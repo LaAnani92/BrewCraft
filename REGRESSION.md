@@ -189,3 +189,11 @@ Run before every release. All items must pass. Updated for v6 (Sprint 1).
 - [ ] Coarseness word-select removed; dynamic fine→coarse bar shows a caret from (setting−min)/(max−min) with the method's target band overlaid (in range / off target); legacy grindCoarseness still positions the caret + renders in diffs
 - [ ] Espresso still shows yield/shot/pressure/preinfusion fields
 - [ ] Update toast after deploy (cache v2.0.0)
+
+## Sprint 13 (v2.1.0) — Quick recipes for every method
+- [ ] Every one of the 20 methods now shows a Quick Recipes rail (no method is empty); 37 recipes total
+- [ ] New methods have attributed recipes: Origami (Kurasu, Equator), Melitta (Voltage), Phin (CAFELY), Cold Drip (Padre), Flair (Flair official, Lance Hedrick "soup"), Cafelat Robot (Cafelat, Hoffmann-style), Nanopresso (Wacaco), Hario Switch (Hoffmann ×2), Siphon (Hario), Cold Brew (Hoffmann RTD, ATK concentrate), Turkish (Mehmet Efendi), Cupping (SCA protocol)
+- [ ] Enriched: Chemex +2 (Blue Bottle, Equator), Kalita Wave +2 (George Howell, Ozone), AeroPress +1 (2023 WAC champion Tay Wipvasutt), Espresso +2 (Ristretto 1:1.5, Lungo 1:3)
+- [ ] Tapping any card fills dose/ratio/water/temp/grind correctly; large-batch values (Cold Brew 80g/255g, Cold Drip 60g) and unusual ratios (Phin 1:6, Cupping 1:18.2, Turkish 1:10) apply without clamping (temp stays ≤100)
+- [ ] Each card shows name · author · stats; technique is the hover/title tooltip; every recipe has a source URL
+- [ ] Update toast after deploy (cache v2.1.0)

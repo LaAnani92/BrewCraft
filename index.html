@@ -1829,7 +1829,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.0.0';
+const APP_VERSION = '2.1.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0;
 let wakeLock = null;
@@ -1849,27 +1849,75 @@ const QUICK_RECIPES = {
     { name:'Onyx V60', author:'Onyx Coffee Lab', doseG:15, ratio:16.7, tempC:96, grind:'medium-fine', time:'2:30', technique:'Bloom 50g/45s; half center, half a medium circle, matching pour to drawdown.', src:'https://onyxcoffeelab.com/blogs/library' }
   ],
   'Chemex': [
-    { name:'Ultimate Chemex', author:'James Hoffmann', doseG:30, ratio:16.7, tempC:95, grind:'medium (coarser than V60)', time:'4:10', technique:'Bloom 60-90g/35s; pour to 300g then 500g; stir, then a gentle swirl.', src:'https://www.timer.coffee/recipes/chemex/james-hoffmann-chemex-recipe/' }
+    { name:'Ultimate Chemex', author:'James Hoffmann', doseG:30, ratio:16.7, tempC:95, grind:'medium (coarser than V60)', time:'4:10', technique:'Bloom 60-90g/35s; pour to 300g then 500g; stir, then a gentle swirl.', src:'https://www.timer.coffee/recipes/chemex/james-hoffmann-chemex-recipe/' },
+    { name:'Chemex 6-Cup', author:'Blue Bottle Coffee', doseG:37.5, ratio:16, tempC:96, grind:'medium-coarse', time:'4:00', technique:'Bloom with about twice the coffee weight for 30-45s, then add water in slow spirals at 0:30, 1:15 and 2:00; target around 4:00.', src:'https://bluebottlecoffee.com/us/eng/brew-guides/chemex' },
+    { name:'Chemex Classic', author:'Equator Coffees', doseG:45, ratio:16, tempC:96, grind:'medium-coarse', time:'4:30', technique:'Bloom 90g for 30s, then pour 210g at 0:30, 1:30 and 2:30 spiralling out then in; finishes 4-5 min.', src:'https://www.equatorcoffees.com/blogs/guides/chemex' }
   ],
   'Kalita Wave': [
-    { name:'Kalita 185', author:'Standard recipe', doseG:20, ratio:16, tempC:96, grind:'medium-coarse', time:'3:15', technique:'Bloom ~45g/45s; 3-stage pulse pours; last pour rinses the walls.', src:'https://prima-coffee.com/learn/article/brewing-guides/comparing-kalita-wave-recipes/33005' }
+    { name:'Kalita 185', author:'Standard recipe', doseG:20, ratio:16, tempC:96, grind:'medium-coarse', time:'3:15', technique:'Bloom ~45g/45s; 3-stage pulse pours; last pour rinses the walls.', src:'https://prima-coffee.com/learn/article/brewing-guides/comparing-kalita-wave-recipes/33005' },
+    { name:'Kalita 185 Pulse', author:'George Howell Coffee', doseG:26, ratio:15, tempC:95, grind:'medium', time:'3:30', technique:'Pulse pour 65g every 30s for six pours (bloom included), spiralling out and back to center, reaching 390g by 2:45 and draining by 3:30.', src:'https://georgehowellcoffee.com/pages/brew-guide-kalita-185' },
+    { name:'Kalita 185 House', author:'Ozone Coffee', doseG:25, ratio:16, tempC:93, grind:'medium', time:'3:00', technique:'Bloom 50g for 30s, pour 110g in circles at 0:30, then add 60g at each of 0:45, 1:00, 1:15 and 1:45; done by 3:00.', src:'https://ozonecoffee.co.uk/pages/kalita-wave-brew-guide' }
   ],
   'AeroPress': [
     { name:'Ultimate AeroPress', author:'James Hoffmann', doseG:11, ratio:18, tempC:93, grind:'medium-fine', time:'2:30', technique:'Add water, seal with plunger; steep 2:00, swirl, wait 30s, gentle press; dilute to taste.', src:'https://www.timer.coffee/recipes/aeropress/james-hoffmann-aeropress-recipe/' },
     { name:'A Very Good AeroPress', author:'Lance Hedrick', doseG:15, ratio:16.7, tempC:92, grind:'medium-fine', time:'2:00', technique:'Slow pour, swirl + 45s bloom, top up, seal; press very gently at 2:00.', src:'https://aeroprecipe.com/recipes/lance-hedrick-a-very-good-aeropress-recipe-and-3-simple-tips' },
-    { name:'Original (inventor)', author:'Alan Adler', doseG:15, ratio:6, tempC:82, grind:'fine', time:'1:00', technique:'Brew a concentrate; stir 10s; press 20-60s; dilute Americano-style.', src:'https://europeancoffeetrip.com/original-aeropress-recipe-inventor-alan-adler/' }
+    { name:'Original (inventor)', author:'Alan Adler', doseG:15, ratio:6, tempC:82, grind:'fine', time:'1:00', technique:'Brew a concentrate; stir 10s; press 20-60s; dilute Americano-style.', src:'https://europeancoffeetrip.com/original-aeropress-recipe-inventor-alan-adler/' },
+    { name:'2023 WAC Champion', author:'Tay Wipvasutt', doseG:18, ratio:8.5, tempC:89, grind:'medium-fine', time:'3:00', technique:'Upright, 3 filters; 16g + 55g water, stir, plunge; add 2g + 50g, plunge; bypass with room-temp then hot water to ~154g.', src:'https://aeropress.com/blogs/w-a-c-aeropress-recipes/1st-tay-wipvasutt-thailand-2023' }
   ],
   'French Press': [
     { name:'Ultimate French Press', author:'James Hoffmann', doseG:30, ratio:16.7, tempC:95, grind:'medium-coarse', time:'4:00 + settle', technique:'Steep 4:00, break crust and skim, rest ~5 min, pour gently (do not plunge fully).', src:'https://www.timer.coffee/recipes/french-press/james-hoffmann-french-press-recipe/' }
   ],
   'Espresso': [
-    { name:'Modern espresso', author:'Specialty standard', doseG:18, ratio:2, tempC:93, grind:'espresso-fine', time:'25-30s', espYield:36, espShot:27, technique:'18g in to 36g out (1:2) in ~25-30s; dial grind to hit the window.', src:'https://coffeebros.com/blogs/coffee/most-popular-espresso-shot-ratios-or-recipes' }
+    { name:'Modern espresso', author:'Specialty standard', doseG:18, ratio:2, tempC:93, grind:'espresso-fine', time:'25-30s', espYield:36, espShot:27, technique:'18g in to 36g out (1:2) in ~25-30s; dial grind to hit the window.', src:'https://coffeebros.com/blogs/coffee/most-popular-espresso-shot-ratios-or-recipes' },
+    { name:'Ristretto', author:'Specialty standard', doseG:18, ratio:1.5, tempC:93, grind:'espresso-fine', time:'20-25s', espYield:27, espShot:22, technique:'Same 18g dose ground slightly finer, stop early at about 27g out (1:1.5) for a concentrated, syrupy, bittersweet cup.', src:'https://coffeebros.com/blogs/coffee/most-popular-espresso-shot-ratios-or-recipes' },
+    { name:'Lungo', author:'Specialty standard', doseG:18, ratio:3, tempC:93, grind:'fine', time:'35-45s', espYield:54, espShot:40, technique:'Grind a touch coarser, dose 18g and let the shot run long to about 54g out (1:3) for a lighter, more tea-like cup.', src:'https://coffeebros.com/blogs/coffee/most-popular-espresso-shot-ratios-or-recipes' }
   ],
   'Moka Pot': [
     { name:'Ultimate Moka Pot', author:'James Hoffmann', doseG:20, ratio:10, tempC:100, grind:'medium-fine', time:'~5:00', technique:'Pre-boiled water to the valve; level basket, no tamp; low heat, lid open; pull at first sputter, cool the base.', src:'https://unpacking.coffee/recipes/50-james-hoffmann-moka-pot' }
   ],
   'Clever': [
     { name:'Clever standard', author:'Sweet Maria’s style', doseG:21, ratio:16, tempC:96, grind:'medium', time:'3:30', technique:'Add water and coffee, steep, stir ~1:30, then place on a mug to drain.', src:'https://library.sweetmarias.com/clever-coffee-dripper-a-full-immersion-brewing-method/' }
+  ],
+  'Origami': [
+    { name:'Origami Clean & Sweet', author:'Kurasu (Kyoto)', doseG:15, ratio:18, tempC:89, grind:'medium-fine', time:'1:20', technique:'Pour 40g over 30s, then 130g over the next 30s, then the rest to 270g; pull the dripper at 1:20 for a clean, sweet cup.', src:'https://kurasu.kyoto/blogs/kurasu-journal/origami-dripper-brewing-recipe-how-we-do-it-at-kurasu' },
+    { name:'Origami Delicate', author:'Equator Coffees', doseG:22, ratio:16.7, tempC:96, grind:'medium-fine', time:'3:00', technique:'Bloom 50g for 30s, take 45-60s to pour to 250g spiralling outward, then add the final 120g; finish around 3:00.', src:'https://www.equatorcoffees.com/blogs/guides/origami' }
+  ],
+  'Melitta': [
+    { name:'Melitta Pulse', author:'Voltage Coffee', doseG:23.5, ratio:17, tempC:96, grind:'medium', time:'4:00', technique:'Bloom 50g for 40s, then pulse pour 50g, 100g, 100g, 100g in stages, finishing the drain by about 4:00.', src:'https://voltagecoffee.com/melitta/' }
+  ],
+  'Phin': [
+    { name:'Traditional Phin', author:'CAFELY', doseG:21, ratio:6, tempC:93, grind:'medium-coarse', time:'5:00', technique:'Add grounds, seat the gravity press, wet to bloom 45s, then fill near the brim, lid on; drips finish in 5-8 min, add condensed milk.', src:'https://cafely.com/blogs/coffee-brew-guide/vietnamese-phin-drip' }
+  ],
+  'Cold Drip': [
+    { name:'Cold Drip Concentrate', author:'Padre Coffee', doseG:60, ratio:8.3, tempC:20, grind:'medium-coarse', time:'6h', technique:'Set the tower to 1 drop every 2-3 seconds through 60g into 500g; runs about 6 hours, then dilute the concentrate to taste.', src:'https://www.padrecoffee.com.au/pages/cold-drip-coffee-the-definitive-guide' }
+  ],
+  'Flair': [
+    { name:'Modern 1:2 Espresso', author:'Flair Espresso', doseG:18, ratio:2, tempC:93, grind:'espresso-fine', time:'25-30s', espYield:36, espShot:28, technique:'Preheat the group, dose 18g level and tamp, pull at 6-9 bar aiming for 36g out in about 25-30 seconds.', src:'https://flairespresso.com/blog/dialing-in-flair-58-plus-manual-espresso-maker/' },
+    { name:'Soup Method (light roast)', author:'Lance Hedrick', doseG:17, ratio:3, tempC:99, grind:'coarse', time:'~15s', espYield:51, espShot:15, technique:'Paper filter under the puck, dose 17g and tamp, add 70g near-boiling water, soak to full saturation then press fast to 51g by 0:15.', src:'https://beanbook.app/recipes/dc-lance-hedrick--soup-method-espresso__77034718-fab7-4e21-be87-f71f64cee3e7' }
+  ],
+  'Cafelat Robot': [
+    { name:'Classic 1:2', author:'Cafelat', doseG:16, ratio:2, tempC:95, grind:'espresso-fine', time:'25-35s', espYield:32, espShot:30, technique:'Dose 16g and tamp, fill with water just off the boil to 5-8mm below the rim, build to 6-7 bar and pull 32g in 25-35 seconds.', src:'https://www.cafelat.co.uk/blogs/cafelat-robot-manual/robot-tips' },
+    { name:'Extended 1:3 (Hoffmann style)', author:'James Hoffmann method', doseG:18, ratio:3, tempC:95, grind:'fine', time:'35-50s', espYield:54, espShot:45, technique:'Grind very fine, dose 18g, pull a long slow shot to about 54g over 35-50 seconds chasing higher extraction and clarity.', src:'https://completehomebarista.com/guides/hoffman-method-james-hoffmann-espresso-technique/' }
+  ],
+  'Nanopresso': [
+    { name:'Wacaco Standard Shot', author:'Wacaco', doseG:8, ratio:2, tempC:92, grind:'espresso-fine', time:'~30s', espYield:16, espShot:30, technique:'Run a hot-water cycle to preheat, dose the 8g scoop level, fill with rolling-boil water, then pump about once per second until ~16g pours.', src:'https://www.wacaco.com/blogs/news/how-to-use-your-nanopresso-a-step-by-step-guide' }
+  ],
+  'Hario Switch': [
+    { name:'Switch Immersion', author:'James Hoffmann', doseG:15, ratio:16.7, tempC:93, grind:'medium-fine', time:'2:45', technique:'Switch closed, bloom 1:2 and swirl, add water to 250g, stir at 1:00, open the switch at 2:00 to drain by 2:45.', src:'https://www.beanbook.app/recipes/james-hoffmann--hario-switch-immersion-brew__fa27df0d-36fc-44be-95b6-b53acbb27e1b' },
+    { name:'Switch Hybrid', author:'James Hoffmann', doseG:20, ratio:16.5, tempC:95, grind:'medium', time:'3:30', technique:'Valve closed, bloom 60g and swirl, fill to 330g, stir gently, then open the valve to finish as a percolation drawdown.', src:'https://unpacking.coffee/recipes/23-james-hoffmann-hario-switch-hybrid' }
+  ],
+  'Siphon': [
+    { name:'Syphon Brew', author:'Hario', doseG:24, ratio:16, tempC:93, grind:'medium', time:'1:30', technique:'Let vapour push water up, stir to submerge grounds, brew ~60s after the full rise, kill the heat and let the coffee draw back down.', src:'https://www.hario.co.uk/pages/brew-guides-syphon' }
+  ],
+  'Cold Brew': [
+    { name:'Cold Brew (ready to drink)', author:'James Hoffmann', doseG:80, ratio:14, tempC:20, grind:'coarse', time:'12-24h', technique:'Coarse grind at 1:14, stir to fully saturate, steep refrigerated 12-24h, then filter; serve ready to drink over ice.', src:'https://www.youtube.com/watch?v=vGisEZIscOk' },
+    { name:'Cold Brew Concentrate', author:'America’s Test Kitchen', doseG:255, ratio:3.2, tempC:20, grind:'extra coarse', time:'24h', technique:'Coarse grind steeped at room temp 24h makes a concentrate; dilute roughly 1:1 with cold water and ice before drinking.', src:'https://www.americastestkitchen.com/recipes/8790-cold-brew-coffee-concentrate' }
+  ],
+  'Turkish': [
+    { name:'Turkish (cezve)', author:'Kurukahveci Mehmet Efendi', doseG:7, ratio:10, tempC:20, grind:'extra fine', time:'3-4 min', technique:'Powder-fine grind with cold water (optional sugar), heat slowly without stirring until foam rises, share the foam, bring up once more.', src:'https://www.mehmetefendi.com/eng/brew-guide/turkish-coffee/with-cezve' }
+  ],
+  'Cupping': [
+    { name:'SCA Cupping Protocol', author:'SCA', doseG:8.25, ratio:18.2, tempC:93, grind:'medium-coarse', time:'4:00', technique:'8.25g per 150ml, just-off-boil water poured over the grounds, steep 4:00 undisturbed, then break the crust with three stirs and skim.', src:'https://sca.coffee/research/protocols-best-practices' }
   ]
 };
 
