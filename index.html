@@ -371,6 +371,21 @@
   .chip-row { display:flex; gap:6px; flex-wrap:wrap; margin-top:8px; }
   .preset-chip { font-size:12px; font-weight:600; padding:9px 14px; border-radius:18px; border:1px solid var(--border); background:var(--bg-input); color:var(--text-secondary); cursor:pointer; transition:all 0.15s; font-family:'DM Sans',sans-serif; }
   .preset-chip:active, .preset-chip:hover { border-color:var(--accent); color:var(--accent-bright); background:var(--accent-glow); }
+  /* precision dial */
+  .dial-head { display:flex; align-items:center; gap:6px; margin-bottom:6px; }
+  .dial-reset { margin-left:auto; width:30px; height:30px; display:inline-flex; align-items:center; justify-content:center; background:transparent; border:1px solid var(--border); border-radius:var(--radius-xs); color:var(--text-muted); cursor:pointer; transition:all 0.15s; flex-shrink:0; }
+  .dial-reset:active, .dial-reset:hover { color:var(--accent-bright); border-color:var(--accent); background:var(--accent-glow); }
+  .dial-reset .ico { width:15px; height:15px; }
+  .scrub { display:flex; flex-direction:column; gap:8px; }
+  .scrub-num { -webkit-appearance:none; appearance:none; width:100%; text-align:center; font-family:'JetBrains Mono',monospace; font-size:30px; font-weight:600; letter-spacing:0.5px; color:var(--text-primary); background:transparent; border:none; padding:2px 0; outline:none; min-height:42px; }
+  .scrub-num::-webkit-inner-spin-button, .scrub-num::-webkit-outer-spin-button { -webkit-appearance:none; margin:0; }
+  .scrub-num:focus { color:var(--accent-bright); }
+  .ruler { position:relative; height:46px; border-radius:var(--radius-sm); background:var(--bg-input); border:1px solid var(--border); overflow:hidden; cursor:ew-resize; touch-action:none; -webkit-user-select:none; user-select:none; }
+  .ruler:focus-visible { border-color:var(--accent); box-shadow:0 0 0 2px var(--accent-glow); outline:none; }
+  .ruler.dragging { border-color:var(--accent); background:var(--bg-surface); }
+  .ruler-ticks { position:absolute; top:0; bottom:0; left:-50%; width:200%; background-image:repeating-linear-gradient(90deg, var(--border-light,#4f4436) 0 1.5px, transparent 1.5px var(--gap,25px)); -webkit-mask-image:linear-gradient(90deg,transparent,#000 18%,#000 82%,transparent); mask-image:linear-gradient(90deg,transparent,#000 18%,#000 82%,transparent); will-change:transform; }
+  .ruler-caret { position:absolute; top:7px; bottom:7px; left:50%; width:2px; transform:translateX(-50%); background:var(--accent-bright); border-radius:2px; box-shadow:0 0 8px rgba(232,184,138,0.5); pointer-events:none; }
+  .scrub-hint { font-size:10px; color:var(--text-muted); text-align:center; letter-spacing:0.3px; margin-top:-2px; }
   .fresh-badge { display:inline-block; font-size:11px; font-weight:600; padding:4px 10px; border-radius:12px; margin-top:6px; }
   .fresh-degassing { background:rgba(212,160,74,0.15); color:var(--warning); border:1px solid rgba(212,160,74,0.4); }
   .fresh-peak { background:rgba(122,184,122,0.15); color:var(--success); border:1px solid rgba(122,184,122,0.4); }
@@ -573,6 +588,28 @@
   .brewbar-compact { margin:0 0 14px; }
   .brewbar-compact .bb-val { font-size:15px; }
 
+  /* ===== v13 SCAN ===== */
+  .btn-scan { width:100%; margin-bottom:12px; background:linear-gradient(135deg, rgba(200,149,108,0.22), rgba(200,149,108,0.08)); border:1px solid rgba(200,149,108,0.32); color:var(--accent-bright); display:flex; align-items:center; justify-content:center; gap:8px; padding:13px; font-weight:600; }
+  .btn-scan .ico { width:18px; height:18px; }
+  .btn-scan:active { transform:scale(0.98); }
+  .scan-modal { max-width:540px; }
+  .scan-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; }
+  .scan-head h3 { margin:0; }
+  .scan-drop { display:flex; flex-direction:column; align-items:center; gap:12px; padding:38px 20px; border:2px dashed var(--border-light); border-radius:14px; color:var(--text-secondary); cursor:pointer; text-align:center; transition:border-color 0.2s, background 0.2s; }
+  .scan-drop:active { border-color:var(--accent); background:var(--bg-input); }
+  .scan-keyhint { margin-top:14px; padding:11px 14px; border-radius:10px; background:rgba(196,107,94,0.12); color:var(--danger); font-size:13px; }
+  .scan-preview { width:100%; max-height:300px; object-fit:contain; border-radius:12px; background:var(--bg-input); margin-bottom:12px; }
+  .scan-status { font-size:14px; color:var(--text-secondary); min-height:22px; margin-bottom:12px; text-align:center; }
+  .scan-status.err { color:var(--danger); }
+  .scan-actions { display:flex; gap:10px; }
+  .scan-actions .btn { flex:1; }
+  .scan-fields { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:10px 0; }
+  .scan-f { display:flex; flex-direction:column; gap:4px; font-size:11px; font-weight:600; letter-spacing:0.05em; text-transform:uppercase; color:var(--text-muted); }
+  .scan-f input { background:var(--bg-input); border:1px solid var(--border); border-radius:9px; padding:10px; color:var(--text-primary); font-size:15px; font-weight:400; text-transform:none; letter-spacing:0; }
+  .scan-f:first-child, .scan-f:nth-child(2) { grid-column:1 / -1; }
+  .scan-note { font-size:13px; color:var(--text-muted); margin:8px 0; min-height:18px; }
+  @media (max-width:480px) { .scan-fields { grid-template-columns:1fr; } }
+
   #printCard { display:none; }
   @media print {
     body > *:not(#printCard) { display:none !important; }
@@ -598,6 +635,7 @@
 <symbol id="i-flask" viewBox="0 0 24 24"><path d="M10 3h4"/><path d="M11 3v5.5L6.2 17.5A2.3 2.3 0 0 0 8.3 21h7.4a2.3 2.3 0 0 0 2.1-3.5L13 8.5V3"/><path d="M8 15h8"/></symbol>
 <symbol id="i-cone" viewBox="0 0 24 24"><path d="M4.5 5h15l-5.5 7.5h-4L4.5 5z"/><path d="M12 15.5v.01"/><path d="M8 20.5h8"/></symbol>
 <symbol id="i-sliders" viewBox="0 0 24 24"><path d="M4.8 7h8"/><circle cx="17" cy="7" r="2.2"/><path d="M19.2 17H11"/><circle cx="7" cy="17" r="2.2"/></symbol>
+<symbol id="i-reset" viewBox="0 0 24 24"><path d="M19 12a7 7 0 1 1-2.05-4.95"/><path d="M17 3.5v4h-4"/></symbol>
 <symbol id="i-drop" viewBox="0 0 24 24"><path d="M12 3.5s5.7 6 5.7 10.2a5.7 5.7 0 0 1-11.4 0C6.3 9.5 12 3.5 12 3.5z"/></symbol>
 <symbol id="i-wave" viewBox="0 0 24 24"><path d="M3 9.5c3-3.5 6 3.5 9 0s6 3.5 9 0"/><path d="M3 15.5c3-3.5 6 3.5 9 0s6 3.5 9 0"/></symbol>
 <symbol id="i-chart" viewBox="0 0 24 24"><path d="M4 20h16"/><path d="M7 16v-5"/><path d="M12 16V6"/><path d="M17 16v-8"/></symbol>
@@ -612,6 +650,7 @@
 <symbol id="i-press" viewBox="0 0 24 24"><rect x="6" y="8" width="12" height="12" rx="2"/><path d="M12 8V4"/><path d="M9 4h6"/><path d="M8 13.5h8"/></symbol>
 <symbol id="i-aero" viewBox="0 0 24 24"><rect x="7.5" y="10" width="9" height="10" rx="1.5"/><path d="M12 3v5"/><path d="M9.5 6L12 8.5 14.5 6"/></symbol>
 <symbol id="i-esp" viewBox="0 0 24 24"><path d="M5.5 7h10v5a5 5 0 0 1-10 0z"/><path d="M15.5 8h1.6a2.5 2.5 0 0 1 0 5h-1.6"/><path d="M7 20h9"/></symbol>
+<symbol id="i-camera" viewBox="0 0 24 24"><path d="M3.5 8.5h3l1.5-2.2h8l1.5 2.2h3v10.5h-17z"/><circle cx="12" cy="13.5" r="3.6"/></symbol>
 </defs></svg>
 
 <header class="header">
@@ -720,6 +759,7 @@
       <div class="section-toggle">▾</div>
     </div>
     <div class="section-body">
+      <button class="btn btn-scan" onclick="openScan()" id="scanBagBtn"><svg class="ico"><use href="#i-camera"/></svg> Scan bag</button>
       <div class="profile-row">
         <select id="beanProfileSelect" onchange="applyBeanProfile()">
           <option value="">Saved beans…</option>
@@ -812,32 +852,40 @@
     </div>
     <div class="section-body">
       <div class="field-grid" style="margin-bottom:10px">
-        <div class="field"><label>Coffee Dose <span class="unit">(g)</span></label>
-          <div class="stepper">
-            <button class="step-btn" aria-label="Decrease dose" onclick="stepField('coffeeDose',-0.5,recalcFromDose)">−</button>
-            <input type="number" inputmode="decimal" enterkeyhint="done" id="coffeeDose" data-default="15" placeholder="15" step="0.1" min="0" oninput="recalcFromDose()">
-            <button class="step-btn" aria-label="Increase dose" onclick="stepField('coffeeDose',0.5,recalcFromDose)">＋</button>
+        <div class="field">
+          <div class="dial-head"><label>Coffee Dose <span class="unit">(g)</span></label>
+            <button class="dial-reset" aria-label="Reset dose to default" title="Reset to default (15)" onclick="resetField('coffeeDose',recalcFromDose)"><svg class="ico"><use href="#i-reset"/></svg></button>
+          </div>
+          <div class="scrub">
+            <input type="number" inputmode="decimal" enterkeyhint="done" id="coffeeDose" class="scrub-num" data-default="15" placeholder="15" step="0.1" min="0" oninput="recalcFromDose()" aria-label="Coffee dose in grams">
+            <div class="ruler" data-field="coffeeDose" role="slider" tabindex="0" aria-label="Coffee dose — drag or arrow keys to adjust" style="--gap:25px"><div class="ruler-ticks"></div><div class="ruler-caret"></div></div>
           </div>
         </div>
-        <div class="field"><label>Ratio <span class="unit">(1 : x)</span></label>
-          <div class="stepper">
-            <button class="step-btn" aria-label="Decrease ratio" onclick="stepField('brewRatio',-0.5,recalcFromRatio)">−</button>
-            <input type="number" inputmode="decimal" enterkeyhint="done" id="brewRatio" data-default="16" placeholder="16" step="0.1" min="1" oninput="recalcFromRatio()">
-            <button class="step-btn" aria-label="Increase ratio" onclick="stepField('brewRatio',0.5,recalcFromRatio)">＋</button>
+        <div class="field">
+          <div class="dial-head"><label>Ratio <span class="unit">(1 : x)</span></label>
+            <button class="dial-reset" aria-label="Reset ratio to default" title="Reset to default (16)" onclick="resetField('brewRatio',recalcFromRatio)"><svg class="ico"><use href="#i-reset"/></svg></button>
+          </div>
+          <div class="scrub">
+            <input type="number" inputmode="decimal" enterkeyhint="done" id="brewRatio" class="scrub-num" data-default="16" placeholder="16" step="0.1" min="1" oninput="recalcFromRatio()" aria-label="Brew ratio (1 to x)">
+            <div class="ruler" data-field="brewRatio" role="slider" tabindex="0" aria-label="Ratio — drag or arrow keys to adjust" style="--gap:40px"><div class="ruler-ticks"></div><div class="ruler-caret"></div></div>
           </div>
         </div>
-        <div class="field"><label>Total Water <span class="unit">(g)</span></label>
-          <div class="stepper">
-            <button class="step-btn" aria-label="Decrease water" onclick="stepField('totalWater',-10,recalcFromWater)">−</button>
-            <input type="number" inputmode="decimal" enterkeyhint="done" id="totalWater" data-default="250" placeholder="250" step="1" min="0" oninput="recalcFromWater()">
-            <button class="step-btn" aria-label="Increase water" onclick="stepField('totalWater',10,recalcFromWater)">＋</button>
+        <div class="field">
+          <div class="dial-head"><label>Total Water <span class="unit">(g)</span></label>
+            <button class="dial-reset" aria-label="Reset water to default" title="Reset to default (250)" onclick="resetField('totalWater',recalcFromWater)"><svg class="ico"><use href="#i-reset"/></svg></button>
+          </div>
+          <div class="scrub">
+            <input type="number" inputmode="decimal" enterkeyhint="done" id="totalWater" class="scrub-num" data-default="250" placeholder="250" step="1" min="0" oninput="recalcFromWater()" aria-label="Total water in grams">
+            <div class="ruler" data-field="totalWater" role="slider" tabindex="0" aria-label="Total water — drag or arrow keys to adjust" style="--gap:30px"><div class="ruler-ticks"></div><div class="ruler-caret"></div></div>
           </div>
         </div>
-        <div class="field"><label>Water Temp <span class="unit" id="tempUnitLabel">(°C)</span></label>
-          <div class="stepper">
-            <button class="step-btn" aria-label="Decrease temperature" onclick="stepField('waterTemp',-1,markDirty)">−</button>
-            <input type="number" inputmode="decimal" enterkeyhint="done" id="waterTemp" data-default="93" placeholder="93" step="0.5" min="0" max="100" oninput="markDirty()">
-            <button class="step-btn" aria-label="Increase temperature" onclick="stepField('waterTemp',1,markDirty)">＋</button>
+        <div class="field">
+          <div class="dial-head"><label>Water Temp <span class="unit" id="tempUnitLabel">(°C)</span></label>
+            <button class="dial-reset" aria-label="Reset temperature to default" title="Reset to default" onclick="resetField('waterTemp',markDirty)"><svg class="ico"><use href="#i-reset"/></svg></button>
+          </div>
+          <div class="scrub">
+            <input type="number" inputmode="decimal" enterkeyhint="done" id="waterTemp" class="scrub-num" data-default="93" placeholder="93" step="0.5" min="0" max="100" oninput="markDirty()" aria-label="Water temperature">
+            <div class="ruler" data-field="waterTemp" role="slider" tabindex="0" aria-label="Water temperature — drag or arrow keys to adjust" style="--gap:24px"><div class="ruler-ticks"></div><div class="ruler-caret"></div></div>
           </div>
         </div>
       </div>
@@ -1397,6 +1445,53 @@
   </div>
 </div>
 
+<div class="modal-overlay" id="scanModal">
+  <div class="modal scan-modal">
+    <div class="scan-head">
+      <h3 id="scanTitle">Scan a coffee bag</h3>
+      <button class="icon-btn" onclick="closeScan()" aria-label="Close">✕</button>
+    </div>
+
+    <div id="scanStep1" class="scan-step">
+      <p class="field-hint">Take a clear photo of the bag label — roaster, origin, and roast date if printed. Claude reads it and fills in the bean fields.</p>
+      <label class="scan-drop" for="scanFile">
+        <svg class="ico" style="width:40px;height:40px"><use href="#i-camera"/></svg>
+        <span>Take photo or choose image</span>
+      </label>
+      <input type="file" id="scanFile" accept="image/*" capture="environment" style="display:none" onchange="scanFilePicked(event)">
+      <div class="scan-keyhint" id="scanKeyHint" style="display:none">No API key set — add one in Settings (gear icon) to enable scanning.</div>
+    </div>
+
+    <div id="scanStep2" class="scan-step" style="display:none">
+      <img id="scanPreview" class="scan-preview" alt="bag photo preview">
+      <div id="scanStatus" class="scan-status"></div>
+      <div class="scan-actions">
+        <button class="btn btn-secondary" id="scanReadBtn" onclick="runScanRead()">Read this label</button>
+        <button class="btn btn-ghost" onclick="scanReset()">Retake</button>
+      </div>
+    </div>
+
+    <div id="scanStep3" class="scan-step" style="display:none">
+      <p class="field-hint">Here's what I read. Edit anything, then apply.</p>
+      <div class="scan-fields">
+        <label class="scan-f">Roaster<input type="text" id="scRoaster"></label>
+        <label class="scan-f">Origin / Coffee name<input type="text" id="scOrigin"></label>
+        <label class="scan-f">Process<input type="text" id="scProcess"></label>
+        <label class="scan-f">Varietal<input type="text" id="scVarietal"></label>
+        <label class="scan-f">Roast date<input type="date" id="scRoastDate"></label>
+        <label class="scan-f">Roast level<input type="text" id="scRoastLevel"></label>
+        <label class="scan-f">Bag size (g)<input type="number" id="scBagSize" inputmode="decimal"></label>
+        <label class="scan-f">Elevation (masl)<input type="text" id="scElevation"></label>
+      </div>
+      <div id="scanNote" class="scan-note"></div>
+      <div class="scan-actions">
+        <button class="btn btn-primary" onclick="applyScan()">Fill bean fields</button>
+        <button class="btn btn-ghost" onclick="scanReset()">Scan another</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div class="modal-overlay" id="settingsModal" onclick="if(event.target===this)closeSettings()">
   <div class="modal" style="max-width:620px">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
@@ -1573,7 +1668,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '1.4.0';
+const APP_VERSION = '1.6.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0;
 let wakeLock = null;
@@ -1863,7 +1958,7 @@ function recalcFromWater() {
   if (dose > 0 && water > 0) document.getElementById('brewRatio').value = +(water/dose).toFixed(1);
   afterRecalc(); _recalcLock = false;
 }
-function afterRecalc() { updatePourTotals(); calcExtraction(); markDirty(); }
+function afterRecalc() { updatePourTotals(); calcExtraction(); markDirty(); renderAllScrubbers(); }
 
 /* ======= EXTRACTION ======= */
 function computeEY(r) {
@@ -2499,6 +2594,7 @@ function loadRecipeData(r) {
   document.getElementById('brewRatio').value = r.brewRatio || '';
   document.getElementById('totalWater').value = r.totalWater || '';
   document.getElementById('waterTemp').value = displayTemp(r.waterTemp);
+  renderAllScrubbers();
   document.getElementById('espYield').value = r.espYield || '';
   document.getElementById('espShotTime').value = r.espShotTime || '';
   document.getElementById('espPressure').value = r.espPressure || '';
@@ -3263,17 +3359,101 @@ function printRecipe() {
 }
 
 /* ======= v5: STEPPERS, CHIPS, FRESHNESS ======= */
-function stepField(id, delta, cb) {
-  const el = document.getElementById(id);
-  let v = parseFloat(el.value);
-  if (isNaN(v)) v = parseFloat(el.dataset.default) || 0;
-  else v += delta;
-  v = Math.max(parseFloat(el.min) || 0, Math.round(v * 10) / 10);
-  const mx = parseFloat(el.max);
+/* ===== Precision scrubber dials =====
+   Drag (or arrow-key) a ruler to set a value: small drag = fine, fast swipe =
+   coarse, snapping to each field's resolution with a haptic tick. Tap the number
+   to type an exact value. The <input> stays the source of truth so all recalc /
+   save logic is unchanged. */
+const SCRUBBERS = {
+  coffeeDose: { step: 0.1, pxPerUnit: 50, gap: 25, cb: recalcFromDose },
+  brewRatio:  { step: 0.1, pxPerUnit: 80, gap: 40, cb: recalcFromRatio },
+  totalWater: { step: 1,   pxPerUnit: 3,  gap: 30, cb: recalcFromWater },
+  waterTemp:  { step: 0.5, pxPerUnit: 12, gap: 24, cb: markDirty }
+};
+function _scrubSnap(v, cfg, input) {
+  v = Number((Math.round(v / cfg.step) * cfg.step).toFixed(4));
+  const mn = parseFloat(input.min), mx = parseFloat(input.max);
+  if (!isNaN(mn)) v = Math.max(mn, v);
   if (!isNaN(mx)) v = Math.min(mx, v);
-  el.value = v;
-  vibrate(10);
+  return v;
+}
+function _tickOffset(val, cfg) {
+  return -((((val * cfg.pxPerUnit) % cfg.gap) + cfg.gap) % cfg.gap);
+}
+function renderScrubber(field) {
+  const cfg = SCRUBBERS[field];
+  if (!cfg || !cfg.ticks) return;
+  const v = parseFloat(cfg.input.value);
+  const val = isNaN(v) ? (parseFloat(cfg.input.dataset.default) || 0) : v;
+  cfg.ticks.style.transform = 'translateX(' + _tickOffset(val, cfg) + 'px)';
+  cfg.ruler.setAttribute('aria-valuenow', isNaN(v) ? '' : String(val));
+}
+function renderAllScrubbers() { Object.keys(SCRUBBERS).forEach(renderScrubber); }
+function initScrubber(field) {
+  const cfg = SCRUBBERS[field];
+  const input = document.getElementById(field);
+  const ruler = document.querySelector('.ruler[data-field="' + field + '"]');
+  if (!input || !ruler) return;
+  cfg.input = input; cfg.ruler = ruler; cfg.ticks = ruler.querySelector('.ruler-ticks');
+  const mn = parseFloat(input.min), mx = parseFloat(input.max);
+  if (!isNaN(mn)) ruler.setAttribute('aria-valuemin', mn);
+  if (!isNaN(mx)) ruler.setAttribute('aria-valuemax', mx);
+  const cur = function() { const v = parseFloat(input.value); return isNaN(v) ? (parseFloat(input.dataset.default) || 0) : v; };
+  let dragging = false, startX = 0, startVal = 0, lastVal = 0;
+  ruler.addEventListener('pointerdown', function(e) {
+    dragging = true; startX = e.clientX; startVal = cur(); lastVal = startVal;
+    try { ruler.setPointerCapture(e.pointerId); } catch (_) {}
+    ruler.classList.add('dragging');
+  });
+  ruler.addEventListener('pointermove', function(e) {
+    if (!dragging) return;
+    let raw = startVal + (e.clientX - startX) / cfg.pxPerUnit;
+    const lo = parseFloat(input.min), hi = parseFloat(input.max);
+    if (!isNaN(lo)) raw = Math.max(lo, raw);
+    if (!isNaN(hi)) raw = Math.min(hi, raw);
+    cfg.ticks.style.transform = 'translateX(' + _tickOffset(raw, cfg) + 'px)';
+    const snapped = _scrubSnap(raw, cfg, input);
+    if (snapped !== lastVal) {
+      lastVal = snapped; input.value = snapped; vibrate(6);
+      ruler.setAttribute('aria-valuenow', String(snapped));
+      if (typeof cfg.cb === 'function') cfg.cb();
+    }
+  });
+  const end = function(e) {
+    if (!dragging) return;
+    dragging = false; ruler.classList.remove('dragging');
+    try { ruler.releasePointerCapture(e.pointerId); } catch (_) {}
+    renderScrubber(field);
+  };
+  ruler.addEventListener('pointerup', end);
+  ruler.addEventListener('pointercancel', end);
+  ruler.addEventListener('keydown', function(e) {
+    let d = 0;
+    if (e.key === 'ArrowRight' || e.key === 'ArrowUp') d = 1;
+    else if (e.key === 'ArrowLeft' || e.key === 'ArrowDown') d = -1;
+    else if (e.key === 'Home') {
+      input.value = _scrubSnap(parseFloat(input.dataset.default) || cur(), cfg, input);
+      if (typeof cfg.cb === 'function') cfg.cb();
+      renderScrubber(field); e.preventDefault(); return;
+    } else return;
+    input.value = _scrubSnap(cur() + d * cfg.step * (e.shiftKey ? 10 : 1), cfg, input);
+    vibrate(6);
+    if (typeof cfg.cb === 'function') cfg.cb();
+    renderScrubber(field); e.preventDefault();
+  });
+  input.addEventListener('input', function() { renderScrubber(field); });
+  renderScrubber(field);
+}
+function initScrubbers() { Object.keys(SCRUBBERS).forEach(initScrubber); }
+function resetField(id, cb) {
+  const el = document.getElementById(id);
+  const d = el.dataset.default;
+  if (d != null && d !== '') {
+    el.value = (id === 'waterTemp' && settings.tempUnit === 'F') ? Math.round(cToF(parseFloat(d))) : d;
+  }
+  vibrate(12);
   if (typeof cb === 'function') cb();
+  if (SCRUBBERS[id] && SCRUBBERS[id].ticks) renderScrubber(id);
 }
 function setRatioChip(x) { document.getElementById('brewRatio').value = x; recalcFromRatio(); }
 function setTempChip(c) {
@@ -3493,6 +3673,10 @@ function refreshTempUI() {
     ch.textContent = (settings.tempUnit === 'F' ? Math.round(cToF(c)) : c) + '\u00b0';
   });
   document.getElementById('waterTemp').max = settings.tempUnit === 'F' ? 212 : 100;
+  if (typeof SCRUBBERS !== 'undefined' && SCRUBBERS.waterTemp && SCRUBBERS.waterTemp.ruler) {
+    SCRUBBERS.waterTemp.ruler.setAttribute('aria-valuemax', settings.tempUnit === 'F' ? 212 : 100);
+    renderScrubber('waterTemp');
+  }
 }
 function applyMode() {
   document.body.classList.toggle('simple', settings.mode === 'simple');
@@ -4080,6 +4264,154 @@ function espressoDialIn(issues, r) {
   return out.join('\n\n');
 }
 
+/* ======= v13: CAMERA OCR (vision autofill) ======= */
+let scanImageData = null, scanMime = 'image/jpeg';
+function openScan() {
+  scanReset();
+  document.getElementById('scanKeyHint').style.display = settings.apiKey ? 'none' : 'block';
+  document.getElementById('scanModal').classList.add('show');
+}
+function closeScan() { document.getElementById('scanModal').classList.remove('show'); }
+function scanReset() {
+  scanImageData = null;
+  document.getElementById('scanStep1').style.display = 'block';
+  document.getElementById('scanStep2').style.display = 'none';
+  document.getElementById('scanStep3').style.display = 'none';
+  document.getElementById('scanStatus').textContent = '';
+  document.getElementById('scanStatus').classList.remove('err');
+  const f = document.getElementById('scanFile'); if (f) f.value = '';
+}
+function scanFilePicked(evt) {
+  const file = evt.target.files && evt.target.files[0];
+  if (!file) return;
+  downscaleImage(file, function(dataUrl, mime) {
+    scanImageData = dataUrl.split(',')[1];
+    scanMime = mime;
+    document.getElementById('scanPreview').src = dataUrl;
+    document.getElementById('scanStep1').style.display = 'none';
+    document.getElementById('scanStep2').style.display = 'block';
+    document.getElementById('scanStatus').textContent = settings.apiKey ? 'Ready to read.' : 'Add an API key in Settings to read this.';
+  });
+}
+function downscaleImage(file, cb) {
+  const reader = new FileReader();
+  reader.onload = function() {
+    const img = new Image();
+    img.onload = function() {
+      const max = 1100;
+      let w = img.width, h = img.height;
+      if (w > max || h > max) { const r = Math.min(max / w, max / h); w = Math.round(w * r); h = Math.round(h * r); }
+      const canvas = document.createElement('canvas');
+      canvas.width = w; canvas.height = h;
+      canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+      cb(canvas.toDataURL('image/jpeg', 0.85), 'image/jpeg');
+    };
+    img.onerror = function() { cb(reader.result, file.type || 'image/jpeg'); };
+    img.src = reader.result;
+  };
+  reader.readAsDataURL(file);
+}
+async function runScanRead() {
+  if (!scanImageData) return;
+  if (!settings.apiKey) { document.getElementById('scanStatus').textContent = 'No API key — add one in Settings (gear icon).'; document.getElementById('scanStatus').classList.add('err'); return; }
+  const btn = document.getElementById('scanReadBtn');
+  btn.disabled = true; btn.textContent = '\u2026 reading';
+  const st = document.getElementById('scanStatus');
+  st.classList.remove('err');
+  st.textContent = 'Claude is reading the label\u2026';
+  const sys = 'You read specialty coffee bag labels from a photo and extract structured data. Return ONLY a JSON object, no markdown, no prose. Keys: roaster, origin (the coffee name/region as printed, e.g. "Ethiopia Yirgacheffe Konga"), process, varietal, roastDate (ISO YYYY-MM-DD if any date is printed, else ""), roastLevel (one of: Light, Light-Medium, Medium, Medium-Dark, Dark, or ""), bagSize (grams as a number, converting kg/oz/lb to grams, else ""), elevation (masl number or range as printed, else ""). Use "" for anything not visible. Do not guess values that are not on the label.';
+  try {
+    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': settings.apiKey,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
+      body: JSON.stringify({
+        model: settings.model || 'claude-sonnet-4-6',
+        max_tokens: 600,
+        system: sys,
+        messages: [{ role: 'user', content: [
+          { type: 'image', source: { type: 'base64', media_type: scanMime, data: scanImageData } },
+          { type: 'text', text: 'Extract the coffee bag details as JSON.' }
+        ] }]
+      })
+    });
+    if (!resp.ok) throw new Error('API ' + resp.status);
+    const dataResp = await resp.json();
+    const text = (dataResp.content || []).filter(function(b) { return b.type === 'text'; }).map(function(b) { return b.text; }).join('').trim();
+    const jsonMatch = text.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) throw new Error('no data');
+    const parsed = JSON.parse(jsonMatch[0]);
+    fillScanReview(parsed);
+  } catch(e) {
+    st.classList.add('err');
+    st.textContent = e.message === 'API 401' ? 'API key rejected — check it in Settings.' : 'Couldn\u2019t read that one. Try a clearer, straight-on photo of the label.';
+  } finally {
+    btn.disabled = false; btn.textContent = 'Read this label';
+  }
+}
+function fillScanReview(d) {
+  document.getElementById('scRoaster').value = d.roaster || '';
+  document.getElementById('scOrigin').value = d.origin || '';
+  document.getElementById('scProcess').value = d.process || '';
+  document.getElementById('scVarietal').value = d.varietal || '';
+  document.getElementById('scRoastDate').value = /^\d{4}-\d{2}-\d{2}$/.test(d.roastDate || '') ? d.roastDate : '';
+  document.getElementById('scRoastLevel').value = d.roastLevel || '';
+  document.getElementById('scBagSize').value = (d.bagSize !== '' && !isNaN(parseFloat(d.bagSize))) ? parseFloat(d.bagSize) : '';
+  document.getElementById('scElevation').value = d.elevation || '';
+  const filled = ['roaster','origin','process','varietal','roastDate','roastLevel','bagSize','elevation'].filter(function(k) { return d[k] !== '' && d[k] != null; }).length;
+  document.getElementById('scanNote').textContent = filled ? ('Read ' + filled + ' field' + (filled > 1 ? 's' : '') + ' from the label.') : 'Nothing clear was found — fill in by hand or retake.';
+  document.getElementById('scanStep2').style.display = 'none';
+  document.getElementById('scanStep3').style.display = 'block';
+}
+function setSelectByText(id, text) {
+  if (!text) return false;
+  const sel = document.getElementById(id);
+  if (!sel) return false;
+  const t = text.trim().toLowerCase();
+  for (let i = 0; i < sel.options.length; i++) {
+    const o = sel.options[i];
+    if (o.disabled) continue;
+    if (o.value.toLowerCase() === t || o.textContent.trim().toLowerCase() === t) { sel.value = o.value; return true; }
+  }
+  for (let i = 0; i < sel.options.length; i++) {
+    const o = sel.options[i];
+    if (o.disabled || !o.value) continue;
+    if (o.textContent.trim().toLowerCase().indexOf(t) !== -1 || t.indexOf(o.textContent.trim().toLowerCase()) !== -1) { sel.value = o.value; return true; }
+  }
+  return false;
+}
+function applyScan() {
+  const v = function(id) { return document.getElementById(id).value.trim(); };
+  if (v('scRoaster')) document.getElementById('roaster').value = v('scRoaster');
+  if (v('scOrigin')) document.getElementById('beanOrigin').value = v('scOrigin');
+  setSelectByText('beanProcess', v('scProcess'));
+  if (v('scRoastDate')) { document.getElementById('roastDate').value = v('scRoastDate'); if (typeof updateFreshness === 'function') updateFreshness(); }
+  setSelectByText('roastLevel', v('scRoastLevel'));
+  if (v('scBagSize')) { document.getElementById('bagSizeInput').value = v('scBagSize'); if (typeof updateBagSize === 'function') updateBagSize(); }
+  if (v('scElevation')) { const e = document.getElementById('beanElevation'); if (e) e.value = (v('scElevation').match(/\d+/) || [v('scElevation')])[0]; }
+  const varText = v('scVarietal');
+  if (varText) {
+    const matched = setSelectByText('beanVarietal', varText);
+    if (!matched) {
+      const sel = document.getElementById('beanVarietal');
+      if (sel) {
+        sel.value = '__other__';
+        if (typeof handleOtherSelect === 'function') handleOtherSelect('beanVarietal', 'beanVarietalCustom');
+        const custom = document.querySelector('#beanVarietalCustom input');
+        if (custom) custom.value = varText;
+      }
+    }
+  }
+  markDirty();
+  closeScan();
+  document.getElementById('sec-bean').classList.remove('collapsed');
+  showToast('Bean fields filled from the label \u2713', 'success');
+}
+
 /* ======= KEYBOARD & UNLOAD ======= */
 document.addEventListener('keydown', function(e) {
   if ((e.metaKey || e.ctrlKey) && e.key === 's') { e.preventDefault(); saveRecipe(); }
@@ -4108,6 +4440,7 @@ function init() {
   loadSettings();
   loadProfiles();
   initPours();
+  initScrubbers();
   updateGrindVisual();
   if (!recipes.length && !store.get('brewcraft_seeded')) {
     ['hoffmann','kasuya'].forEach(function(key) {

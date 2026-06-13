@@ -1,0 +1,16 @@
+{
+  "name": "brewcraft",
+  "version": "1.6.0",
+  "private": true,
+  "description": "BrewCraft — specialty coffee recipes, guided brewing, and AI dial-in. A single-file PWA.",
+  "type": "module",
+  "scripts": {
+    "dev": "npx --yes serve@14 . -l 5000",
+    "validate": "node tools/validate.mjs",
+    "boot": "node tools/boot-test.mjs",
+    "check": "npm run validate && npm run boot"
+  },
+  "devDependencies": {
+    "jsdom": "^24.0.0"
+  }
+}
