@@ -156,6 +156,23 @@
   }
 
   .method-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(105px,1fr)); gap:10px; }
+  /* collapsible method categories (gravity / pressure / immersion) */
+  .method-cat { margin-bottom:8px; }
+  .method-cat-head { display:flex; align-items:center; justify-content:space-between; width:100%; background:var(--bg-surface); border:1px solid var(--border); border-radius:var(--radius-sm); padding:11px 14px; color:var(--text-secondary); font-size:13px; font-weight:600; cursor:pointer; min-height:44px; transition:all var(--transition); }
+  .method-cat-head:hover { border-color:var(--border-light); }
+  .method-cat-sub { color:var(--text-muted); font-weight:400; }
+  .method-cat-toggle { color:var(--text-muted); transition:transform 0.2s; }
+  .method-cat.collapsed .method-cat-toggle { transform:rotate(-90deg); }
+  .method-cat .method-grid { margin-top:8px; }
+  .method-cat.collapsed .method-grid { display:none; }
+  .method-cat:not(.collapsed) .method-cat-head { border-color:var(--accent); color:var(--accent-bright); }
+  /* Recipe tab order: Brew Parameters sits directly below Brew Method (Bean moves below). */
+  #tab-recipe.active { display:flex; flex-direction:column; }
+  #tab-recipe > #versionDiffCard { order:0; }
+  #tab-recipe > #sec-method { order:1; }
+  #tab-recipe > #sec-params { order:2; }
+  #tab-recipe > #sec-bean { order:3; }
+  #tab-recipe > #sec-water { order:4; }
   .method-card {
     padding:12px 8px; background:var(--bg-input); border:1px solid var(--border);
     border-radius:var(--radius-sm); cursor:pointer; transition:all var(--transition);
@@ -172,6 +189,16 @@
   .grind-dot { border-radius:50%; background:var(--border); transition:background 0.2s; }
   .grind-dot.active { background:var(--accent); }
   .grind-label-row { font-size:10px; color:var(--text-muted); display:flex; justify-content:space-between; margin-top:4px; }
+  /* dynamic grind position bar (caret = your setting, band = method's target range) */
+  .grind-bar { position:relative; height:14px; border-radius:7px; margin-top:10px; background:linear-gradient(90deg, var(--bg-surface) 0%, var(--border-light) 100%); }
+  .grind-bar-empty { opacity:0.45; }
+  .grind-bar-band { position:absolute; top:0; bottom:0; background:var(--accent-glow); border-left:1px solid var(--accent); border-right:1px solid var(--accent); border-radius:2px; }
+  .grind-bar-caret { position:absolute; top:-3px; bottom:-3px; width:3px; border-radius:2px; background:var(--accent-bright); transform:translateX(-50%); box-shadow:0 0 6px var(--accent-glow); transition:left 0.18s ease; }
+  .grind-bar-caret.out { background:var(--warning); box-shadow:0 0 6px rgba(212,160,74,0.5); }
+  .grind-pos { font-size:10px; font-weight:600; }
+  .grind-custom-row { display:flex; gap:6px; margin-top:8px; }
+  .grind-custom-row[hidden] { display:none; }
+  .grind-custom-row input { flex:1; min-width:0; }
 
   .info-card { background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius); padding:16px 18px; margin-bottom:14px; }
   .info-card h3 { font-family:'Playfair Display',serif; font-size:16px; margin-bottom:4px; }
@@ -376,6 +403,18 @@
   .dial-reset { margin-left:auto; width:30px; height:30px; display:inline-flex; align-items:center; justify-content:center; background:transparent; border:1px solid var(--border); border-radius:var(--radius-xs); color:var(--text-muted); cursor:pointer; transition:all 0.15s; flex-shrink:0; }
   .dial-reset:active, .dial-reset:hover { color:var(--accent-bright); border-color:var(--accent); background:var(--accent-glow); }
   .dial-reset .ico { width:15px; height:15px; }
+  /* per-method quick recipes rail (qrec- prefix avoids the QR-code .qr-* widget) */
+  .qrec-wrap { margin-bottom:16px; }
+  .qrec-label { font-size:11px; font-weight:600; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.8px; margin-bottom:8px; }
+  .qrec-label-sub { color:var(--text-muted); font-weight:400; text-transform:none; letter-spacing:0; }
+  .qrec-rail { display:flex; gap:8px; overflow-x:auto; padding-bottom:4px; -webkit-overflow-scrolling:touch; }
+  .qrec-card { flex:0 0 auto; min-width:160px; max-width:210px; text-align:left; background:var(--bg-input); border:1px solid var(--border); border-radius:var(--radius-sm); padding:10px 12px; cursor:pointer; display:flex; flex-direction:column; gap:3px; transition:all 0.15s; }
+  .qrec-card:hover, .qrec-card:active { border-color:var(--accent); background:var(--accent-glow); }
+  .qrec-name { font-size:13px; font-weight:600; color:var(--text-primary); }
+  .qrec-author { font-size:11px; color:var(--accent-bright); }
+  .qrec-stats { font-size:10px; color:var(--text-muted); font-family:'JetBrains Mono',monospace; line-height:1.4; }
+  .dial-presets { display:flex; flex-wrap:wrap; gap:5px; margin:0 0 8px; }
+  .dial-presets .preset-chip { padding:6px 10px; font-size:11px; }
   .scrub { display:flex; flex-direction:column; gap:8px; }
   .scrub-num { -webkit-appearance:none; appearance:none; width:100%; text-align:center; font-family:'JetBrains Mono',monospace; font-size:30px; font-weight:600; letter-spacing:0.5px; color:var(--text-primary); background:transparent; border:none; padding:2px 0; outline:none; min-height:42px; }
   .scrub-num::-webkit-inner-spin-button, .scrub-num::-webkit-outer-spin-button { -webkit-appearance:none; margin:0; }
@@ -664,6 +703,7 @@
 <symbol id="i-cone" viewBox="0 0 24 24"><path d="M4.5 5h15l-5.5 7.5h-4L4.5 5z"/><path d="M12 15.5v.01"/><path d="M8 20.5h8"/></symbol>
 <symbol id="i-sliders" viewBox="0 0 24 24"><path d="M4.8 7h8"/><circle cx="17" cy="7" r="2.2"/><path d="M19.2 17H11"/><circle cx="7" cy="17" r="2.2"/></symbol>
 <symbol id="i-reset" viewBox="0 0 24 24"><path d="M19 12a7 7 0 1 1-2.05-4.95"/><path d="M17 3.5v4h-4"/></symbol>
+<symbol id="i-moka" viewBox="0 0 24 24"><path d="M7.5 12h9l-1.1 8H8.6z"/><path d="M8.4 12l1-3.5h5.2l1 3.5"/><path d="M16.5 6.5h3V10"/></symbol>
 <symbol id="i-drop" viewBox="0 0 24 24"><path d="M12 3.5s5.7 6 5.7 10.2a5.7 5.7 0 0 1-11.4 0C6.3 9.5 12 3.5 12 3.5z"/></symbol>
 <symbol id="i-wave" viewBox="0 0 24 24"><path d="M3 9.5c3-3.5 6 3.5 9 0s6 3.5 9 0"/><path d="M3 15.5c3-3.5 6 3.5 9 0s6 3.5 9 0"/></symbol>
 <symbol id="i-chart" viewBox="0 0 24 24"><path d="M4 20h16"/><path d="M7 16v-5"/><path d="M12 16V6"/><path d="M17 16v-8"/></symbol>
@@ -733,15 +773,51 @@
       <div class="section-toggle">▾</div>
     </div>
     <div class="section-body">
-      <div class="method-grid" id="methodGrid">
-        <div class="method-card active" data-method="V60" onclick="selectMethod(this)"><span class="method-icon"><svg class="ico"><use href="#i-cone"/></svg></span><span class="method-name">V60</span></div>
-        <div class="method-card" data-method="Chemex" onclick="selectMethod(this)"><span class="method-icon"><svg class="ico"><use href="#i-hourglass"/></svg></span><span class="method-name">Chemex</span></div>
-        <div class="method-card" data-method="Kalita Wave" onclick="selectMethod(this)"><span class="method-icon"><svg class="ico"><use href="#i-wave"/></svg></span><span class="method-name">Kalita Wave</span></div>
-        <div class="method-card" data-method="AeroPress" onclick="selectMethod(this)"><span class="method-icon"><svg class="ico"><use href="#i-aero"/></svg></span><span class="method-name">AeroPress</span></div>
-        <div class="method-card" data-method="French Press" onclick="selectMethod(this)"><span class="method-icon"><svg class="ico"><use href="#i-press"/></svg></span><span class="method-name">French Press</span></div>
-        <div class="method-card" data-method="Clever" onclick="selectMethod(this)"><span class="method-icon"><svg class="ico"><use href="#i-drop"/></svg></span><span class="method-name">Clever</span></div>
-        <div class="method-card" data-method="Siphon" onclick="selectMethod(this)"><span class="method-icon"><svg class="ico"><use href="#i-flask"/></svg></span><span class="method-name">Siphon</span></div>
-        <div class="method-card" data-method="Espresso" onclick="selectMethod(this)"><span class="method-icon"><svg class="ico"><use href="#i-esp"/></svg></span><span class="method-name">Espresso</span></div>
+      <div class="method-cats" id="methodCats">
+        <div class="method-cat" data-cat="gravity">
+          <button type="button" class="method-cat-head" onclick="toggleMethodCat(this)" aria-expanded="true">
+            <span class="method-cat-name">Gravity <span class="method-cat-sub">· pour-over, percolation</span></span>
+            <span class="method-cat-toggle">▾</span>
+          </button>
+          <div class="method-grid">
+            <div class="method-card active" data-method="V60" onclick="selectMethod(this)"><span class="method-icon"><svg class="ico"><use href="#i-cone"/></svg></span><span class="method-name">V60</span></div>
+            <div class="method-card" data-method="Chemex" onclick="selectMethod(this)"><span class="method-icon"><svg class="ico"><use href="#i-hourglass"/></svg></span><span class="method-name">Chemex</span></div>
+            <div class="method-card" data-method="Kalita Wave" onclick="selectMethod(this)"><span class="method-icon"><svg class="ico"><use href="#i-wave"/></svg></span><span class="method-name">Kalita Wave</span></div>
+            <div class="method-card" data-method="Origami" onclick="selectMethod(this)"><span class="method-icon"><svg class="ico"><use href="#i-cone"/></svg></span><span class="method-name">Origami</span></div>
+            <div class="method-card" data-method="Melitta" onclick="selectMethod(this)"><span class="method-icon"><svg class="ico"><use href="#i-cone"/></svg></span><span class="method-name">Melitta</span></div>
+            <div class="method-card" data-method="Phin" onclick="selectMethod(this)"><span class="method-icon"><svg class="ico"><use href="#i-press"/></svg></span><span class="method-name">Phin</span></div>
+            <div class="method-card" data-method="Cold Drip" onclick="selectMethod(this)"><span class="method-icon"><svg class="ico"><use href="#i-drop"/></svg></span><span class="method-name">Cold Drip</span></div>
+          </div>
+        </div>
+        <div class="method-cat collapsed" data-cat="pressure">
+          <button type="button" class="method-cat-head" onclick="toggleMethodCat(this)" aria-expanded="false">
+            <span class="method-cat-name">Pressure <span class="method-cat-sub">· forced through the bed</span></span>
+            <span class="method-cat-toggle">▾</span>
+          </button>
+          <div class="method-grid">
+            <div class="method-card" data-method="Espresso" onclick="selectMethod(this)"><span class="method-icon"><svg class="ico"><use href="#i-esp"/></svg></span><span class="method-name">Espresso</span></div>
+            <div class="method-card" data-method="Moka Pot" onclick="selectMethod(this)"><span class="method-icon"><svg class="ico"><use href="#i-moka"/></svg></span><span class="method-name">Moka Pot</span></div>
+            <div class="method-card" data-method="Flair" onclick="selectMethod(this)"><span class="method-icon"><svg class="ico"><use href="#i-esp"/></svg></span><span class="method-name">Flair</span></div>
+            <div class="method-card" data-method="Cafelat Robot" onclick="selectMethod(this)"><span class="method-icon"><svg class="ico"><use href="#i-esp"/></svg></span><span class="method-name">Cafelat Robot</span></div>
+            <div class="method-card" data-method="Nanopresso" onclick="selectMethod(this)"><span class="method-icon"><svg class="ico"><use href="#i-esp"/></svg></span><span class="method-name">Nanopresso</span></div>
+          </div>
+        </div>
+        <div class="method-cat collapsed" data-cat="immersion">
+          <button type="button" class="method-cat-head" onclick="toggleMethodCat(this)" aria-expanded="false">
+            <span class="method-cat-name">Immersion <span class="method-cat-sub">· full steep, then separate</span></span>
+            <span class="method-cat-toggle">▾</span>
+          </button>
+          <div class="method-grid">
+            <div class="method-card" data-method="French Press" onclick="selectMethod(this)"><span class="method-icon"><svg class="ico"><use href="#i-press"/></svg></span><span class="method-name">French Press</span></div>
+            <div class="method-card" data-method="AeroPress" onclick="selectMethod(this)"><span class="method-icon"><svg class="ico"><use href="#i-aero"/></svg></span><span class="method-name">AeroPress</span></div>
+            <div class="method-card" data-method="Clever" onclick="selectMethod(this)"><span class="method-icon"><svg class="ico"><use href="#i-drop"/></svg></span><span class="method-name">Clever</span></div>
+            <div class="method-card" data-method="Hario Switch" onclick="selectMethod(this)"><span class="method-icon"><svg class="ico"><use href="#i-drop"/></svg></span><span class="method-name">Hario Switch</span></div>
+            <div class="method-card" data-method="Siphon" onclick="selectMethod(this)"><span class="method-icon"><svg class="ico"><use href="#i-flask"/></svg></span><span class="method-name">Siphon</span></div>
+            <div class="method-card" data-method="Cold Brew" onclick="selectMethod(this)"><span class="method-icon"><svg class="ico"><use href="#i-drop"/></svg></span><span class="method-name">Cold Brew</span></div>
+            <div class="method-card" data-method="Turkish" onclick="selectMethod(this)"><span class="method-icon"><svg class="ico"><use href="#i-flask"/></svg></span><span class="method-name">Turkish</span></div>
+            <div class="method-card" data-method="Cupping" onclick="selectMethod(this)"><span class="method-icon"><svg class="ico"><use href="#i-spoon"/></svg></span><span class="method-name">Cupping</span></div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -845,6 +921,10 @@
       <div class="section-toggle">▾</div>
     </div>
     <div class="section-body">
+      <div class="qrec-wrap" id="quickRecipesWrap" hidden>
+        <div class="qrec-label">Quick recipes <span class="qrec-label-sub">· tap to load</span></div>
+        <div class="qrec-rail" id="quickRecipes"></div>
+      </div>
       <div class="field-grid" style="margin-bottom:10px">
         <div class="field">
           <div class="dial-head"><label>Coffee Dose <span class="unit">(g)</span></label>
@@ -859,6 +939,12 @@
         <div class="field">
           <div class="dial-head"><label>Ratio <span class="unit">(1 : x)</span></label>
             <button class="dial-reset" aria-label="Reset ratio to default" title="Reset to default (16)" onclick="resetField('brewRatio',recalcFromRatio)"><svg class="ico"><use href="#i-reset"/></svg></button>
+          </div>
+          <div class="dial-presets">
+            <button class="preset-chip" onclick="setRatioChip(14)">1:14</button>
+            <button class="preset-chip" onclick="setRatioChip(15)">1:15</button>
+            <button class="preset-chip" onclick="setRatioChip(16)">1:16</button>
+            <button class="preset-chip" onclick="setRatioChip(17)">1:17</button>
           </div>
           <div class="scrub">
             <input type="number" inputmode="decimal" enterkeyhint="done" id="brewRatio" class="scrub-num" data-default="16" placeholder="16" step="0.1" min="1" oninput="recalcFromRatio()" aria-label="Brew ratio (1 to x)">
@@ -878,28 +964,20 @@
           <div class="dial-head"><label>Water Temp <span class="unit" id="tempUnitLabel">(°C)</span></label>
             <button class="dial-reset" aria-label="Reset temperature to default" title="Reset to default" onclick="resetField('waterTemp',markDirty)"><svg class="ico"><use href="#i-reset"/></svg></button>
           </div>
+          <div class="dial-presets">
+            <button class="preset-chip" data-c="88" onclick="setTempChip(88)">88°</button>
+            <button class="preset-chip" data-c="90" onclick="setTempChip(90)">90°</button>
+            <button class="preset-chip" data-c="93" onclick="setTempChip(93)">93°</button>
+            <button class="preset-chip" data-c="96" onclick="setTempChip(96)">96°</button>
+            <button class="preset-chip" data-c="98" onclick="setTempChip(98)">98°</button>
+          </div>
           <div class="scrub">
             <input type="number" inputmode="decimal" enterkeyhint="done" id="waterTemp" class="scrub-num" data-default="93" placeholder="93" step="0.5" min="0" max="100" oninput="markDirty()" aria-label="Water temperature">
             <div class="ruler" data-field="waterTemp" role="slider" tabindex="0" aria-label="Water temperature — drag or arrow keys to adjust" style="--gap:24px"><div class="ruler-ticks"></div><div class="ruler-caret"></div></div>
           </div>
         </div>
       </div>
-      <div class="chip-row" style="margin-bottom:6px">
-        <span class="field-hint" style="align-self:center">Ratio:</span>
-        <button class="preset-chip" onclick="setRatioChip(14)">1:14</button>
-        <button class="preset-chip" onclick="setRatioChip(15)">1:15</button>
-        <button class="preset-chip" onclick="setRatioChip(16)">1:16</button>
-        <button class="preset-chip" onclick="setRatioChip(17)">1:17</button>
-      </div>
-      <div class="field-hint simple-only" style="margin:6px 0 0">Ratio = grams of water per gram of coffee. Example: 15g coffee at 1:16 → 240g water.</div>
-      <div class="chip-row" style="margin-bottom:22px">
-        <span class="field-hint" style="align-self:center">Temp:</span>
-        <button class="preset-chip" data-c="88" onclick="setTempChip(88)">88°</button>
-        <button class="preset-chip" data-c="90" onclick="setTempChip(90)">90°</button>
-        <button class="preset-chip" data-c="93" onclick="setTempChip(93)">93°</button>
-        <button class="preset-chip" data-c="96" onclick="setTempChip(96)">96°</button>
-        <button class="preset-chip" data-c="98" onclick="setTempChip(98)">98°</button>
-      </div>
+      <div class="field-hint simple-only" style="margin:6px 0 18px">Ratio = grams of water per gram of coffee. Example: 15g coffee at 1:16 → 240g water.</div>
 
       <div class="field-grid" id="espressoFields" style="display:none;margin-bottom:22px">
         <div class="field"><label>Yield Out <span class="unit">(g)</span></label><input type="number" inputmode="decimal" enterkeyhint="done" id="espYield" placeholder="e.g., 36" step="0.1" min="0" oninput="markDirty()"></div>
@@ -1021,27 +1099,18 @@
         </div>
       </div>
 
-      <div class="field-grid field-grid-2">
-        <div class="field beginner-hide">
-          <label>Grind Setting <span class="unit" id="grindSettingUnit">(clicks / numbers)</span></label>
-          <input type="text" id="grindSize" placeholder="e.g., 24 clicks" oninput="markDirty()">
-          <div class="grind-info" id="grindInfo" style="display:none"></div>
+      <div class="field beginner-hide" style="margin-top:4px">
+        <label>Grind Setting <span class="unit" id="grindSettingUnit">(clicks / numbers)</span></label>
+        <input type="text" id="grindSize" inputmode="decimal" placeholder="e.g., 24" oninput="updateGrindVisual(); markDirty()">
+        <div class="grind-custom-row" id="grindCustomRange" hidden>
+          <input type="text" id="grindCustomUnit" placeholder="unit (e.g. clicks)" oninput="onGrinderChange(); markDirty()" aria-label="Your grinder's unit">
+          <input type="number" inputmode="decimal" id="grindCustomMin" placeholder="min" oninput="updateGrindVisual(); markDirty()" aria-label="Grinder finest setting">
+          <input type="number" inputmode="decimal" id="grindCustomMax" placeholder="max" oninput="updateGrindVisual(); markDirty()" aria-label="Grinder coarsest setting">
         </div>
-        <div class="field">
-          <label>Grind Coarseness</label>
-          <select id="grindCoarseness" onchange="updateGrindVisual(); markDirty()">
-            <option value="0">Select…</option>
-            <option value="1">Extra Fine (Turkish)</option>
-            <option value="2">Fine (Espresso)</option>
-            <option value="3">Medium-Fine (AeroPress)</option>
-            <option value="4">Medium (Pour Over)</option>
-            <option value="5">Medium-Coarse (Chemex)</option>
-            <option value="6">Coarse (French Press)</option>
-            <option value="7">Extra Coarse (Cold Brew)</option>
-          </select>
-          <div class="grind-visual-bar" id="grindVisual"></div>
-          <div class="grind-label-row"><span>Fine</span><span>Coarse</span></div>
-        </div>
+        <div class="grind-info" id="grindInfo" style="display:none"></div>
+        <div class="grind-bar grind-bar-empty" id="grindBar"><div class="grind-bar-band" id="grindBand" style="display:none"></div><div class="grind-bar-caret" id="grindCaret" style="display:none"></div></div>
+        <div class="grind-label-row"><span>Fine</span><span class="grind-pos" id="grindPosLabel"></span><span>Coarse</span></div>
+        <input type="hidden" id="grindCoarseness">
       </div>
     </div>
   </div>
@@ -1760,7 +1829,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '1.9.0';
+const APP_VERSION = '2.0.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0;
 let wakeLock = null;
@@ -1768,6 +1837,41 @@ let audioCtx = null;
 let cueTimes = [], cueFired = [];
 
 const COARSE_LABELS = ['','Extra Fine','Fine','Medium-Fine','Medium','Medium-Coarse','Coarse','Extra Coarse'];
+
+/* ======= CURATED QUICK RECIPES (researched, attributed) =======
+   Per brew method; tapping one fills dose/ratio/temp/grind. ratio = the x in 1:x.
+   Sources are kept for attribution; "standard" entries are common guidance, not one author's. */
+const QUICK_RECIPES = {
+  'V60': [
+    { name:'Ultimate V60 (1 cup)', author:'James Hoffmann', doseG:15, ratio:16.7, tempC:95, grind:'medium-fine', time:'3:00', technique:'Bloom 50g + swirl; pour to 100/150/200/250g; finish with a swirl.', src:'https://www.timer.coffee/recipes/v60/james-hoffmann-v60-one-cup-recipe/' },
+    { name:'4:6 Method', author:'Tetsu Kasuya', doseG:20, ratio:15, tempC:92, grind:'medium-coarse', time:'3:30', technique:'5 pours ~every 45s; first 40% sets sweetness/acidity, last 60% sets strength.', src:'https://www.hario-europe.com/blogs/hario-community/v60-ambassadors-tetsu-kasuya' },
+    { name:'April V60', author:'Patrik Rolf / April', doseG:20, ratio:15, tempC:92, grind:'medium-coarse', time:'3:20', technique:'6 aggressive circular 50g pours, ~every 30s, to agitate the bed.', src:'https://www.aprilcoffeeroasters.com/blogs/news/how-to-brew-coffee-with-a-v60' },
+    { name:'Onyx V60', author:'Onyx Coffee Lab', doseG:15, ratio:16.7, tempC:96, grind:'medium-fine', time:'2:30', technique:'Bloom 50g/45s; half center, half a medium circle, matching pour to drawdown.', src:'https://onyxcoffeelab.com/blogs/library' }
+  ],
+  'Chemex': [
+    { name:'Ultimate Chemex', author:'James Hoffmann', doseG:30, ratio:16.7, tempC:95, grind:'medium (coarser than V60)', time:'4:10', technique:'Bloom 60-90g/35s; pour to 300g then 500g; stir, then a gentle swirl.', src:'https://www.timer.coffee/recipes/chemex/james-hoffmann-chemex-recipe/' }
+  ],
+  'Kalita Wave': [
+    { name:'Kalita 185', author:'Standard recipe', doseG:20, ratio:16, tempC:96, grind:'medium-coarse', time:'3:15', technique:'Bloom ~45g/45s; 3-stage pulse pours; last pour rinses the walls.', src:'https://prima-coffee.com/learn/article/brewing-guides/comparing-kalita-wave-recipes/33005' }
+  ],
+  'AeroPress': [
+    { name:'Ultimate AeroPress', author:'James Hoffmann', doseG:11, ratio:18, tempC:93, grind:'medium-fine', time:'2:30', technique:'Add water, seal with plunger; steep 2:00, swirl, wait 30s, gentle press; dilute to taste.', src:'https://www.timer.coffee/recipes/aeropress/james-hoffmann-aeropress-recipe/' },
+    { name:'A Very Good AeroPress', author:'Lance Hedrick', doseG:15, ratio:16.7, tempC:92, grind:'medium-fine', time:'2:00', technique:'Slow pour, swirl + 45s bloom, top up, seal; press very gently at 2:00.', src:'https://aeroprecipe.com/recipes/lance-hedrick-a-very-good-aeropress-recipe-and-3-simple-tips' },
+    { name:'Original (inventor)', author:'Alan Adler', doseG:15, ratio:6, tempC:82, grind:'fine', time:'1:00', technique:'Brew a concentrate; stir 10s; press 20-60s; dilute Americano-style.', src:'https://europeancoffeetrip.com/original-aeropress-recipe-inventor-alan-adler/' }
+  ],
+  'French Press': [
+    { name:'Ultimate French Press', author:'James Hoffmann', doseG:30, ratio:16.7, tempC:95, grind:'medium-coarse', time:'4:00 + settle', technique:'Steep 4:00, break crust and skim, rest ~5 min, pour gently (do not plunge fully).', src:'https://www.timer.coffee/recipes/french-press/james-hoffmann-french-press-recipe/' }
+  ],
+  'Espresso': [
+    { name:'Modern espresso', author:'Specialty standard', doseG:18, ratio:2, tempC:93, grind:'espresso-fine', time:'25-30s', espYield:36, espShot:27, technique:'18g in to 36g out (1:2) in ~25-30s; dial grind to hit the window.', src:'https://coffeebros.com/blogs/coffee/most-popular-espresso-shot-ratios-or-recipes' }
+  ],
+  'Moka Pot': [
+    { name:'Ultimate Moka Pot', author:'James Hoffmann', doseG:20, ratio:10, tempC:100, grind:'medium-fine', time:'~5:00', technique:'Pre-boiled water to the valve; level basket, no tamp; low heat, lid open; pull at first sputter, cool the base.', src:'https://unpacking.coffee/recipes/50-james-hoffmann-moka-pot' }
+  ],
+  'Clever': [
+    { name:'Clever standard', author:'Sweet Maria’s style', doseG:21, ratio:16, tempC:96, grind:'medium', time:'3:30', technique:'Add water and coffee, steep, stir ~1:30, then place on a mug to drain.', src:'https://library.sweetmarias.com/clever-coffee-dripper-a-full-immersion-brewing-method/' }
+  ]
+};
 
 /* ======= GRINDER DATABASE ======= */
 const GRINDER_DATA = {
@@ -2049,26 +2153,86 @@ function onGrinderChange() {
   const infoEl = document.getElementById('grindInfo');
   const unitEl = document.getElementById('grindSettingUnit');
   const sizeInput = document.getElementById('grindSize');
+  const customRow = document.getElementById('grindCustomRange');
   if (data) {
     infoEl.style.display = 'block';
     infoEl.innerHTML = '<strong>' + escapeHtml(data.unit) + '</strong> \u2014 Range: ' + escapeHtml(data.range) +
       '<br>Espresso: ' + escapeHtml(data.espresso) + ' \u00b7 Pour Over: ' + escapeHtml(data.pourOver) +
       ' \u00b7 French Press: ' + escapeHtml(data.frenchPress) + '<br><em>' + escapeHtml(data.info) + '</em>';
     unitEl.textContent = '(' + data.unit + ')';
-    sizeInput.placeholder = 'e.g., ' + (data.pourOver.split('-')[0] || '?');
+    sizeInput.placeholder = 'e.g., ' + ((data.pourOver.match(/\d+(\.\d+)?/) || ['?'])[0]);
+    if (customRow) customRow.hidden = true;
   } else {
     infoEl.style.display = 'none';
-    unitEl.textContent = '(clicks / numbers)';
-    sizeInput.placeholder = 'e.g., 24 clicks';
+    const cu = ((document.getElementById('grindCustomUnit') || {}).value || '').trim();
+    unitEl.textContent = cu ? '(' + cu + ')' : '(setting)';
+    sizeInput.placeholder = 'e.g., 24';
+    if (customRow) customRow.hidden = !grinder;
   }
+  updateGrindVisual();
 }
 
 /* ======= METHOD ======= */
+function toggleMethodCat(head) {
+  const cat = head.closest('.method-cat');
+  if (!cat) return;
+  const collapsed = cat.classList.toggle('collapsed');
+  head.setAttribute('aria-expanded', String(!collapsed));
+}
+function expandActiveMethodCat() {
+  const active = document.querySelector('.method-card.active');
+  if (!active) return;
+  const cat = active.closest('.method-cat');
+  if (!cat) return;
+  document.querySelectorAll('.method-cat').forEach(function(c) {
+    const on = c === cat;
+    c.classList.toggle('collapsed', !on);
+    const h = c.querySelector('.method-cat-head');
+    if (h) h.setAttribute('aria-expanded', String(on));
+  });
+}
 function selectMethod(el) {
   document.querySelectorAll('.method-card').forEach(function(c) { c.classList.remove('active'); });
   el.classList.add('active');
   toggleEspressoFields();
+  renderQuickRecipes();
+  updateGrindVisual();
   markDirty();
+}
+function renderQuickRecipes() {
+  const wrap = document.getElementById('quickRecipesWrap');
+  const rail = document.getElementById('quickRecipes');
+  if (!wrap || !rail) return;
+  const method = getSelectedMethod();
+  const list = QUICK_RECIPES[method] || [];
+  if (!list.length) { wrap.hidden = true; rail.innerHTML = ''; return; }
+  wrap.hidden = false;
+  rail.innerHTML = list.map(function(r, i) {
+    const t = settings.tempUnit === 'F' ? Math.round(cToF(r.tempC)) + '°F' : r.tempC + '°';
+    const stats = r.doseG + 'g · 1:' + r.ratio + ' · ' + t + (r.grind ? ' · ' + r.grind : '') + (r.time ? ' · ' + r.time : '');
+    return '<button class="qrec-card" onclick="applyQuickRecipe(\'' + method + '\',' + i + ')" title="' + escapeHtml(r.technique || '') + '">' +
+      '<span class="qrec-name">' + escapeHtml(r.name) + '</span>' +
+      '<span class="qrec-author">' + escapeHtml(r.author) + '</span>' +
+      '<span class="qrec-stats">' + escapeHtml(stats) + '</span></button>';
+  }).join('');
+}
+function applyQuickRecipe(method, idx) {
+  const r = (QUICK_RECIPES[method] || [])[idx];
+  if (!r) return;
+  setMethod(method);
+  document.getElementById('coffeeDose').value = r.doseG;
+  document.getElementById('brewRatio').value = r.ratio;
+  document.getElementById('waterTemp').value = settings.tempUnit === 'F' ? Math.round(cToF(r.tempC)) : r.tempC;
+  if (r.grind) document.getElementById('grindCoarseness').value = grindDescriptorToLevel(r.grind);
+  if (r.espYield) document.getElementById('espYield').value = r.espYield;
+  if (r.espShot) document.getElementById('espShotTime').value = r.espShot;
+  recalcFromDose();
+  renderAllScrubbers();
+  renderBrewBar();
+  updateGrindVisual();
+  markDirty();
+  vibrate(10);
+  showToast(r.name + ' — ' + r.author, 'success');
 }
 function getSelectedMethod() {
   const a = document.querySelector('.method-card.active');
@@ -2076,7 +2240,10 @@ function getSelectedMethod() {
 }
 function setMethod(method) {
   document.querySelectorAll('.method-card').forEach(function(c) { c.classList.toggle('active', c.dataset.method === method); });
+  expandActiveMethodCat();
   toggleEspressoFields();
+  renderQuickRecipes();
+  updateGrindVisual();
 }
 function toggleEspressoFields() {
   const isEsp = getSelectedMethod() === 'Espresso';
@@ -2139,14 +2306,81 @@ function calcExtraction() {
 }
 
 /* ======= GRIND VISUAL ======= */
+/* Parse a range string like "5-36", "0-300", "1-11", "Macro 1-10, Micro A-Q" → {min,max} (first numeric pair). */
+function parseRange(str) {
+  if (!str) return null;
+  const nums = String(str).match(/\d+(\.\d+)?/g); // settings are non-negative; '-' is the range separator
+  if (!nums || nums.length < 2) return null;
+  const min = parseFloat(nums[0]), max = parseFloat(nums[1]);
+  return (isFinite(min) && isFinite(max) && max > min) ? { min: min, max: max } : null;
+}
+/* The active grinder's setting range — custom min/max win, else the GRINDER_DATA range. */
+function grindRange() {
+  const cMin = parseFloat((document.getElementById('grindCustomMin') || {}).value);
+  const cMax = parseFloat((document.getElementById('grindCustomMax') || {}).value);
+  if (isFinite(cMin) && isFinite(cMax) && cMax > cMin) return { min: cMin, max: cMax };
+  const data = GRINDER_DATA[getSelectOrCustom('grinderName', 'grinderCustom')];
+  return data ? parseRange(data.range) : null;
+}
+/* Which GRINDER_DATA target band applies to the current method. */
+function grindBandKey(method) {
+  if (['Espresso','Moka Pot','Flair','Cafelat Robot','Nanopresso'].indexOf(method) >= 0) return 'espresso';
+  if (['French Press','Cold Brew','Clever','Cupping','Turkish'].indexOf(method) >= 0) return 'frenchPress';
+  return 'pourOver';
+}
+/* Map a relative grind descriptor (from a quick recipe) to a 1-7 coarseness level for the visual hint. */
+function grindDescriptorToLevel(d) {
+  d = (d || '').toLowerCase();
+  if (d.indexOf('extra coarse') >= 0 || d.indexOf('cold brew') >= 0) return 7;
+  if (d.indexOf('medium-coarse') >= 0 || d.indexOf('medium coarse') >= 0) return 5;
+  if (d.indexOf('coarse') >= 0) return 6;
+  if (d.indexOf('medium-fine') >= 0 || d.indexOf('medium fine') >= 0) return 3;
+  if (d.indexOf('espresso') >= 0 || d.indexOf('extra fine') >= 0) return 2;
+  if (d.indexOf('fine') >= 0) return 2;
+  if (d.indexOf('medium') >= 0) return 4;
+  return 0;
+}
+/* Dynamic fine→coarse bar: caret from the setting vs the grinder's range; band = method target. */
 function updateGrindVisual() {
-  const level = parseInt(document.getElementById('grindCoarseness').value,10) || 0;
-  let html = '';
-  for (let i = 1; i <= 7; i++) {
-    const size = 4 + i*3;
-    html += '<div class="grind-dot' + (i<=level?' active':'') + '" style="width:'+size+'px;height:'+size+'px;"></div>';
+  const bar = document.getElementById('grindBar');
+  if (!bar) return;
+  const caret = document.getElementById('grindCaret');
+  const band = document.getElementById('grindBand');
+  const posLabel = document.getElementById('grindPosLabel');
+  const range = grindRange();
+  const v = parseFloat(document.getElementById('grindSize').value);
+  const haveSetting = !!range && isFinite(v);
+  let pos = null;
+  if (haveSetting) {
+    pos = Math.max(0, Math.min(1, (v - range.min) / (range.max - range.min)));
+  } else {
+    const lvl = parseInt(document.getElementById('grindCoarseness').value, 10) || 0; // legacy/quick-recipe fallback
+    if (lvl) pos = (lvl - 0.5) / 7;
   }
-  document.getElementById('grindVisual').innerHTML = html;
+  if (pos === null) {
+    bar.classList.add('grind-bar-empty');
+    caret.style.display = 'none'; band.style.display = 'none'; posLabel.textContent = '';
+    return;
+  }
+  bar.classList.remove('grind-bar-empty');
+  caret.style.display = 'block';
+  caret.style.left = (pos * 100) + '%';
+  // method target band (only when we have a real grinder range)
+  const data = GRINDER_DATA[getSelectOrCustom('grinderName', 'grinderCustom')];
+  const bandRange = (data && range) ? parseRange(data[grindBandKey(getSelectedMethod())]) : null;
+  let inBand = true;
+  if (bandRange && range) {
+    const lo = Math.max(0, Math.min(1, (bandRange.min - range.min) / (range.max - range.min)));
+    const hi = Math.max(0, Math.min(1, (bandRange.max - range.min) / (range.max - range.min)));
+    band.style.display = 'block';
+    band.style.left = (lo * 100) + '%';
+    band.style.width = ((hi - lo) * 100) + '%';
+    if (haveSetting) inBand = v >= bandRange.min && v <= bandRange.max;
+  } else {
+    band.style.display = 'none';
+  }
+  caret.classList.toggle('out', haveSetting && !inBand);
+  posLabel.textContent = haveSetting ? (bandRange ? (inBand ? 'in range' : 'off target') : '') : 'approx';
 }
 
 /* ======= POURS (card UI) ======= */
@@ -2763,6 +2997,7 @@ function loadRecipeData(r) {
   setSelectOrCustom('grinderName','grinderCustom', r.grinderName || '');
   onGrinderChange();
   document.getElementById('grindCoarseness').value = r.grindCoarseness || '0';
+  updateGrindVisual();
   document.getElementById('filterType').value = r.filterType || '';
   document.getElementById('waterTDS').value = r.waterTDS || '';
   document.getElementById('waterGH').value = r.waterGH || '';

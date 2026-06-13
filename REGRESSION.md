@@ -178,3 +178,14 @@ Run before every release. All items must pass. Updated for v6 (Sprint 1).
 - [ ] Carry-the-thread line appears when the current recipe is a child version: "Continuing vN — last change: X→Y (improved/worse)"; hidden for a first-version recipe
 - [ ] Recent brews list removed from the home (recipes still in Library); boots clean, no console errors
 - [ ] Update toast after deploy (cache v1.9.0)
+
+## Sprint 12 (v2.0.0) — Recipe tab redesign: methods, quick recipes, grind
+- [ ] Brew Method shows 3 collapsible categories (Gravity / Pressure / Immersion); only the active method's category is open on load; ~20 methods reachable one tap away
+- [ ] Selecting a method in a collapsed category works; loading a recipe opens its method's category
+- [ ] Brew Parameters appears directly below Brew Method (Bean & Recipe Details moved below Parameters)
+- [ ] Ratio presets (1:14–17) sit directly above the Ratio dial; Temp presets (88–98°) above the Temp dial
+- [ ] Quick Recipes rail appears at top of Brew Parameters for methods that have recipes (V60/Chemex/Kalita/AeroPress/French Press/Espresso/Moka/Clever); tapping a card fills dose/ratio/temp (+espresso yield/shot) and a coarseness hint; rail hides for methods without recipes
+- [ ] Grind Setting unit + placeholder + info adapt to the selected grinder; "Other" reveals custom unit/min/max; known grinders hide them
+- [ ] Coarseness word-select removed; dynamic fine→coarse bar shows a caret from (setting−min)/(max−min) with the method's target band overlaid (in range / off target); legacy grindCoarseness still positions the caret + renders in diffs
+- [ ] Espresso still shows yield/shot/pressure/preinfusion fields
+- [ ] Update toast after deploy (cache v2.0.0)
