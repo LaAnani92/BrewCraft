@@ -417,6 +417,16 @@
   body.simple .pro-only { display:none !important; }
   body.simple .bean-extra { display:none; }
   body.simple.show-bean-extra .bean-extra { display:flex; }
+  /* Beginner tier hides precision-gear bits that Enthusiast keeps (grinder model, grind clicks, saved setups). */
+  body.skill-beginner .beginner-hide { display:none !important; }
+  /* Brew timer progress ring — fills toward the brew's expected finish. */
+  .timer-ring-wrap { position:relative; width:230px; height:230px; margin:6px auto 18px; }
+  .timer-ring { width:100%; height:100%; transform:rotate(-90deg); display:block; }
+  .timer-ring-track { fill:none; stroke:var(--bg-surface); stroke-width:12; }
+  .timer-ring-prog { fill:none; stroke:var(--accent); stroke-width:12; stroke-linecap:round; stroke-dasharray:628.319; stroke-dashoffset:628.319; transition:stroke-dashoffset 0.2s linear, stroke 0.3s ease; }
+  .timer-ring-prog.done { stroke:var(--accent-bright); filter:drop-shadow(0 0 7px var(--accent-glow)); }
+  .timer-ring-center { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; }
+  .timer-ring-center .timer-display { font-size:40px; }
   .today-name { font-family:'Playfair Display',serif; font-size:24px; font-weight:700; margin:4px 0 4px; line-height:1.2; }
   .today-actions { display:flex; gap:10px; flex-wrap:wrap; margin-top:16px; }
   .today-actions .btn { padding:13px 20px; }
@@ -686,15 +696,16 @@
 <div class="tab-panel active" id="tab-today">
 
   <div class="info-card" id="todayHero">
-    <div class="section-subtitle">Current recipe</div>
+    <div class="section-subtitle" id="todaySubtitle">Current recipe</div>
     <div class="today-name" id="todayName">—</div>
     <div class="recipe-card-meta" id="todayMeta"></div>
+    <div class="field-hint" id="todayStarterHint" style="margin-top:8px;font-style:italic" hidden></div>
     <div id="todayFresh" style="margin-top:8px"></div>
     <div id="todayBag" class="bag-status" style="margin-top:10px;margin-bottom:0"></div>
     <div class="today-actions">
       <button class="btn btn-primary" onclick="todayBrew()">▶ Brew this</button>
       <button class="btn btn-secondary" onclick="quickBrew()">⚡ Repeat last</button>
-      <button class="btn btn-ghost" onclick="switchTab('recipe')">Edit recipe</button>
+      <button class="btn btn-ghost" onclick="switchTab('recipe')">✎ Make it yours</button>
     </div>
     <div id="todayBest" style="display:none;margin-top:16px;padding-top:14px;border-top:1px solid var(--border)"></div>
   </div>
@@ -913,20 +924,20 @@
         <div class="field pro-only"><label>Pre-infusion <span class="unit">(s)</span></label><input type="number" inputmode="decimal" enterkeyhint="done" id="espPreinfusion" placeholder="e.g., 5" step="1" min="0" oninput="markDirty()"></div>
       </div>
 
-      <div class="profile-row">
+      <div class="profile-row beginner-hide">
         <select id="gearProfileSelect" onchange="applyGearProfile()">
           <option value="">Saved setups…</option>
         </select>
         <button class="btn btn-sm btn-secondary" onclick="saveGearProfile()">＋ Save setup</button>
         <button class="btn btn-sm btn-ghost" onclick="deleteGearProfile()" title="Delete selected setup" aria-label="Delete selected setup">Del</button>
       </div>
-      <div class="profile-row" id="gearNameRow" style="display:none">
+      <div class="profile-row beginner-hide" id="gearNameRow" style="display:none">
         <input type="text" id="gearNameInput" placeholder="Name this setup (e.g., V60 daily driver)" onkeydown="if(event.key==='Enter')confirmSaveGear()">
         <button class="btn btn-sm btn-primary" onclick="confirmSaveGear()">Save</button>
         <button class="btn btn-sm btn-ghost" onclick="cancelSaveGear()">Cancel</button>
       </div>
       <div class="field-grid field-grid-2" style="margin-bottom:18px">
-        <div class="field">
+        <div class="field beginner-hide">
           <label>Grinder</label>
           <select id="grinderName" onchange="handleOtherSelect('grinderName','grinderCustom'); onGrinderChange(); markDirty()">
             <option value="">Select grinder…</option>
@@ -1027,7 +1038,7 @@
       </div>
 
       <div class="field-grid field-grid-2">
-        <div class="field">
+        <div class="field beginner-hide">
           <label>Grind Setting <span class="unit" id="grindSettingUnit">(clicks / numbers)</span></label>
           <input type="text" id="grindSize" placeholder="e.g., 24 clicks" oninput="markDirty()">
           <div class="grind-info" id="grindInfo" style="display:none"></div>
@@ -1086,8 +1097,16 @@
   <button class="btn btn-primary btn-block" style="margin-bottom:16px;padding:14px" onclick="enterBrewAlong()">▶ Brew-Along Mode (guided, keeps screen on)</button>
 
   <div class="timer-section">
-    <div class="timer-label">Elapsed Time</div>
-    <div class="timer-display" id="timerDisplay">00:00.0</div>
+    <div class="timer-ring-wrap">
+      <svg class="timer-ring" viewBox="0 0 220 220" aria-hidden="true">
+        <circle class="timer-ring-track" cx="110" cy="110" r="100"></circle>
+        <circle class="timer-ring-prog" id="brewRing" cx="110" cy="110" r="100"></circle>
+      </svg>
+      <div class="timer-ring-center">
+        <div class="timer-label">Elapsed Time</div>
+        <div class="timer-display" id="timerDisplay">00:00.0</div>
+      </div>
+    </div>
     <div class="timer-buttons">
       <button class="btn btn-primary" id="timerStartBtn" onclick="toggleTimer()">▶ Start</button>
       <button class="btn btn-secondary" onclick="resetTimer()">↺ Reset</button>
@@ -1517,12 +1536,13 @@
           <div class="field-hint">Editable so the app keeps working as new models release.</div>
         </div>
         <div class="field">
-          <label>Mode</label>
-          <select id="labMode" onchange="persistSettings()">
-            <option value="simple">Simple — essentials only</option>
-            <option value="pro">Pro — everything</option>
+          <label>Skill level</label>
+          <select id="labSkill" onchange="persistSettings()">
+            <option value="beginner">Beginner — keep it simple</option>
+            <option value="enthusiast">Enthusiast — dial in cups</option>
+            <option value="expert">Expert — every tool</option>
           </select>
-          <div class="field-hint">Simple hides water chemistry, TDS, cupping and other advanced tools.</div>
+          <div class="field-hint">Beginner &amp; Enthusiast keep the essentials view; Expert unlocks water chemistry, TDS, cupping and other advanced tools.</div>
         </div>
         <div class="field">
           <label>Theme</label>
@@ -1595,10 +1615,11 @@
       <p style="margin-top:12px">One variable at a time — that is how cups get great.</p>
     </div>
     <div id="obStep3" hidden>
-      <h2>How deep do you go?</h2>
-      <p style="margin-bottom:16px">You can switch anytime in Settings (gear icon, top right).</p>
-      <button class="btn btn-primary ob-choice" onclick="obChoose('simple')">Keep it Simple — just great coffee</button>
-      <button class="btn btn-secondary ob-choice" onclick="obChoose('pro')">Pro Mode — chemistry, cupping, everything</button>
+      <h2>Where are you on your coffee journey?</h2>
+      <p style="margin-bottom:16px">This tunes how much the app shows you. You can switch anytime in Settings (gear icon, top right).</p>
+      <button class="btn btn-primary ob-choice" onclick="obChoose('beginner')">Beginner — show me the way</button>
+      <button class="btn btn-secondary ob-choice" onclick="obChoose('enthusiast')">Enthusiast — I dial in my cups</button>
+      <button class="btn btn-secondary ob-choice" onclick="obChoose('expert')">Expert — give me every tool</button>
     </div>
     <div class="ob-dots" id="obDots">
       <div class="ba-dot now"></div><div class="ba-dot"></div><div class="ba-dot"></div>
@@ -1661,6 +1682,24 @@ let recipes = [];
 let currentRecipeId = null;
 let isDirty = false;
 let timerInterval = null, timerStartTime = null, timerElapsed = 0, timerRunning = false;
+let brewTargetSec = 180; // expected total brew time; drives the progress ring
+const BREW_RING_C = 628.319; // circumference of the r=100 ring
+function setBrewRing(frac) {
+  const ring = document.getElementById('brewRing');
+  if (!ring) return;
+  const f = Math.max(0, Math.min(1, frac || 0));
+  ring.style.strokeDashoffset = String(BREW_RING_C * (1 - f));
+  ring.classList.toggle('done', f >= 1);
+}
+function computeBrewTarget() {
+  // Last pour cue + a drawdown buffer; fall back to a logged total time, else 3 min.
+  let target = cueTimes.length ? cueTimes[cueTimes.length - 1].t + 45 : 0;
+  if (!target) {
+    const tbt = parseTimeStr(document.getElementById('totalBrewTime').value);
+    target = (tbt && tbt > 0) ? tbt : 180;
+  }
+  brewTargetSec = target;
+}
 let currentRating = 0;
 let pourCount = 0;
 let _recalcLock = false;
@@ -1668,8 +1707,8 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '1.6.0';
-let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', feedbackUrl:'', theme:'auto' };
+const APP_VERSION = '1.7.0';
+let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0;
 let wakeLock = null;
 let audioCtx = null;
@@ -1829,7 +1868,8 @@ function persistSettings() {
   settings.model = document.getElementById('labModel').value.trim() || 'claude-sonnet-4-6';
   settings.sounds = document.getElementById('labSounds').value;
   settings.tempUnit = document.getElementById('labTempUnit').value;
-  settings.mode = document.getElementById('labMode').value;
+  settings.skill = document.getElementById('labSkill').value;
+  settings.mode = skillToMode(settings.skill);
   settings.feedbackUrl = document.getElementById('labFeedback').value.trim();
   settings.theme = document.getElementById('labTheme').value;
   if (settings.tempUnit !== prevUnit) {
@@ -2153,7 +2193,7 @@ function toggleTimer() {
       showActionToast('Brew time ' + tbt.value + ' logged', 'Evaluate \u203a', function() { switchTab('evaluate'); }, 'success', 6000);
     }
   } else {
-    if (timerElapsed === 0) cachePourCues();
+    if (timerElapsed === 0) { cachePourCues(); computeBrewTarget(); }
     timerStartTime = Date.now();
     timerRunning = true;
     setTimerBtns('\u275a\u275a Pause');
@@ -2173,6 +2213,7 @@ function resetTimer() {
   timerRunning = false; timerElapsed = 0; timerStartTime = null;
   document.getElementById('timerDisplay').textContent = '00:00.0';
   document.getElementById('baTimer').textContent = '00:00.0';
+  setBrewRing(0);
   document.getElementById('timerDisplay').classList.remove('running');
   document.getElementById('baTimer').classList.remove('running');
   setTimerBtns('\u25b6 Start');
@@ -2188,6 +2229,7 @@ function updateTimerDisplay() {
   const str = formatTime(ms);
   document.getElementById('timerDisplay').textContent = str;
   document.getElementById('baTimer').textContent = str;
+  setBrewRing(brewTargetSec > 0 ? (ms / 1000) / brewTargetSec : 0);
   checkCues(ms/1000);
   if (baActive) { baAutoAdvance(ms/1000); updateBATheater(ms/1000); }
 }
@@ -3678,11 +3720,18 @@ function refreshTempUI() {
     renderScrubber('waterTemp');
   }
 }
+/* Three-level skill maps onto the existing binary Simple/Pro layout:
+   Expert unlocks the full Pro view; Beginner & Enthusiast keep the Simple view.
+   The skill is also tagged on <body> (skill-beginner/-enthusiast/-expert) so future
+   styling can distinguish the tiers without re-touching this mapping. */
+function skillToMode(skill) { return skill === 'expert' ? 'pro' : 'simple'; }
 function applyMode() {
   document.body.classList.toggle('simple', settings.mode === 'simple');
   document.body.classList.remove('show-bean-extra');
-  const sel = document.getElementById('labMode');
-  if (sel) sel.value = settings.mode === 'simple' ? 'simple' : 'pro';
+  document.body.classList.remove('skill-beginner', 'skill-enthusiast', 'skill-expert');
+  if (settings.skill) document.body.classList.add('skill-' + settings.skill);
+  const sel = document.getElementById('labSkill');
+  if (sel) sel.value = settings.skill || (settings.mode === 'pro' ? 'expert' : 'beginner');
 }
 function toggleBeanExtra() {
   document.body.classList.toggle('show-bean-extra');
@@ -3710,6 +3759,17 @@ function renderToday() {
   if (rt) bits.push('1:' + rt);
   if (w) bits.push('\u2192 ' + w + 'g water');
   document.getElementById('todayMeta').textContent = bits.join(' \u00b7 ') || 'Pick a Quick Start below or build your own';
+  // Welcoming "starter" framing for new users: the seeded samples are named "Sample \u2014 \u2026".
+  const isStarter = /^Sample \u2014 /.test(name);
+  const allSamples = recipes.length > 0 && recipes.every(function(r) { return /^Sample \u2014 /.test(r.name || ''); });
+  document.getElementById('todaySubtitle').textContent = isStarter ? 'Your starter recipe' : 'Current recipe';
+  const starterHint = document.getElementById('todayStarterHint');
+  if (isStarter && allSamples) {
+    starterHint.hidden = false;
+    starterHint.textContent = 'New to BrewCraft? A forgiving first brew \u2014 just tap \u201cBrew this\u201d.';
+  } else {
+    starterHint.hidden = true;
+  }
   const f = freshnessInfo(document.getElementById('roastDate').value);
   document.getElementById('todayFresh').innerHTML =
     f ? '<span class="fresh-badge ' + f.cls + '">' + escapeHtml(f.label) + '</span>' : '';
@@ -4035,12 +4095,16 @@ function obShow() {
 function obNext() {
   if (obIdx < 2) { obIdx++; obShow(); }
 }
-function obChoose(mode) {
-  settings.mode = mode;
+function obChoose(skill) {
+  settings.skill = skill;
+  settings.mode = skillToMode(skill);
   try { store.set('brewcraft_settings', JSON.stringify(settings)); } catch(e) {}
   applyMode();
   obFinish();
-  showToast(mode === 'simple' ? 'Simple mode \u2014 enjoy the coffee \u2713' : 'Pro mode \u2014 all tools unlocked \u2713','success');
+  const msg = skill === 'beginner' ? 'Beginner \u2014 we\u2019ll keep it simple \u2713'
+    : skill === 'enthusiast' ? 'Enthusiast \u2014 ready to dial in \u2713'
+    : 'Expert \u2014 all tools unlocked \u2713';
+  showToast(msg, 'success');
 }
 function obSkip() { obFinish(); }
 function obFinish() {
@@ -4436,6 +4500,10 @@ function init() {
   if (!settings.mode) {
     settings.mode = recipes.length ? 'pro' : 'simple';
     try { store.set('brewcraft_settings', JSON.stringify(settings)); } catch(e) {}
+  }
+  if (!settings.skill) {
+    // Returning users predate skill levels — infer from their saved mode so Settings shows a sensible value.
+    settings.skill = settings.mode === 'pro' ? 'expert' : 'beginner';
   }
   loadSettings();
   loadProfiles();

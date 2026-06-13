@@ -143,3 +143,15 @@ Run before every release. All items must pass. Updated for v6 (Sprint 1).
 - [ ] Switch °C↔°F in Lab: the temp value converts, the ruler ceiling extends to 212 °F, and the dial still drags correctly
 - [ ] Load a saved recipe / restore a draft → all four rulers show the correct position on load
 - [ ] Update toast after deploy (cache v1.6.0)
+
+## Sprint 9 (v1.7.0) — Adaptive onboarding & Brew ring
+- [ ] First run (clear storage): after the two welcome screens, step 3 asks "Where are you on your coffee journey?" with three choices — Beginner / Enthusiast / Expert (no clipped text)
+- [ ] Choosing a level shows a tailored toast and tunes the app; the choice persists across reload
+- [ ] Settings (Lab) shows a "Skill level" picker (Beginner/Enthusiast/Expert) that changes the app live; returning users who had Simple/Pro see a sensible inferred level
+- [ ] Beginner hides the grinder model, grind-setting (clicks), and saved-gear setups (keeps the coarseness word + visual)
+- [ ] Enthusiast shows grinder model + grind clicks + saved setups, but still hides water chemistry / TDS / cupping
+- [ ] Expert unlocks everything (water chemistry, TDS, cupping)
+- [ ] Today tab for a new user reads "Your starter recipe" with the welcome hint and a "Make it yours" button; an experienced user (own recipes) sees "Current recipe" and no hint
+- [ ] Brew tab: the timer sits inside a progress ring that fills as the brew runs toward its expected finish; ring reaches full + brightens at/after target; Reset empties the ring
+- [ ] Ring target derives from the last pour cue (+drawdown), or a logged total time, or 3 min fallback
+- [ ] Update toast after deploy (cache v1.7.0)
