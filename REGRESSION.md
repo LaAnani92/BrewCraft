@@ -155,3 +155,15 @@ Run before every release. All items must pass. Updated for v6 (Sprint 1).
 - [ ] Brew tab: the timer sits inside a progress ring that fills as the brew runs toward its expected finish; ring reaches full + brightens at/after target; Reset empties the ring
 - [ ] Ring target derives from the last pour cue (+drawdown), or a logged total time, or 3 min fallback
 - [ ] Update toast after deploy (cache v1.7.0)
+
+## Sprint 10 (v1.8.0) — Guided pour-along & finish, accessibility, gesture hints
+- [ ] Brew tab: start the timer → a live line under the ring shows the current step "pour to X g (+Y g)" and advances Bloom → pours as start times pass
+- [ ] "next: <pour> in M:SS" counts down; after the last pour it reads "drawing down — done ~M:SS"
+- [ ] At the expected finish a one-time "✓ Brew complete" (green) appears with a gentle beep/haptic; it does not refire; Reset clears the guide + ring
+- [ ] Full-screen Brew-Along target also shows the per-pour increment (+Y g)
+- [ ] All collapsible section headers are reachable by Tab and toggle with Enter/Space; aria-expanded reflects state; the pour guidance announces via aria-live
+- [ ] Rating a cup and tapping "Brew this" give a haptic on supported devices
+- [ ] First few app opens: a "↔ Drag the ruler" hint shows under the dose dial and disappears permanently after the first drag
+- [ ] Brew-Along shows a "tap screen edges" hint on entry that fades after ~5s or on the first edge tap
+- [ ] Settings → "Show tips again" re-enables both hints
+- [ ] Update toast after deploy (cache v1.8.0)

@@ -427,6 +427,18 @@
   .timer-ring-prog.done { stroke:var(--accent-bright); filter:drop-shadow(0 0 7px var(--accent-glow)); }
   .timer-ring-center { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; }
   .timer-ring-center .timer-display { font-size:40px; }
+  /* Live pour-along guidance under the timer ring on the main Brew tab. */
+  .brew-guide { display:none; margin:0 auto 14px; max-width:320px; text-align:center; font-size:15px; color:var(--text-secondary); line-height:1.5; }
+  .brew-guide.show { display:block; }
+  .brew-guide strong { color:var(--accent-bright); font-weight:600; }
+  .brew-guide .bg-add { color:var(--accent-warm); font-family:'JetBrains Mono',monospace; }
+  .brew-guide .bg-next { display:block; font-size:11px; color:var(--text-muted); margin-top:3px; }
+  .brew-guide .bg-done { color:var(--success); font-size:17px; }
+  /* First-run gesture hints */
+  .dial-hint { margin-top:8px; font-size:11px; text-align:center; color:var(--accent-bright); background:var(--accent-glow); border:1px solid rgba(200,149,108,0.3); border-radius:14px; padding:5px 10px; animation:dialHintBob 1.6s ease-in-out infinite; }
+  @keyframes dialHintBob { 0%,100% { transform:translateX(-3px); } 50% { transform:translateX(3px); } }
+  .ba-hint { position:absolute; top:16%; left:50%; transform:translateX(-50%); max-width:80%; text-align:center; background:rgba(0,0,0,0.55); color:var(--text-primary); font-size:13px; padding:8px 14px; border-radius:18px; border:1px solid var(--border); z-index:5; }
+  @media (prefers-reduced-motion: reduce) { .dial-hint { animation:none; } }
   .today-name { font-family:'Playfair Display',serif; font-size:24px; font-weight:700; margin:4px 0 4px; line-height:1.2; }
   .today-actions { display:flex; gap:10px; flex-wrap:wrap; margin-top:16px; }
   .today-actions .btn { padding:13px 20px; }
@@ -870,6 +882,7 @@
           <div class="scrub">
             <input type="number" inputmode="decimal" enterkeyhint="done" id="coffeeDose" class="scrub-num" data-default="15" placeholder="15" step="0.1" min="0" oninput="recalcFromDose()" aria-label="Coffee dose in grams">
             <div class="ruler" data-field="coffeeDose" role="slider" tabindex="0" aria-label="Coffee dose — drag or arrow keys to adjust" style="--gap:25px"><div class="ruler-ticks"></div><div class="ruler-caret"></div></div>
+            <div class="dial-hint" id="dialHint" hidden>↔ Drag the ruler to adjust — or tap the number to type</div>
           </div>
         </div>
         <div class="field">
@@ -1107,6 +1120,7 @@
         <div class="timer-display" id="timerDisplay">00:00.0</div>
       </div>
     </div>
+    <div class="brew-guide" id="brewGuide" aria-live="polite"></div>
     <div class="timer-buttons">
       <button class="btn btn-primary" id="timerStartBtn" onclick="toggleTimer()">▶ Start</button>
       <button class="btn btn-secondary" onclick="resetTimer()">↺ Reset</button>
@@ -1429,6 +1443,7 @@
 <div class="ba-overlay" id="baOverlay">
   <div class="ba-tap left" onclick="baPrev()" aria-hidden="true"></div>
   <div class="ba-tap right" onclick="baNext()" aria-hidden="true"></div>
+  <div class="ba-hint" id="baHint" hidden>‹ tap the screen edges to move between pours ›</div>
   <button class="btn btn-secondary ba-exit" onclick="exitBrewAlong()">✕ Exit</button>
   <div class="ba-step" id="baStepLabel">Step 1 · Bloom</div>
   <div class="ba-target" id="baTarget">Pour to 45 g</div>
@@ -1571,6 +1586,11 @@
             <option value="off">Off</option>
           </select>
         </div>
+        <div class="field">
+          <label>Gesture tips</label>
+          <button class="btn btn-sm btn-secondary" onclick="resetHints()" style="align-self:flex-start">↻ Show tips again</button>
+          <div class="field-hint">Re-show the drag-the-dial and edge-tap hints (they fade after you use them).</div>
+        </div>
       </div>
     </div>
   </div>
@@ -1683,7 +1703,45 @@ let currentRecipeId = null;
 let isDirty = false;
 let timerInterval = null, timerStartTime = null, timerElapsed = 0, timerRunning = false;
 let brewTargetSec = 180; // expected total brew time; drives the progress ring
+let guideSteps = [];     // cached pour steps for live guidance under the timer
+let brewCompleteFired = false; // one-time "brew complete" cue guard
 const BREW_RING_C = 628.319; // circumference of the r=100 ring
+function updateBrewGuide(sec) {
+  const el = document.getElementById('brewGuide');
+  if (!el) return;
+  if (!guideSteps.length) { el.classList.remove('show'); el.innerHTML = ''; return; }
+  // Past the expected finish → a one-time "brew complete" moment, then a calm done state.
+  if (brewTargetSec > 0 && sec >= brewTargetSec) {
+    if (!brewCompleteFired) {
+      brewCompleteFired = true;
+      beep(660, 0.18); setTimeout(function() { beep(880, 0.2); }, 200); vibrate(140);
+    }
+    el.innerHTML = '<strong class="bg-done">✓ Brew complete</strong>' +
+      '<span class="bg-next">let it finish draining, then rate your cup in Evaluate</span>';
+    el.classList.add('show');
+    return;
+  }
+  // Current step = the latest pour whose start time has arrived (default the first).
+  let cur = 0;
+  for (let i = 0; i < guideSteps.length; i++) {
+    if (guideSteps[i].start !== null && sec >= guideSteps[i].start) cur = i;
+  }
+  const st = guideSteps[cur];
+  const inc = st.weight ? ' <span class="bg-add">(+' + Math.round(st.weight) + ' g)</span>' : '';
+  let html = '<strong>' + escapeHtml(st.label) + '</strong> — pour to ' + st.targetCum + ' g' + inc;
+  const next = guideSteps[cur + 1];
+  if (next && next.start !== null) {
+    const remain = Math.ceil(next.start - sec);
+    if (remain > 0) html += '<span class="bg-next">next: ' + escapeHtml(next.label) + ' in ' + secToStr(remain) + '</span>';
+    else html += '<span class="bg-next">tap Lap or wait — ' + escapeHtml(next.label) + ' now</span>';
+  } else if (!next) {
+    html += brewTargetSec > 0
+      ? '<span class="bg-next">drawing down — done ~' + secToStr(brewTargetSec) + '</span>'
+      : '<span class="bg-next">last pour — let it draw down</span>';
+  }
+  el.innerHTML = html;
+  el.classList.add('show');
+}
 function setBrewRing(frac) {
   const ring = document.getElementById('brewRing');
   if (!ring) return;
@@ -1692,6 +1750,8 @@ function setBrewRing(frac) {
   ring.classList.toggle('done', f >= 1);
 }
 function computeBrewTarget() {
+  guideSteps = buildBASteps(); // cache pour steps for the live guidance line
+  brewCompleteFired = false;
   // Last pour cue + a drawdown buffer; fall back to a logged total time, else 3 min.
   let target = cueTimes.length ? cueTimes[cueTimes.length - 1].t + 45 : 0;
   if (!target) {
@@ -1707,7 +1767,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '1.7.0';
+const APP_VERSION = '1.8.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0;
 let wakeLock = null;
@@ -1898,11 +1958,69 @@ function switchTab(name) {
   document.getElementById('tab-' + name).classList.add('active');
   document.getElementById('tabbtn-' + name).classList.add('active');
   if (name === 'today') renderToday();
+  if (name === 'recipe') showDialHint();
   if (name === 'library') { renderLibrary(); refreshSharePanel(); }
   if (name === 'lab') drawStats();
   window.scrollTo({ top: 0 });
 }
-function toggleSection(id) { document.getElementById(id).classList.toggle('collapsed'); }
+function toggleSection(id) {
+  const sec = document.getElementById(id);
+  const collapsed = sec.classList.toggle('collapsed');
+  const h = sec.querySelector('.section-header');
+  if (h) h.setAttribute('aria-expanded', String(!collapsed));
+}
+/* Make the collapsible section headers operable by keyboard + screen readers
+   (they're <div onclick> in markup; this upgrades them to real buttons once at boot). */
+function initSectionA11y() {
+  document.querySelectorAll('.section-header').forEach(function(h) {
+    h.setAttribute('role', 'button');
+    h.setAttribute('tabindex', '0');
+    const sec = h.closest('.section');
+    if (sec) h.setAttribute('aria-expanded', String(!sec.classList.contains('collapsed')));
+    h.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); h.click(); }
+    });
+  });
+}
+
+/* ===== First-run gesture hints (teach the dial drag + Brew-Along edge taps, then fade) ===== */
+let hintsSeen = 0, dialHintUsed = false, baHintUsed = false;
+function loadHintState() {
+  hintsSeen = parseInt(store.get('brewcraft_hints_seen') || '0', 10) || 0;
+  dialHintUsed = store.get('brewcraft_dialHintUsed') === '1';
+  baHintUsed = store.get('brewcraft_baHintUsed') === '1';
+}
+function bumpHintsSeen() { hintsSeen += 1; try { store.set('brewcraft_hints_seen', String(hintsSeen)); } catch(e) {} }
+function hintsEligible() { return hintsSeen <= 4; } // only nudge during the first few app opens
+function showDialHint() {
+  const el = document.getElementById('dialHint');
+  if (!el) return;
+  el.hidden = !(!dialHintUsed && hintsEligible());
+}
+function dismissDialHint(permanent) {
+  const el = document.getElementById('dialHint');
+  if (el) el.hidden = true;
+  if (permanent && !dialHintUsed) { dialHintUsed = true; try { store.set('brewcraft_dialHintUsed', '1'); } catch(e) {} }
+}
+function showBAHint() {
+  const el = document.getElementById('baHint');
+  if (!el) return;
+  if (baHintUsed || !hintsEligible()) { el.hidden = true; return; }
+  el.hidden = false;
+  clearTimeout(el._t);
+  el._t = setTimeout(function() { el.hidden = true; }, 5000);
+}
+function dismissBAHint(permanent) {
+  const el = document.getElementById('baHint');
+  if (el) el.hidden = true;
+  if (permanent && !baHintUsed) { baHintUsed = true; try { store.set('brewcraft_baHintUsed', '1'); } catch(e) {} }
+}
+function resetHints() {
+  try { store.set('brewcraft_hints_seen', '0'); store.set('brewcraft_dialHintUsed', ''); store.set('brewcraft_baHintUsed', ''); } catch(e) {}
+  hintsSeen = 0; dialHintUsed = false; baHintUsed = false;
+  showDialHint();
+  showToast('Tips reset — gesture hints will show again ✓', 'success');
+}
 
 /* ======= "OTHER" SELECTS ======= */
 function handleOtherSelect(selectId, wrapperId) {
@@ -2214,6 +2332,10 @@ function resetTimer() {
   document.getElementById('timerDisplay').textContent = '00:00.0';
   document.getElementById('baTimer').textContent = '00:00.0';
   setBrewRing(0);
+  const guideEl = document.getElementById('brewGuide');
+  if (guideEl) { guideEl.classList.remove('show'); guideEl.innerHTML = ''; }
+  guideSteps = [];
+  brewCompleteFired = false;
   document.getElementById('timerDisplay').classList.remove('running');
   document.getElementById('baTimer').classList.remove('running');
   setTimerBtns('\u25b6 Start');
@@ -2230,6 +2352,7 @@ function updateTimerDisplay() {
   document.getElementById('timerDisplay').textContent = str;
   document.getElementById('baTimer').textContent = str;
   setBrewRing(brewTargetSec > 0 ? (ms / 1000) / brewTargetSec : 0);
+  updateBrewGuide(ms / 1000);
   checkCues(ms/1000);
   if (baActive) { baAutoAdvance(ms/1000); updateBATheater(ms/1000); }
 }
@@ -2294,6 +2417,7 @@ async function enterBrewAlong() {
   document.getElementById('baOverlay').classList.add('show');
   renderBAStep();
   updateBATheater(currentElapsedMs() / 1000);
+  showBAHint();
   try {
     if (navigator.wakeLock) wakeLock = await navigator.wakeLock.request('screen');
   } catch(e) { wakeLock = null; }
@@ -2308,7 +2432,7 @@ function renderBAStep() {
   const st = baSteps[baIdx];
   if (!st) return;
   document.getElementById('baStepLabel').textContent = 'Step ' + (baIdx+1) + ' / ' + baSteps.length + ' \u00b7 ' + st.label;
-  document.getElementById('baTarget').textContent = 'Pour to ' + st.targetCum + ' g';
+  document.getElementById('baTarget').textContent = 'Pour to ' + st.targetCum + ' g' + (st.weight ? '  (+' + Math.round(st.weight) + ' g)' : '');
   let win = '';
   if (st.start !== null) {
     win = 'window ' + secToStr(st.start) + (st.end !== null ? ' \u2013 ' + secToStr(st.end) : '');
@@ -2327,8 +2451,8 @@ function renderBAStep() {
 function secToStr(sec) {
   return Math.floor(sec/60) + ':' + String(Math.floor(sec%60)).padStart(2,'0');
 }
-function baNext() { if (baIdx < baSteps.length-1) { baIdx++; renderBAStep(); beep(660,0.15); vibrate(40); } }
-function baPrev() { if (baIdx > 0) { baIdx--; renderBAStep(); vibrate(20); } }
+function baNext() { dismissBAHint(true); if (baIdx < baSteps.length-1) { baIdx++; renderBAStep(); beep(660,0.15); vibrate(40); } }
+function baPrev() { dismissBAHint(true); if (baIdx > 0) { baIdx--; renderBAStep(); vibrate(20); } }
 function baAutoAdvance(elapsedSec) {
   const next = baSteps[baIdx+1];
   const info = document.getElementById('baNextInfo');
@@ -2355,6 +2479,7 @@ function setRating(v, silent) {
   if (!silent) {
     const tgt = document.querySelector('.rating-star[data-v="' + v + '"]');
     if (tgt) { tgt.classList.remove('pop'); void tgt.offsetWidth; tgt.classList.add('pop'); }
+    vibrate(v === 5 ? 60 : 18);
     if (v === 5) celebrate();
   }
   markDirty();
@@ -3446,6 +3571,7 @@ function initScrubber(field) {
     dragging = true; startX = e.clientX; startVal = cur(); lastVal = startVal;
     try { ruler.setPointerCapture(e.pointerId); } catch (_) {}
     ruler.classList.add('dragging');
+    dismissDialHint(true); // they found the drag — never nudge again
   });
   ruler.addEventListener('pointermove', function(e) {
     if (!dragging) return;
@@ -3843,6 +3969,7 @@ function renderToday() {
 }
 
 function todayBrew() {
+  vibrate(15);
   switchTab('brew');
   enterBrewAlong();
 }
@@ -4509,6 +4636,10 @@ function init() {
   loadProfiles();
   initPours();
   initScrubbers();
+  initSectionA11y();
+  loadHintState();
+  bumpHintsSeen();
+  showDialHint();
   updateGrindVisual();
   if (!recipes.length && !store.get('brewcraft_seeded')) {
     ['hoffmann','kasuya'].forEach(function(key) {
