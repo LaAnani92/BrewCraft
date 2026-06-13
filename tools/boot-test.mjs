@@ -36,8 +36,8 @@ setTimeout(() => {
   else ok('no runtime errors during boot');
 
   const checks = [
-    ['six tab panels mounted', () => d.querySelectorAll('.tab-panel').length === 6],
-    ['Today tab is active on load', () => d.getElementById('tab-today')?.classList.contains('active')],
+    ['five tab panels mounted', () => d.querySelectorAll('.tab-panel').length === 5],
+    ['Brew tab is active on load', () => d.getElementById('tab-brew')?.classList.contains('active')],
     ['version label populated', () => /\d+\.\d+\.\d+/.test(d.getElementById('appVersion')?.textContent || '')],
     ['recipe library seeded', () => dom.window.localStorage.getItem('brewcraft_seeded') === '1'],
     ['Brew Bar rendered', () => (d.getElementById('bbDose')?.textContent || '') !== ''],

@@ -434,6 +434,12 @@
   .brew-guide .bg-add { color:var(--accent-warm); font-family:'JetBrains Mono',monospace; }
   .brew-guide .bg-next { display:block; font-size:11px; color:var(--text-muted); margin-top:3px; }
   .brew-guide .bg-done { color:var(--success); font-size:17px; }
+  /* a flex .template-row otherwise overrides the [hidden] attribute */
+  .template-row[hidden] { display:none; }
+  /* Brew-landing context: freshness-as-guidance + carry-the-thread */
+  .brew-freshtip { font-size:12px; color:var(--text-secondary); line-height:1.55; margin-top:6px; }
+  .brew-thread { font-size:13px; color:var(--accent-bright); background:var(--accent-glow); border:1px solid rgba(200,149,108,0.25); border-radius:var(--radius-sm); padding:9px 11px; line-height:1.5; margin-top:12px; }
+  .brew-thread strong { color:var(--accent-bright); }
   /* First-run gesture hints */
   .dial-hint { margin-top:8px; font-size:11px; text-align:center; color:var(--accent-bright); background:var(--accent-glow); border:1px solid rgba(200,149,108,0.3); border-radius:14px; padding:5px 10px; animation:dialHintBob 1.6s ease-in-out infinite; }
   @keyframes dialHintBob { 0%,100% { transform:translateX(-3px); } 50% { transform:translateX(3px); } }
@@ -695,9 +701,8 @@
 </div>
 
 <nav class="tabbar">
-  <button class="tab-btn active" id="tabbtn-today" onclick="switchTab('today')"><span class="t-icon"><svg class="ico"><use href="#i-home"/></svg></span><span class="t-label">Today</span></button>
+  <button class="tab-btn active" id="tabbtn-brew" onclick="switchTab('brew')"><span class="live-dot" id="brewLiveDot"></span><span class="t-icon"><svg class="ico"><use href="#i-timer"/></svg></span><span class="t-label">Brew</span></button>
   <button class="tab-btn" id="tabbtn-recipe" onclick="switchTab('recipe')"><span class="t-icon"><svg class="ico"><use href="#i-bean"/></svg></span><span class="t-label">Recipe</span></button>
-  <button class="tab-btn" id="tabbtn-brew" onclick="switchTab('brew')"><span class="live-dot" id="brewLiveDot"></span><span class="t-icon"><svg class="ico"><use href="#i-timer"/></svg></span><span class="t-label">Brew</span></button>
   <button class="tab-btn" id="tabbtn-evaluate" onclick="switchTab('evaluate')"><span class="t-icon"><svg class="ico"><use href="#i-star"/></svg></span><span class="t-label">Evaluate</span></button>
   <button class="tab-btn" id="tabbtn-library" onclick="switchTab('library')"><span class="t-icon"><svg class="ico"><use href="#i-book"/></svg></span><span class="t-label">Library</span></button>
   <button class="tab-btn" id="tabbtn-lab" onclick="switchTab('lab')"><span class="t-icon"><svg class="ico"><use href="#i-flask"/></svg></span><span class="t-label">Lab</span></button>
@@ -705,40 +710,6 @@
 
 <main class="main">
 
-<div class="tab-panel active" id="tab-today">
-
-  <div class="info-card" id="todayHero">
-    <div class="section-subtitle" id="todaySubtitle">Current recipe</div>
-    <div class="today-name" id="todayName">—</div>
-    <div class="recipe-card-meta" id="todayMeta"></div>
-    <div class="field-hint" id="todayStarterHint" style="margin-top:8px;font-style:italic" hidden></div>
-    <div id="todayFresh" style="margin-top:8px"></div>
-    <div id="todayBag" class="bag-status" style="margin-top:10px;margin-bottom:0"></div>
-    <div class="today-actions">
-      <button class="btn btn-primary" onclick="todayBrew()">▶ Brew this</button>
-      <button class="btn btn-secondary" onclick="quickBrew()">⚡ Repeat last</button>
-      <button class="btn btn-ghost" onclick="switchTab('recipe')">✎ Make it yours</button>
-    </div>
-    <div id="todayBest" style="display:none;margin-top:16px;padding-top:14px;border-top:1px solid var(--border)"></div>
-  </div>
-
-  <div class="info-card" id="templatesCard">
-    <h3>✨ Quick Start</h3>
-    <div class="section-subtitle" style="margin-bottom:10px">Load a proven recipe, then make it yours</div>
-    <div class="template-row">
-      <button class="preset-chip" onclick="loadTemplate('hoffmann')">Hoffmann V60</button>
-      <button class="preset-chip" onclick="loadTemplate('kasuya')">Kasuya 4:6</button>
-      <button class="preset-chip" onclick="loadTemplate('aeropress')">AeroPress Classic</button>
-      <button class="preset-chip" onclick="loadTemplate('frenchpress')">French Press</button>
-    </div>
-  </div>
-
-  <div class="info-card">
-    <h3 style="margin-bottom:10px">Recent brews</h3>
-    <div id="todayRecent"></div>
-  </div>
-
-</div>
 
 <div class="tab-panel" id="tab-recipe">
 
@@ -1098,7 +1069,29 @@
 
 </div>
 
-<div class="tab-panel" id="tab-brew">
+<div class="tab-panel active" id="tab-brew">
+
+  <div class="info-card" id="todayHero">
+    <div class="section-subtitle" id="todaySubtitle">Now brewing</div>
+    <div class="today-name" id="todayName">—</div>
+    <div class="recipe-card-meta" id="todayMeta"></div>
+    <div class="field-hint" id="todayStarterHint" style="margin-top:8px;font-style:italic" hidden></div>
+    <div id="todayFresh" style="margin-top:8px"></div>
+    <div class="brew-freshtip" id="todayFreshTip" style="display:none"></div>
+    <div id="todayBag" class="bag-status" style="margin-top:10px;margin-bottom:0"></div>
+    <div class="brew-thread" id="todayThread" style="display:none"></div>
+    <div id="todayBest" style="display:none;margin-top:14px;padding-top:12px;border-top:1px solid var(--border)"></div>
+    <div class="today-actions" style="margin-top:14px">
+      <button class="btn btn-sm btn-ghost" onclick="switchTab('recipe')">✎ Edit recipe</button>
+      <button class="btn btn-sm btn-ghost" onclick="toggleBrewQuickPick()">↺ Switch recipe</button>
+    </div>
+    <div class="template-row" id="brewQuickPick" hidden style="margin-top:12px">
+      <button class="preset-chip" onclick="brewPick('hoffmann')">Hoffmann V60</button>
+      <button class="preset-chip" onclick="brewPick('kasuya')">Kasuya 4:6</button>
+      <button class="preset-chip" onclick="brewPick('aeropress')">AeroPress Classic</button>
+      <button class="preset-chip" onclick="brewPick('frenchpress')">French Press</button>
+    </div>
+  </div>
 
   <div class="brewbar brewbar-compact" id="brewBarBrew">
     <button class="bb-stat" onclick="switchTab('recipe');bbFocus('coffeeDose')"><span class="bb-label">Dose</span><span class="bb-val" id="bb2Dose">—</span></button>
@@ -1767,7 +1760,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '1.8.0';
+const APP_VERSION = '1.9.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0;
 let wakeLock = null;
@@ -1957,7 +1950,7 @@ function switchTab(name) {
   document.querySelectorAll('.tab-btn').forEach(function(b) { b.classList.remove('active'); });
   document.getElementById('tab-' + name).classList.add('active');
   document.getElementById('tabbtn-' + name).classList.add('active');
-  if (name === 'today') renderToday();
+  if (name === 'brew') { renderToday(); renderBrewBar(); }
   if (name === 'recipe') showDialHint();
   if (name === 'library') { renderLibrary(); refreshSharePanel(); }
   if (name === 'lab') drawStats();
@@ -3812,6 +3805,25 @@ function quickBrew() {
   switchTab('brew');
   showToast('Timer ready \u2014 brewing ' + (latest.name || 'your latest recipe'), 'success');
 }
+/* Brew-tab quick-pick: load a method's known-good recipe and STAY on Brew, ready to go. */
+function toggleBrewQuickPick() {
+  const el = document.getElementById('brewQuickPick');
+  if (el) el.hidden = !el.hidden;
+}
+function brewPick(key) {
+  const t = TEMPLATES[key];
+  if (!t) return;
+  currentRecipeId = null;
+  loadRecipeData(JSON.parse(JSON.stringify(t)));
+  markDirty();
+  resetTimer();
+  renderToday();
+  renderBrewBar();
+  const qp = document.getElementById('brewQuickPick');
+  if (qp) qp.hidden = true;
+  vibrate(12);
+  showToast(t.name + ' \u2014 ready to brew', 'success');
+}
 
 function openDialinFromNudge() {
   const sec = document.getElementById('sec-dialin');
@@ -3892,13 +3904,19 @@ function renderToday() {
   const starterHint = document.getElementById('todayStarterHint');
   if (isStarter && allSamples) {
     starterHint.hidden = false;
-    starterHint.textContent = 'New to BrewCraft? A forgiving first brew \u2014 just tap \u201cBrew this\u201d.';
+    starterHint.textContent = 'New to BrewCraft? A forgiving first brew \u2014 just press Start below.';
   } else {
     starterHint.hidden = true;
   }
   const f = freshnessInfo(document.getElementById('roastDate').value);
   document.getElementById('todayFresh').innerHTML =
     f ? '<span class="fresh-badge ' + f.cls + '">' + escapeHtml(f.label) + '</span>' : '';
+  const tipEl = document.getElementById('todayFreshTip');
+  if (tipEl) {
+    const tip = f ? freshnessGuidance(f, m) : '';
+    tipEl.textContent = tip;
+    tipEl.style.display = tip ? 'block' : 'none';
+  }
   const tb = document.getElementById('todayBag');
   const bean = beanProfiles.find(function(x) { return x.id === currentBeanId; });
   const info = bagLine(bean);
@@ -3932,40 +3950,50 @@ function renderToday() {
   } else {
     bEl.style.display = 'none';
   }
-  const wrap = document.getElementById('todayRecent');
-  wrap.innerHTML = '';
-  const list = recipes.slice().sort(function(a,b) { return (b.updatedAt||'').localeCompare(a.updatedAt||''); }).slice(0,3);
-  if (!list.length) {
-    const p = document.createElement('div');
-    p.className = 'field-hint';
-    p.textContent = 'Your brews will appear here.';
-    wrap.appendChild(p);
-    return;
+  renderThread();
+}
+
+/* Freshness as guidance, not a badge: the bean's age changes the advice. */
+function freshnessGuidance(f, method) {
+  if (!f) return '';
+  const esp = method === 'Espresso';
+  switch (f.cls) {
+    case 'fresh-degassing':
+      return esp
+        ? 'Still degassing — shots will gush and taste sharp. Grind finer, expect inconsistency, and don’t over-judge it yet.'
+        : 'Still degassing — lots of CO₂. Use a longer bloom, grind a touch finer, and don’t over-judge this cup.';
+    case 'fresh-peak':
+      return 'Peak window — the bean at its best. A great day to fine-tune one variable.';
+    case 'fresh-good':
+      return 'Still good — consistent extraction. Brew with confidence.';
+    case 'fresh-fading':
+      return esp
+        ? 'Past peak — grind finer or bump the temp to chase sweetness, or finish the bag soon.'
+        : 'Past peak — grind finer or run the water hotter to pull out what’s left, or finish the bag soon.';
+    default: return '';
   }
-  list.forEach(function(r) {
-    const card = document.createElement('div');
-    card.className = 'recipe-card' + (r.id === currentRecipeId ? ' current' : '');
-    card.onclick = function() { loadRecipe(r.id); renderToday(); };
-    const main = document.createElement('div');
-    main.className = 'recipe-card-main';
-    const nm = document.createElement('div');
-    nm.className = 'recipe-card-name';
-    nm.textContent = r.name || 'Untitled';
-    const meta = document.createElement('div');
-    meta.className = 'recipe-card-meta';
-    const mb = [];
-    if (r.method) mb.push(r.method);
-    meta.textContent = mb.join(' \u00b7 ');
-    if (r.rating) {
-      const st2 = document.createElement('span');
-      st2.className = 'recipe-card-stars';
-      st2.textContent = '\u2605'.repeat(r.rating);
-      meta.appendChild(st2);
-    }
-    main.appendChild(nm); main.appendChild(meta);
-    card.appendChild(main);
-    wrap.appendChild(card);
-  });
+}
+
+/* Carry the thread: where you are in this recipe's iteration arc + whether the last change helped. */
+function renderThread() {
+  const el = document.getElementById('todayThread');
+  if (!el) return;
+  const r = recipes.find(function(x) { return x.id === currentRecipeId; });
+  const parent = r && r.parentId ? recipes.find(function(x) { return x.id === r.parentId; }) : null;
+  if (!r || !parent) { el.style.display = 'none'; el.innerHTML = ''; return; }
+  let changed = null;
+  for (let i = 0; i < DIFF_FIELDS.length; i++) {
+    const k = DIFF_FIELDS[i][0];
+    const a = fmtDiffVal(k, parent[k]), b = fmtDiffVal(k, r[k]);
+    if (a !== b) { changed = { label: DIFF_FIELDS[i][1], a: a, b: b }; break; }
+  }
+  let txt = 'Continuing <strong>v' + (r.version || 2) + '</strong>';
+  if (changed) txt += ' — last change: ' + escapeHtml(changed.label) + ' ' + escapeHtml(changed.a) + '→' + escapeHtml(changed.b);
+  const rA = parent.rating || 0, rB = r.rating || 0;
+  if (rA && rB) txt += rB > rA ? ' (improved ✓ — lock it in or push further)' : rB < rA ? ' (scored lower — consider reverting)' : ' (no change yet)';
+  else txt += ' — brew and rate it to see if it helped';
+  el.innerHTML = txt;
+  el.style.display = 'block';
 }
 
 function todayBrew() {

@@ -167,3 +167,14 @@ Run before every release. All items must pass. Updated for v6 (Sprint 1).
 - [ ] Brew-Along shows a "tap screen edges" hint on entry that fades after ~5s or on the first edge tap
 - [ ] Settings → "Show tips again" re-enables both hints
 - [ ] Update toast after deploy (cache v1.8.0)
+
+## Sprint 11 (v1.9.0) — Brew-first landing (Today merged into Brew)
+- [ ] App opens directly on the Brew tab; there is no Today tab; tab bar = Brew · Recipe · Evaluate · Library · Lab (5 tabs)
+- [ ] Brew landing: header (recipe name + method/dose/ratio/water + context) → brew bar → Brew-Along button → timer ring → pour schedule
+- [ ] New users see "Your starter recipe" + welcome hint; experienced users see "Current recipe"
+- [ ] "↺ Switch recipe" reveals the method quick-pick (Hoffmann / Kasuya / AeroPress / French); tapping one loads it and STAYS on Brew, ready to brew (picker collapses, brew bar updates)
+- [ ] "✎ Edit recipe" jumps to the Recipe tab
+- [ ] Freshness shows as guidance, not just a badge: degassing / peak / fading each give different advice; espresso wording differs
+- [ ] Carry-the-thread line appears when the current recipe is a child version: "Continuing vN — last change: X→Y (improved/worse)"; hidden for a first-version recipe
+- [ ] Recent brews list removed from the home (recipes still in Library); boots clean, no console errors
+- [ ] Update toast after deploy (cache v1.9.0)
