@@ -249,3 +249,13 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] Focus ring brightened to solid --accent-bright (#f0c294) so the indicator clears 3:1 on dark backgrounds
 - [ ] npm run check green (2.5.0 synced); 5 panels, Brew active; existing pointer/mouse flows unaffected
 - [ ] Update toast after deploy (cache v2.5.0)
+
+## Sprint 18 (v2.6.0) — Review board: soul & craft (Release 3 of 3, part 1)
+- [ ] Brew-Along finish is a ritual, not a chore: "✓ That's brewed / Let it settle. Take the first sip before you judge it." (was "let it finish draining, then rate your cup in Taste")
+- [ ] The Taste tab opens with a human prompt before the score grid ("First, just taste it. Sweet or sharp, bright or heavy — what jumps out?…") and a warmer subtitle ("Taste it first — then let the numbers agree")
+- [ ] Brewer's Notes placeholder is beginner-friendly ("How was it? Sweet or sharp, thin or full…") instead of competition jargon (Rao spin / channeling / drawdown)
+- [ ] The two golds are harmonized: --accent #c8956c→#d3a06f and --accent-warm #d4a574→#e0b07f so the button/tab-indicator gradient matches the brighter --accent-bright text gold (no more split temperature)
+- [ ] The "Keep editing" button in the save-choice modal now has a visible background (btn-secondary, was a bare .btn)
+- [ ] npm run check green (2.6.0 synced); verified the Taste warmth + accent in preview
+- [ ] DEFERRED to a later polish (owner's eye, they change the signature look): full raw-glyph→SVG icon sweep, single unified timer-ring component, consolidating the 4 :root token blocks, bean-over-its-life arc, celebrate personal-best
+- [ ] Update toast after deploy (cache v2.6.0)

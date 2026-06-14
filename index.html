@@ -20,7 +20,7 @@
   :root {
     --bg-deep: #1a1410; --bg-card: #231e18; --bg-card-hover: #2a2319;
     --bg-input: #1a1410; --bg-surface: #2e2720;
-    --accent: #c8956c; --accent-warm: #d4a574; --accent-bright: #e8b88a;
+    --accent: #d3a06f; --accent-warm: #e0b07f; --accent-bright: #e8b88a;
     --accent-glow: rgba(200,149,108,0.15);
     --text-primary: #f0e6da; --text-secondary: #a89882; --text-muted: #8d7d6a;
     --border: #3a3128; --border-light: #4a3f33;
@@ -327,6 +327,7 @@
   .library-empty p { max-width:32ch; margin:0 auto; }
   .library-empty .btn { margin-top:18px; }
   .water-sub { font-family:var(--font-display); font-size:var(--text-md); color:var(--text-primary); margin:20px 0 12px; padding-top:16px; border-top:1px solid var(--border); }
+  .taste-prompt { font-family:var(--font-display); font-size:var(--text-md); line-height:1.55; color:var(--text-secondary); font-style:italic; margin:2px 0 20px; }
   .recipe-card {
     background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius);
     padding:15px 16px; margin-bottom:10px; cursor:pointer; transition:all var(--transition);
@@ -1317,10 +1318,11 @@
   <div class="section" id="sec-tasting">
     <div class="section-header" onclick="toggleSection('sec-tasting')">
       <div class="section-icon"><svg class="ico"><use href="#i-star"/></svg></div>
-      <div><div class="section-title">Tasting & Scoring</div><div class="section-subtitle">Flavor descriptors and evaluation</div></div>
+      <div><div class="section-title">Tasting &amp; Scoring</div><div class="section-subtitle">Taste it first — then let the numbers agree</div></div>
       <div class="section-toggle">▾</div>
     </div>
     <div class="section-body">
+      <div class="taste-prompt">First, just taste it. Sweet or sharp, bright or heavy — what jumps out? Then let the scores below back up what your mouth already knows.</div>
       <div style="margin-bottom:20px">
         <span class="eval-label">Overall Rating</span>
         <div class="rating-container">
@@ -1373,7 +1375,7 @@
     </div>
     <div class="section-body">
       <div class="notes-box">
-        <textarea id="brewerNotes" placeholder="What would you change next time? Flow rate, channeling, drawdown observations? Notes on swirl, Rao spin…" oninput="markDirty()"></textarea>
+        <textarea id="brewerNotes" placeholder="How was it? Sweet or sharp, thin or full — what jumped out, and what you'd change next time." oninput="markDirty()"></textarea>
       </div>
     </div>
   </div>
@@ -1624,7 +1626,7 @@
     <div style="display:flex;flex-direction:column;gap:9px">
       <button class="btn btn-primary" onclick="saveChoice('version')">Save as new version (keep both)</button>
       <button class="btn btn-secondary" onclick="saveChoice('overwrite')">Update the original</button>
-      <button class="btn" onclick="closeSaveChoice()">Keep editing</button>
+      <button class="btn btn-secondary" onclick="closeSaveChoice()">Keep editing</button>
     </div>
   </div>
 </div>
@@ -1866,8 +1868,8 @@ function updateBrewGuide(sec) {
       brewCompleteFired = true;
       beep(660, 0.18); setTimeout(function() { beep(880, 0.2); }, 200); vibrate(140);
     }
-    el.innerHTML = '<strong class="bg-done">✓ Brew complete</strong>' +
-      '<span class="bg-next">let it finish draining, then rate your cup in Taste</span>';
+    el.innerHTML = '<strong class="bg-done">✓ That’s brewed</strong>' +
+      '<span class="bg-next">Let it settle. Take the first sip before you judge it.</span>';
     el.classList.add('show');
     return;
   }
@@ -1917,7 +1919,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.5.0';
+const APP_VERSION = '2.6.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0;
 let wakeLock = null;
