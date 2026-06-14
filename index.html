@@ -326,6 +326,7 @@
   .library-empty .empty-title { font-family:var(--font-display); font-size:var(--text-lg); color:var(--text-primary); margin-bottom:8px; }
   .library-empty p { max-width:32ch; margin:0 auto; }
   .library-empty .btn { margin-top:18px; }
+  .water-sub { font-family:var(--font-display); font-size:var(--text-md); color:var(--text-primary); margin:20px 0 12px; padding-top:16px; border-top:1px solid var(--border); }
   .recipe-card {
     background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius);
     padding:15px 16px; margin-bottom:10px; cursor:pointer; transition:all var(--transition);
@@ -490,7 +491,7 @@
   button:focus-visible, input:focus-visible, select:focus-visible, [tabindex]:focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
   .simple-only { display:none; }
   body.simple .simple-only { display:revert; }
-  body.simple #sec-water, body.simple #sec-cupping, body.simple #sec-watercalc { display:none; }
+  body.simple #sec-water, body.simple #sec-cupping { display:none; }
   body.simple .pro-only { display:none !important; }
   body.simple .bean-extra { display:none; }
   body.simple.show-bean-extra .bean-extra { display:flex; }
@@ -820,9 +821,9 @@
 <nav class="tabbar">
   <button class="tab-btn active" id="tabbtn-brew" onclick="switchTab('brew')"><span class="live-dot" id="brewLiveDot"></span><span class="t-icon"><svg class="ico"><use href="#i-timer"/></svg></span><span class="t-label">Brew</span></button>
   <button class="tab-btn" id="tabbtn-recipe" onclick="switchTab('recipe')"><span class="t-icon"><svg class="ico"><use href="#i-bean"/></svg></span><span class="t-label">Recipe</span></button>
-  <button class="tab-btn" id="tabbtn-evaluate" onclick="switchTab('evaluate')"><span class="t-icon"><svg class="ico"><use href="#i-star"/></svg></span><span class="t-label">Evaluate</span></button>
-  <button class="tab-btn" id="tabbtn-library" onclick="switchTab('library')"><span class="t-icon"><svg class="ico"><use href="#i-book"/></svg></span><span class="t-label">Library</span></button>
-  <button class="tab-btn" id="tabbtn-lab" onclick="switchTab('lab')"><span class="t-icon"><svg class="ico"><use href="#i-flask"/></svg></span><span class="t-label">Lab</span></button>
+  <button class="tab-btn" id="tabbtn-evaluate" onclick="switchTab('evaluate')"><span class="t-icon"><svg class="ico"><use href="#i-star"/></svg></span><span class="t-label">Taste</span></button>
+  <button class="tab-btn" id="tabbtn-library" onclick="switchTab('library')"><span class="t-icon"><svg class="ico"><use href="#i-book"/></svg></span><span class="t-label">Journal</span></button>
+  <button class="tab-btn" id="tabbtn-lab" onclick="switchTab('lab')"><span class="t-icon"><svg class="ico"><use href="#i-chart"/></svg></span><span class="t-label">Insights</span></button>
 </nav>
 
 <main class="main">
@@ -1205,7 +1206,7 @@
   <div class="section collapsed" id="sec-water">
     <div class="section-header" onclick="toggleSection('sec-water')">
       <div class="section-icon"><svg class="ico"><use href="#i-drop"/></svg></div>
-      <div><div class="section-title">Water Chemistry</div><div class="section-subtitle">Optional — competition-level precision</div></div>
+      <div><div class="section-title">Water</div><div class="section-subtitle">Optional — measure your water, or mix it to target</div></div>
       <div class="section-toggle">▾</div>
     </div>
     <div class="section-body">
@@ -1219,7 +1220,14 @@
         <div class="field"><label>KH <span class="unit">(ppm as CaCO₃)</span></label><input type="number" inputmode="decimal" enterkeyhint="done" id="waterKH" placeholder="e.g., 40" min="0" oninput="markDirty()"></div>
         <div class="field"><label>Water Recipe / Brand</label><input type="text" id="waterRecipe" placeholder="e.g., Third Wave Water, Custom" oninput="markDirty()"></div>
       </div>
-      <div class="field-hint" style="margin-top:10px">Need to mix this water? The Lab tab has a two-concentrate calculator.</div>
+      <div class="water-sub">Mix your water — two-concentrate method</div>
+      <div class="field-grid">
+        <div class="field"><label>Target GH <span class="unit">(ppm as CaCO₃)</span></label><input type="number" inputmode="decimal" enterkeyhint="done" id="wcGH" placeholder="e.g., 70" min="0" oninput="calcWater()"></div>
+        <div class="field"><label>Target KH <span class="unit">(ppm as CaCO₃)</span></label><input type="number" inputmode="decimal" enterkeyhint="done" id="wcKH" placeholder="e.g., 40" min="0" oninput="calcWater()"></div>
+        <div class="field"><label>Batch Size <span class="unit">(liters)</span></label><input type="number" inputmode="decimal" enterkeyhint="done" id="wcL" placeholder="e.g., 1" step="0.5" min="0" oninput="calcWater()"></div>
+      </div>
+      <div class="wc-out" id="wcOut"></div>
+      <div class="field-hint" style="margin-top:10px">Make the stocks once: <strong>GH stock</strong> = 24.65 g Epsom salt (MgSO₄·7H₂O) topped to 1 L with distilled water · <strong>KH stock</strong> = 16.8 g baking soda (NaHCO₃) topped to 1 L. Each stock ≈ 10,000 ppm as CaCO₃. SCA targets: GH 50–175, KH ≈ 40.</div>
     </div>
   </div>
 
@@ -1441,7 +1449,7 @@
   </div>
   <div class="chip-row" style="margin-bottom:12px">
     <button class="preset-chip active-view" id="viewListBtn" onclick="setLibraryView('list')">List</button>
-    <button class="preset-chip" id="viewJournalBtn" onclick="setLibraryView('journal')">Journal</button>
+    <button class="preset-chip" id="viewJournalBtn" onclick="setLibraryView('journal')">Timeline</button>
   </div>
   <div class="library-filters">
     <input type="text" id="librarySearch" placeholder="Search name, origin, roaster…" oninput="renderLibrary()">
@@ -1508,7 +1516,7 @@
     <div class="share-howto">
       <strong>Option 1 — Send the file:</strong> forward this HTML file to friends (WhatsApp, email). They open it in any browser — no account, no install.<br><br>
       <strong>Option 2 — Host it (best):</strong> free static hosting (e.g., GitHub Pages) gives everyone the same link, makes recipe links one-tap, and lets phones "Add to Home Screen" so it behaves like a real app.<br><br>
-      <strong>Backups:</strong> Library → Export All saves everything to a JSON file you own forever.
+      <strong>Backups:</strong> Journal → Export All saves everything to a JSON file you own forever.
     </div>
   </div>
     </div>
@@ -1534,23 +1542,6 @@
       <div class="stats-caption">Extraction Yield (%) vs Rating — sweet spot hunting</div>
       <canvas class="stats-canvas" id="statsCanvas2" width="900" height="240"></canvas>
       <div class="stats-caption">Ratings over time — are your brews improving?</div>
-    </div>
-  </div>
-
-  <div class="section" id="sec-watercalc">
-    <div class="section-header" onclick="toggleSection('sec-watercalc')">
-      <div class="section-icon"><svg class="ico"><use href="#i-drop"/></svg></div>
-      <div><div class="section-title">Water Recipe Calculator</div><div class="section-subtitle">Two-concentrate method (Epsom salt + baking soda)</div></div>
-      <div class="section-toggle">▾</div>
-    </div>
-    <div class="section-body">
-      <div class="field-grid">
-        <div class="field"><label>Target GH <span class="unit">(ppm as CaCO₃)</span></label><input type="number" inputmode="decimal" enterkeyhint="done" id="wcGH" placeholder="e.g., 70" min="0" oninput="calcWater()"></div>
-        <div class="field"><label>Target KH <span class="unit">(ppm as CaCO₃)</span></label><input type="number" inputmode="decimal" enterkeyhint="done" id="wcKH" placeholder="e.g., 40" min="0" oninput="calcWater()"></div>
-        <div class="field"><label>Batch Size <span class="unit">(liters)</span></label><input type="number" inputmode="decimal" enterkeyhint="done" id="wcL" placeholder="e.g., 1" step="0.5" min="0" oninput="calcWater()"></div>
-      </div>
-      <div class="wc-out" id="wcOut"></div>
-      <div class="field-hint" style="margin-top:10px">Make the stocks once: <strong>GH stock</strong> = 24.65 g Epsom salt (MgSO₄·7H₂O) topped to 1 L with distilled water · <strong>KH stock</strong> = 16.8 g baking soda (NaHCO₃) topped to 1 L. Each stock ≈ 10,000 ppm as CaCO₃. SCA targets: GH 50–175, KH ≈ 40.</div>
     </div>
   </div>
 
@@ -1759,7 +1750,7 @@
     <div class="section-body">
       <p style="font-size:14px;color:var(--text-secondary);line-height:1.7;margin-bottom:14px">
         <strong style="color:var(--text-primary)">BrewCraft <span id="appVersion"></span></strong> — Brew. Taste. Improve.<br>
-        Recipes live only on this device. Export backups from the Library.
+        Recipes live only on this device. Export backups from the Journal.
       </p>
       <div style="display:flex;gap:8px;flex-wrap:wrap">
         <button class="btn btn-secondary" onclick="sendFeedback()">Send feedback</button>
@@ -1872,7 +1863,7 @@ function updateBrewGuide(sec) {
       beep(660, 0.18); setTimeout(function() { beep(880, 0.2); }, 200); vibrate(140);
     }
     el.innerHTML = '<strong class="bg-done">✓ Brew complete</strong>' +
-      '<span class="bg-next">let it finish draining, then rate your cup in Evaluate</span>';
+      '<span class="bg-next">let it finish draining, then rate your cup in Taste</span>';
     el.classList.add('show');
     return;
   }
@@ -1922,7 +1913,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.2.0';
+const APP_VERSION = '2.3.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0;
 let wakeLock = null;
@@ -2676,7 +2667,7 @@ function toggleTimer() {
     if (!tbt.value && timerElapsed >= 20000) {
       tbt.value = formatTimeShort(timerElapsed);
       markDirty();
-      showActionToast('Brew time ' + tbt.value + ' logged', 'Evaluate \u203a', function() { switchTab('evaluate'); }, 'success', 6000);
+      showActionToast('Brew time ' + tbt.value + ' logged', 'Taste \u203a', function() { switchTab('evaluate'); }, 'success', 6000);
     }
   } else {
     if (timerElapsed === 0) { cachePourCues(); computeBrewTarget(); }
@@ -2963,7 +2954,7 @@ function ruleDialIn(issues) {
     out.push('Too intense = dilution issue. Loosen the ratio' + (ratio ? ' from 1:' + ratio + ' to about 1:' + (ratio+1).toFixed(0) : ' (e.g., 1:15 \u2192 1:16)') + ', or bypass: add 10\u201320g hot water to the finished cup.');
   }
   if (has('hollow') || has('muted')) {
-    out.push('Hollow/muted often traces to freshness or water. Check days off roast (sweet spot \u2248 7\u201321 for filter)' + (r.roastDate ? ' \u2014 your roast date is logged' : '') + '. High KH (>60ppm) buffers acidity flat \u2014 try lower-KH water (see the Lab calculator).');
+    out.push('Hollow/muted often traces to freshness or water. Check days off roast (sweet spot \u2248 7\u201321 for filter)' + (r.roastDate ? ' \u2014 your roast date is logged' : '') + '. High KH (>60ppm) buffers acidity flat \u2014 try lower-KH water (see the water calculator in Recipe).');
   }
   if (has('unbalanced') && !out.length) {
     out.push('Start with the biggest lever: move grind 2 steps in the direction the cup suggests (sour-leaning \u2192 finer, bitter-leaning \u2192 coarser), everything else fixed.');
