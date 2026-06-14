@@ -224,3 +224,15 @@ Empty states & desktop (Cycle 4)
 - [ ] Copy is consistent: "Journal → Export All" / "backups from the Journal" / "rate your cup in Taste" / brew-time toast says "Taste ›" / dial-in says "see the water calculator in Recipe"
 - [ ] Simple mode still hides the (now merged) Water section; boot test still passes (5 panels, Brew active)
 - [ ] Update toast after deploy (cache v2.3.0)
+
+## Sprint 16 (v2.4.0) — Review board: correctness & safety (Release 1 of 3)
+- [ ] SECURITY: toast no longer interprets HTML — a recipe/bean named `<img src=x onerror=...>` shows as literal text and runs nothing (showToast now uses textContent)
+- [ ] COFFEE: Turkish maps to the finest grind band (espresso), not the coarsest (French press) — grindBandKey('Turkish') === 'espresso'
+- [ ] Typing a negative dose/water or a zero/negative ratio clears that field instead of producing "1:-12" that leaks into extraction/AI (_sanitizeAmounts in the recalc functions)
+- [ ] Water calculator floors GH/KH/L at 0 and warns ("⚠ Those targets need more concentrate than X L can hold…") when targets exceed the batch, instead of silently showing 0 g distilled
+- [ ] iOS: every form input is ≥16px on touch devices so Safari no longer zooms in on focus (the dial scrubber numerals and recipe-name hero keep their larger size)
+- [ ] iOS: the bag scanner file input no longer forces the live camera — the Photo Library / Choose File option is available again (removed capture="environment")
+- [ ] The fractal-noise overlay no longer sits above modals/toasts/onboarding (z-index 9999 → 100); modals render clean
+- [ ] SCA Cupping section is labelled "Legacy 2004 form (pre-CVA)"
+- [ ] npm run check green (2.4.0 synced); existing features unaffected
+- [ ] Update toast after deploy (cache v2.4.0)

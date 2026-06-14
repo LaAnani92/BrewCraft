@@ -37,7 +37,7 @@
   body::before {
     content:''; position:fixed; inset:0;
     background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
-    pointer-events:none; z-index:9999;
+    pointer-events:none; z-index:100;
   }
   .header {
     padding:14px 18px; border-bottom:1px solid var(--border);
@@ -767,6 +767,10 @@
   /* Respect reduced-motion preference */
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
+  }
+  /* iOS Safari zooms in on focus of any sub-16px input and never zooms back — force 16px on touch devices (the dial scrubber numerals and the recipe-name hero keep their size) */
+  @media (pointer: coarse) {
+    input:not(.scrub-num):not(.name-hero), select, textarea { font-size: 16px; }
   }
 </style>
 </head>
@@ -1548,7 +1552,7 @@
   <div class="section collapsed" id="sec-cupping">
     <div class="section-header" onclick="toggleSection('sec-cupping')">
       <div class="section-icon"><svg class="ico"><use href="#i-spoon"/></svg></div>
-      <div><div class="section-title">SCA Cupping Score</div><div class="section-subtitle">For QC and serious evaluation — saves with current recipe</div></div>
+      <div><div class="section-title">SCA Cupping Score</div><div class="section-subtitle">Legacy 2004 form (pre-CVA) — saves with current recipe</div></div>
       <div class="section-toggle">▾</div>
     </div>
     <div class="section-body">
@@ -1638,7 +1642,7 @@
         <svg class="ico" style="width:40px;height:40px"><use href="#i-camera"/></svg>
         <span>Take photo or choose image</span>
       </label>
-      <input type="file" id="scanFile" accept="image/*" capture="environment" style="display:none" onchange="scanFilePicked(event)">
+      <input type="file" id="scanFile" accept="image/*" style="display:none" onchange="scanFilePicked(event)">
       <div class="scan-keyhint" id="scanKeyHint" style="display:none">No API key set — add one in Settings (gear icon) to enable scanning.</div>
     </div>
 
@@ -1913,7 +1917,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.3.0';
+const APP_VERSION = '2.4.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0;
 let wakeLock = null;
@@ -2102,7 +2106,7 @@ function showToast(msg, type) {
   type = type || '';
   const t = document.getElementById('toast');
   t.className = 'toast ' + type + ' show';
-  t.innerHTML = (type==='success'?'\u2713 ':type==='warning'?'\u26a0 ':'\u2139 ') + msg;
+  t.textContent = (type==='success'?'\u2713 ':type==='warning'?'\u26a0 ':'\u2139 ') + msg;
   clearTimeout(t._timer);
   t._timer = setTimeout(function() { t.classList.remove('show'); }, 2600);
 }
@@ -2385,8 +2389,13 @@ function toggleEspressoFields() {
 }
 
 /* ======= BIDIRECTIONAL RATIO ======= */
+function _sanitizeAmounts() {
+  const d = document.getElementById('coffeeDose'); if (d && parseFloat(d.value) < 0) d.value = '';
+  const w = document.getElementById('totalWater'); if (w && parseFloat(w.value) < 0) w.value = '';
+  const r = document.getElementById('brewRatio'); if (r && parseFloat(r.value) <= 0) r.value = '';
+}
 function recalcFromDose() {
-  if (_recalcLock) return; _recalcLock = true;
+  if (_recalcLock) return; _recalcLock = true; _sanitizeAmounts();
   const dose = parseFloat(document.getElementById('coffeeDose').value) || 0;
   const ratio = parseFloat(document.getElementById('brewRatio').value) || 0;
   const water = parseFloat(document.getElementById('totalWater').value) || 0;
@@ -2395,14 +2404,14 @@ function recalcFromDose() {
   afterRecalc(); _recalcLock = false;
 }
 function recalcFromRatio() {
-  if (_recalcLock) return; _recalcLock = true;
+  if (_recalcLock) return; _recalcLock = true; _sanitizeAmounts();
   const dose = parseFloat(document.getElementById('coffeeDose').value) || 0;
   const ratio = parseFloat(document.getElementById('brewRatio').value) || 0;
   if (dose > 0 && ratio > 0) document.getElementById('totalWater').value = +(dose*ratio).toFixed(1);
   afterRecalc(); _recalcLock = false;
 }
 function recalcFromWater() {
-  if (_recalcLock) return; _recalcLock = true;
+  if (_recalcLock) return; _recalcLock = true; _sanitizeAmounts();
   const dose = parseFloat(document.getElementById('coffeeDose').value) || 0;
   const water = parseFloat(document.getElementById('totalWater').value) || 0;
   if (dose > 0 && water > 0) document.getElementById('brewRatio').value = +(water/dose).toFixed(1);
@@ -2456,8 +2465,8 @@ function grindRange() {
 }
 /* Which GRINDER_DATA target band applies to the current method. */
 function grindBandKey(method) {
-  if (['Espresso','Moka Pot','Flair','Cafelat Robot','Nanopresso'].indexOf(method) >= 0) return 'espresso';
-  if (['French Press','Cold Brew','Clever','Cupping','Turkish'].indexOf(method) >= 0) return 'frenchPress';
+  if (['Espresso','Moka Pot','Flair','Cafelat Robot','Nanopresso','Turkish'].indexOf(method) >= 0) return 'espresso';
+  if (['French Press','Cold Brew','Clever','Cupping'].indexOf(method) >= 0) return 'frenchPress';
   return 'pourOver';
 }
 /* Map a relative grind descriptor (from a quick recipe) to a 1-7 coarseness level for the visual hint. */
@@ -3972,14 +3981,19 @@ function declineHashImport() {
 
 /* ======= WATER CALCULATOR ======= */
 function calcWater() {
-  const gh = parseFloat(document.getElementById('wcGH').value) || 0;
-  const kh = parseFloat(document.getElementById('wcKH').value) || 0;
-  const L = parseFloat(document.getElementById('wcL').value) || 0;
+  const gh = Math.max(0, parseFloat(document.getElementById('wcGH').value) || 0);
+  const kh = Math.max(0, parseFloat(document.getElementById('wcKH').value) || 0);
+  const L = Math.max(0, parseFloat(document.getElementById('wcL').value) || 0);
   const out = document.getElementById('wcOut');
   if ((gh <= 0 && kh <= 0) || L <= 0) { out.classList.remove('show'); return; }
   const ghStock = gh * L / 10;
   const khStock = kh * L / 10;
-  const distilled = Math.max(0, L * 1000 - ghStock - khStock);
+  const distilled = L * 1000 - ghStock - khStock;
+  if (distilled < 0) {
+    out.innerHTML = '⚠ Those targets need more concentrate than ' + L + ' L can hold — lower the GH/KH targets or increase the batch size.';
+    out.classList.add('show');
+    return;
+  }
   out.innerHTML =
     'For <strong>' + L + ' L</strong> at GH <strong>' + gh + '</strong> / KH <strong>' + kh + '</strong> ppm:<br>' +
     '\u2022 GH stock: <strong>' + ghStock.toFixed(1) + ' g</strong> (\u2248 ' + ghStock.toFixed(1) + ' mL)<br>' +
