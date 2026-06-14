@@ -586,7 +586,7 @@
     --font-sans: 'DM Sans', sans-serif;
     --font-mono: 'JetBrains Mono', monospace;
     /* Focus + easing */
-    --focus-ring: 0 0 0 3px rgba(200,149,108,0.5);
+    --focus-ring: 0 0 0 3px var(--accent-bright);
     --ease: cubic-bezier(0.4,0,0.2,1);
   }
   body { background: radial-gradient(1100px 520px at 50% -8%, rgba(200,149,108,0.07), transparent 62%), var(--bg-deep); }
@@ -1403,7 +1403,7 @@
         <button class="btn btn-primary" id="dialinBtn" onclick="getDialinAdvice()">⚡ Get Dial-In Advice</button>
         <span class="field-hint" id="dialinModeHint" style="align-self:center"></span>
       </div>
-      <div class="dialin-out" id="dialinOut"></div>
+      <div class="dialin-out" id="dialinOut" role="status" aria-live="polite"></div>
       <div id="dialinNext" style="display:none;margin-top:10px"><button class="btn btn-secondary" onclick="brewAgain()">↻ Brew Again with this plan</button></div>
     </div>
   </div>
@@ -1917,7 +1917,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.4.0';
+const APP_VERSION = '2.5.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0;
 let wakeLock = null;
@@ -2190,6 +2190,7 @@ function switchTab(name) {
   document.querySelectorAll('.tab-btn').forEach(function(b) { b.classList.remove('active'); });
   document.getElementById('tab-' + name).classList.add('active');
   document.getElementById('tabbtn-' + name).classList.add('active');
+  document.querySelectorAll('.tab-btn').forEach(function(b) { b.setAttribute('aria-selected', String(b.classList.contains('active'))); });
   if (name === 'brew') { renderToday(); renderBrewBar(); }
   if (name === 'recipe') showDialHint();
   if (name === 'library') { renderLibrary(); refreshSharePanel(); }
@@ -2212,6 +2213,93 @@ function initSectionA11y() {
     if (sec) h.setAttribute('aria-expanded', String(!sec.classList.contains('collapsed')));
     h.addEventListener('keydown', function(e) {
       if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); h.click(); }
+    });
+  });
+}
+/* Make the custom toggle controls (method cards, flavor/issue tags) keyboard- and screen-reader-
+   operable, give the tab bar tab semantics, associate every .field label with its input, and add
+   focus management to modals. All run once at boot; nothing in the markup needs to change. */
+function refreshTagsA11y() {
+  document.querySelectorAll('.tag').forEach(function(t) {
+    t.setAttribute('role', 'button');
+    t.setAttribute('tabindex', '0');
+    t.setAttribute('aria-pressed', String(t.classList.contains('active')));
+  });
+}
+function initControlsA11y() {
+  document.querySelectorAll('.method-card').forEach(function(c) {
+    c.setAttribute('role', 'button');
+    c.setAttribute('tabindex', '0');
+    c.setAttribute('aria-pressed', String(c.classList.contains('active')));
+    const nm = c.querySelector('.method-name');
+    if (nm) c.setAttribute('aria-label', nm.textContent + ' brew method');
+  });
+  refreshTagsA11y();
+  /* one delegated handler operates every tag and method card by keyboard, including ones added later */
+  document.addEventListener('keydown', function(e) {
+    if (e.key !== 'Enter' && e.key !== ' ') return;
+    const t = e.target;
+    if (t && t.classList && (t.classList.contains('tag') || t.classList.contains('method-card'))) {
+      e.preventDefault(); t.click();
+    }
+  });
+  const bar = document.querySelector('.tabbar');
+  if (bar) bar.setAttribute('role', 'tablist');
+  document.querySelectorAll('.tab-btn').forEach(function(b) {
+    const name = b.id.replace('tabbtn-', '');
+    b.setAttribute('role', 'tab');
+    b.setAttribute('aria-controls', 'tab-' + name);
+    b.setAttribute('aria-selected', String(b.classList.contains('active')));
+    b.addEventListener('keydown', function(e) {
+      if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
+      e.preventDefault();
+      const btns = Array.from(document.querySelectorAll('.tab-btn'));
+      const i = btns.indexOf(b);
+      const ni = e.key === 'ArrowRight' ? (i + 1) % btns.length : (i - 1 + btns.length) % btns.length;
+      btns[ni].focus(); btns[ni].click();
+    });
+  });
+  document.querySelectorAll('.tab-panel').forEach(function(p) {
+    p.setAttribute('role', 'tabpanel');
+    p.setAttribute('aria-labelledby', 'tabbtn-' + p.id.replace('tab-', ''));
+  });
+}
+function initFieldLabels() {
+  let n = 0;
+  document.querySelectorAll('.field').forEach(function(f) {
+    const label = f.querySelector('label');
+    const input = f.querySelector('input, select, textarea');
+    if (!label || !input) return;
+    if (!input.id) input.id = 'fld_' + (++n);
+    if (!label.htmlFor) label.htmlFor = input.id;
+  });
+}
+function initModalA11y() {
+  document.querySelectorAll('.modal-overlay').forEach(function(ov) {
+    const dialog = ov.querySelector('.modal');
+    if (!dialog) return;
+    dialog.setAttribute('role', 'dialog');
+    dialog.setAttribute('aria-modal', 'true');
+    let lastFocus = null;
+    const focusables = function() {
+      return Array.from(dialog.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'))
+        .filter(function(el) { return el.offsetParent !== null && !el.disabled; });
+    };
+    new MutationObserver(function() {
+      if (ov.classList.contains('show')) {
+        lastFocus = document.activeElement;
+        const f = focusables();
+        if (f.length) setTimeout(function() { f[0].focus(); }, 30);
+      } else if (lastFocus) { try { lastFocus.focus(); } catch (_) {} lastFocus = null; }
+    }).observe(ov, { attributes: true, attributeFilter: ['class'] });
+    ov.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') { ov.classList.remove('show'); return; }
+      if (e.key !== 'Tab') return;
+      const f = focusables();
+      if (!f.length) return;
+      const first = f[0], last = f[f.length - 1];
+      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
     });
   });
 }
@@ -2328,8 +2416,9 @@ function expandActiveMethodCat() {
   });
 }
 function selectMethod(el) {
-  document.querySelectorAll('.method-card').forEach(function(c) { c.classList.remove('active'); });
+  document.querySelectorAll('.method-card').forEach(function(c) { c.classList.remove('active'); c.setAttribute('aria-pressed', 'false'); });
   el.classList.add('active');
+  el.setAttribute('aria-pressed', 'true');
   toggleEspressoFields();
   renderQuickRecipes();
   updateGrindVisual();
@@ -2859,7 +2948,7 @@ function clearRating() {
   document.getElementById('ratingValue').textContent = '\u2014';
   document.getElementById('ratingNudge').style.display = 'none';
 }
-function toggleTag(el) { el.classList.toggle('active'); if (!el.classList.contains('issue')) markDirty(); }
+function toggleTag(el) { const on = el.classList.toggle('active'); el.setAttribute('aria-pressed', String(on)); if (!el.classList.contains('issue')) markDirty(); }
 function addCustomTag() {
   const input = document.getElementById('customTagInput');
   const val = input.value.trim();
@@ -2867,6 +2956,7 @@ function addCustomTag() {
   const tag = document.createElement('span');
   tag.className = 'tag active';
   tag.textContent = val;
+  tag.setAttribute('role', 'button'); tag.setAttribute('tabindex', '0'); tag.setAttribute('aria-pressed', 'true');
   tag.onclick = function() { toggleTag(tag); };
   document.getElementById('flavorTags').appendChild(tag);
   input.value = '';
@@ -2888,6 +2978,7 @@ function setActiveTags(tags) {
       document.getElementById('flavorTags').appendChild(el);
     }
   });
+  refreshTagsA11y();
 }
 
 /* ======= CUPPING ======= */
@@ -4237,13 +4328,20 @@ function _scrubSnap(v, cfg, input) {
 function _tickOffset(val, cfg) {
   return -((((val * cfg.pxPerUnit) % cfg.gap) + cfg.gap) % cfg.gap);
 }
+function scrubberValueText(field, val) {
+  if (field === 'coffeeDose') return val + ' grams';
+  if (field === 'brewRatio') return '1 to ' + val;
+  if (field === 'waterTemp') return val + (settings.tempUnit === 'F' ? ' degrees Fahrenheit' : ' degrees Celsius');
+  return String(val);
+}
 function renderScrubber(field) {
   const cfg = SCRUBBERS[field];
   if (!cfg || !cfg.ticks) return;
   const v = parseFloat(cfg.input.value);
   const val = isNaN(v) ? (parseFloat(cfg.input.dataset.default) || 0) : v;
   cfg.ticks.style.transform = 'translateX(' + _tickOffset(val, cfg) + 'px)';
-  cfg.ruler.setAttribute('aria-valuenow', isNaN(v) ? '' : String(val));
+  cfg.ruler.setAttribute('aria-valuenow', String(val));
+  cfg.ruler.setAttribute('aria-valuetext', scrubberValueText(field, val));
 }
 function renderAllScrubbers() { Object.keys(SCRUBBERS).forEach(renderScrubber); }
 function initScrubber(field) {
@@ -5362,6 +5460,9 @@ function init() {
   initPours();
   initScrubbers();
   initSectionA11y();
+  initControlsA11y();
+  initFieldLabels();
+  initModalA11y();
   loadHintState();
   bumpHintsSeen();
   showDialHint();

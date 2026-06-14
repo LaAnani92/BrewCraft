@@ -236,3 +236,16 @@ Empty states & desktop (Cycle 4)
 - [ ] SCA Cupping section is labelled "Legacy 2004 form (pre-CVA)"
 - [ ] npm run check green (2.4.0 synced); existing features unaffected
 - [ ] Update toast after deploy (cache v2.4.0)
+
+## Sprint 17 (v2.5.0) — Review board: accessibility (Release 2 of 3)
+All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModalA11y) — no markup churn.
+- [ ] Method cards are keyboard-operable: Tab to focus, Enter/Space selects, role=button + aria-pressed reflects the active method (verified: Enter on Chemex selects it)
+- [ ] Flavor & issue tags are keyboard-operable (role=button/tabindex/aria-pressed via delegated keydown; aria-pressed updates on toggle; custom + loaded tags get it too via refreshTagsA11y)
+- [ ] Every .field input is now programmatically labelled (label.htmlFor ↔ input.id) — screen readers announce the field name (verified beanOrigin)
+- [ ] Modals (settings/scan/saveChoice/import/compare) are role=dialog aria-modal: opening moves focus inside, Tab is trapped, Escape closes, focus returns to the opener (verified settings)
+- [ ] Tab bar has tablist/tab/tabpanel semantics + aria-selected + Left/Right arrow roving; aria-selected updates on tab change
+- [ ] Dial scrubbers announce a human value: aria-valuetext "15 grams" / "1 to 16" / "93 degrees Celsius"; aria-valuenow no longer empty
+- [ ] The dial-in assistant output (#dialinOut) is a polite live region (role=status aria-live)
+- [ ] Focus ring brightened to solid --accent-bright (#f0c294) so the indicator clears 3:1 on dark backgrounds
+- [ ] npm run check green (2.5.0 synced); 5 panels, Brew active; existing pointer/mouse flows unaffected
+- [ ] Update toast after deploy (cache v2.5.0)
