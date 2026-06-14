@@ -503,7 +503,7 @@
   .timer-ring { width:100%; height:100%; transform:rotate(-90deg); display:block; }
   .timer-ring-track { fill:none; stroke:var(--bg-surface); stroke-width:12; }
   .timer-ring-prog { fill:none; stroke:var(--accent); stroke-width:12; stroke-linecap:round; stroke-dasharray:628.319; stroke-dashoffset:628.319; transition:stroke-dashoffset 0.2s linear, stroke 0.3s ease; }
-  .timer-ring-prog.done { stroke:var(--accent-bright); filter:drop-shadow(0 0 7px var(--accent-glow)); }
+  .timer-ring-prog.done { stroke:var(--accent-bright); filter:drop-shadow(0 0 8px var(--accent-glow)); }
   .timer-ring-center { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; }
   .timer-ring-center .timer-display { font-size:40px; }
   /* Live pour-along guidance under the timer ring on the main Brew tab. */
@@ -663,9 +663,9 @@
 
   .ba-ring-wrap { position:relative; width:232px; height:232px; display:flex; align-items:center; justify-content:center; margin-bottom:10px; }
   .ba-ring { position:absolute; inset:0; width:100%; height:100%; transform:rotate(-90deg); }
-  .ba-ring circle { fill:none; stroke-width:7; stroke-linecap:round; }
-  .ba-ring .ring-bg { stroke:var(--border); }
-  .ba-ring .ring-fg { stroke:var(--accent); transition:stroke-dashoffset 0.25s linear, stroke 0.5s; filter:drop-shadow(0 0 9px rgba(200,149,108,0.45)); }
+  .ba-ring circle { fill:none; stroke-width:12; stroke-linecap:round; }
+  .ba-ring .ring-bg { stroke:var(--bg-surface); }
+  .ba-ring .ring-fg { stroke:var(--accent); transition:stroke-dashoffset 0.25s linear, stroke 0.5s; filter:drop-shadow(0 0 8px var(--accent-glow)); }
   .ba-ring-wrap .ba-timer { font-size:42px; margin-bottom:0; }
   .ba-fill-wrap { width:min(420px, 84vw); margin:2px 0 16px; }
   .ba-fill-track { height:10px; background:var(--bg-surface); border-radius:6px; overflow:hidden; border:1px solid var(--border); }
@@ -1919,7 +1919,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.6.0';
+const APP_VERSION = '2.7.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0;
 let wakeLock = null;
@@ -2930,22 +2930,45 @@ document.addEventListener('visibilitychange', async function() {
 });
 
 /* ======= RATING & TAGS ======= */
+let _bestFired = false;
+/* The best rating among this recipe's earlier versions (its parentId chain) — what a new cup has to beat. */
+function ancestorBestRating() {
+  const cur = recipes.find(function(x) { return x.id === currentRecipeId; });
+  if (!cur) return 0;
+  let best = 0, node = cur.parentId ? recipes.find(function(x) { return x.id === cur.parentId; }) : null, guard = 0;
+  while (node && guard++ < 50) {
+    if ((node.rating || 0) > best) best = node.rating;
+    node = node.parentId ? recipes.find(function(x) { return x.id === node.parentId; }) : null;
+  }
+  return best;
+}
 function setRating(v, silent) {
   currentRating = v;
   document.querySelectorAll('.rating-star').forEach(function(st) { st.classList.toggle('active', parseInt(st.dataset.v,10) <= v); });
   document.getElementById('ratingValue').textContent = v + '/5';
   document.getElementById('ratingNudge').style.display = (v > 0 && v <= 3) ? 'block' : 'none';
+  if (silent) { _bestFired = false; } // loading a recipe arms the moment again
   if (!silent) {
     const tgt = document.querySelector('.rating-star[data-v="' + v + '"]');
     if (tgt) { tgt.classList.remove('pop'); void tgt.offsetWidth; tgt.classList.add('pop'); }
     vibrate(v === 5 ? 60 : 18);
     if (v === 5) celebrate();
+    // A new best for this recipe's lineage — the payoff of dialing it in over several brews.
+    if (v > 0 && !_bestFired) {
+      const prevBest = ancestorBestRating();
+      if (prevBest > 0 && v > prevBest) {
+        _bestFired = true;
+        showToast('New best for this recipe — ' + v + '★ beats your ' + prevBest + '★', 'success');
+        if (v < 5) { vibrate(45); celebrate(); }
+      }
+    }
   }
   markDirty();
 }
 
 function clearRating() {
   currentRating = 0;
+  _bestFired = false;
   document.querySelectorAll('.rating-star').forEach(function(st) { st.classList.remove('active'); });
   document.getElementById('ratingValue').textContent = '\u2014';
   document.getElementById('ratingNudge').style.display = 'none';

@@ -259,3 +259,10 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] npm run check green (2.6.0 synced); verified the Taste warmth + accent in preview
 - [ ] DEFERRED to a later polish (owner's eye, they change the signature look): full raw-glyph→SVG icon sweep, single unified timer-ring component, consolidating the 4 :root token blocks, bean-over-its-life arc, celebrate personal-best
 - [ ] Update toast after deploy (cache v2.6.0)
+
+## Sprint 19 (v2.7.0) — Soul & craft, part 2
+- [ ] Celebrate a personal best: rating a brew higher than the best rating among its earlier versions (the parentId lineage) fires "New best for this recipe — N★ beats your M★" + confetti/haptic. A rating at or below the prior best does NOT fire. Only fires once per loaded cup (re-armed on recipe load / clearRating). New recipes with no rated ancestors never fire (nothing to beat).
+- [ ] The two timer rings share one identity: the Brew-Along ring is now stroke-width 12 (was 7) with the same drop-shadow glow (var(--accent-glow)) and bg-surface track as the Brew-tab ring
+- [ ] npm run check green (2.7.0 synced); verified the personal-best logic in preview (ancestorBestRating, fire/no-fire/once)
+- [ ] Still DEFERRED (a dedicated pass): full raw-glyph→SVG icon sweep (needs dynamic Start/Pause label handled + ~10 symbols + ~50 swaps), consolidating the 4 :root token blocks, the bean-over-its-life arc
+- [ ] Update toast after deploy (cache v2.7.0)
