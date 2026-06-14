@@ -96,6 +96,14 @@
   .tab-btn .t-icon { font-size:18px; line-height:1; }
   .tab-btn .t-label { font-size:9.5px; font-weight:600; letter-spacing:0.4px; }
   .tab-btn.active { color:var(--accent-bright); }
+  .tab-btn.active::before {
+    content:''; position:absolute; top:0; left:50%; transform:translateX(-50%);
+    width:24px; height:2.5px; border-radius:0 0 3px 3px;
+    background:linear-gradient(90deg,var(--accent),var(--accent-bright));
+    box-shadow:0 0 8px var(--accent-glow);
+  }
+  /* On desktop the existing ::after underline is the indicator — avoid doubling up */
+  @media (min-width:900px) { .tab-btn.active::before { display:none; } }
   .tab-btn:hover { color:var(--accent-warm); }
   .live-dot {
     position:absolute; top:4px; right:calc(50% - 16px);
@@ -178,8 +186,9 @@
     border-radius:var(--radius-sm); cursor:pointer; transition:all var(--transition);
     text-align:center; display:flex; flex-direction:column; align-items:center; gap:6px;
   }
-  .method-card:hover { border-color:var(--border-light); background:var(--bg-card-hover); }
-  .method-card.active { border-color:var(--accent); background:var(--accent-glow); box-shadow:0 0 0 3px rgba(200,149,108,0.1); }
+  .method-card:hover { border-color:var(--border-light); background:var(--bg-card-hover); box-shadow:var(--elev-2); }
+  .method-card:active { transform:scale(0.97); }
+  .method-card.active { border-color:var(--accent); background:var(--accent-glow); box-shadow:0 0 0 3px rgba(200,149,108,0.18); }
   .method-card .method-icon { font-size:21px; line-height:1; }
   .method-card .method-name { font-size:11px; font-weight:600; color:var(--text-secondary); }
   .method-card.active .method-name { color:var(--accent-bright); }
@@ -276,6 +285,31 @@
   }
   .dialin-out.show { display:block; }
   .dialin-out .src { display:block; margin-top:10px; font-size:11px; color:var(--text-muted); font-style:italic; }
+  /* AI inline helpers (Cycle 3) — quiet, additive */
+  .ai-explain-row { display:flex; flex-wrap:wrap; gap:8px; margin:2px 0 14px; }
+  .ai-explain-btn {
+    display:inline-flex; align-items:center; gap:7px; cursor:pointer;
+    font-family:var(--font-sans); font-size:var(--text-sm); font-weight:600;
+    color:var(--accent-bright);
+    background:linear-gradient(135deg, rgba(200,149,108,0.14), rgba(200,149,108,0.05));
+    border:1px solid rgba(200,149,108,0.28); border-radius:999px; padding:8px 15px;
+    transition:all var(--transition);
+  }
+  .ai-explain-btn:hover { background:rgba(200,149,108,0.20); }
+  .ai-explain-btn:active { transform:scale(0.97); }
+  .ai-explain-btn .ico { width:15px; height:15px; }
+  .ai-explain-btn.open { background:var(--accent-glow); }
+  .ai-panel {
+    background:var(--bg-input); border:1px solid var(--border); border-radius:var(--radius-sm);
+    padding:15px 17px; margin:0 0 14px; font-size:var(--text-base); line-height:1.7;
+    white-space:normal; box-shadow:var(--elev-1); animation:fadeUp 0.25s ease both;
+  }
+  .ai-panel[hidden] { display:none; }
+  .ai-panel h4 { font-family:var(--font-display); font-size:var(--text-md); font-weight:600; margin:0 0 8px; color:var(--text-primary); }
+  .ai-panel .src { display:block; margin-top:11px; font-size:var(--text-xs); color:var(--text-muted); font-style:italic; }
+  .suggest-goals { display:flex; flex-wrap:wrap; gap:8px; margin:11px 0 2px; }
+  .suggest-stats { font-family:var(--font-mono); font-size:var(--text-sm); color:var(--accent-bright); margin:6px 0 12px; }
+  .ai-panel .btn { margin:2px 6px 0 0; }
   .dialin-textarea { width:100%; font-family:'DM Sans',sans-serif; font-size:13px; padding:10px 13px; background:var(--bg-input); border:1px solid var(--border); border-radius:var(--radius-xs); color:var(--text-primary); outline:none; resize:vertical; min-height:60px; margin-top:10px; }
   .dialin-textarea:focus { border-color:var(--accent); }
 
@@ -289,6 +323,9 @@
   .library-filters input:focus, .library-filters select:focus { border-color:var(--accent); }
   .library-empty { padding:50px 20px; text-align:center; color:var(--text-muted); font-size:14px; line-height:1.7; }
   .library-empty .empty-icon { font-size:42px; margin-bottom:12px; opacity:0.5; }
+  .library-empty .empty-title { font-family:var(--font-display); font-size:var(--text-lg); color:var(--text-primary); margin-bottom:8px; }
+  .library-empty p { max-width:32ch; margin:0 auto; }
+  .library-empty .btn { margin-top:18px; }
   .recipe-card {
     background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius);
     padding:15px 16px; margin-bottom:10px; cursor:pointer; transition:all var(--transition);
@@ -409,7 +446,8 @@
   .qrec-label-sub { color:var(--text-muted); font-weight:400; text-transform:none; letter-spacing:0; }
   .qrec-rail { display:flex; gap:8px; overflow-x:auto; padding-bottom:4px; -webkit-overflow-scrolling:touch; }
   .qrec-card { flex:0 0 auto; min-width:160px; max-width:210px; text-align:left; background:var(--bg-input); border:1px solid var(--border); border-radius:var(--radius-sm); padding:10px 12px; cursor:pointer; display:flex; flex-direction:column; gap:3px; transition:all 0.15s; }
-  .qrec-card:hover, .qrec-card:active { border-color:var(--accent); background:var(--accent-glow); }
+  .qrec-card:hover { border-color:var(--accent); background:var(--accent-glow); transform:translateY(-2px); box-shadow:var(--elev-2); }
+  .qrec-card:active { border-color:var(--accent); background:var(--accent-glow); transform:scale(0.98); }
   .qrec-name { font-size:13px; font-weight:600; color:var(--text-primary); }
   .qrec-author { font-size:11px; color:var(--accent-bright); }
   .qrec-stats { font-size:10px; color:var(--text-muted); font-family:'JetBrains Mono',monospace; line-height:1.4; }
@@ -529,19 +567,40 @@
     --shadow-lg: 0 12px 48px rgba(0,0,0,0.5);
     --card-edge: inset 0 1px 0 rgba(240,230,218,0.04);
   }
+  /* ===== Design tokens v2 — one warm system (additive: scales/aliases only; colour tokens above still win, so no regression) ===== */
+  :root {
+    /* Type scale — names map 1:1 to the sizes already used across the app */
+    --text-2xs: 9.5px; --text-xs: 11px; --text-sm: 13px; --text-base: 14px;
+    --text-md: 15px; --text-lg: 17px; --text-xl: 20px; --text-2xl: 26px; --text-3xl: 32px;
+    /* Spacing rhythm */
+    --space-1: 4px; --space-2: 8px; --space-3: 12px; --space-4: 16px; --space-5: 24px; --space-6: 32px;
+    /* Radius — adds a large step; existing --radius / -sm / -xs are unchanged */
+    --radius-lg: 20px;
+    /* Elevation — one consistent shadow language (built on the existing --card-edge) */
+    --elev-1: var(--card-edge), 0 1px 3px rgba(0,0,0,0.28);
+    --elev-2: var(--card-edge), 0 6px 22px rgba(0,0,0,0.34);
+    --elev-3: var(--card-edge), 0 12px 48px rgba(0,0,0,0.5);
+    /* Font-family aliases (DRY — replaces dozens of repeated literals over time) */
+    --font-display: 'Playfair Display', serif;
+    --font-sans: 'DM Sans', sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+    /* Focus + easing */
+    --focus-ring: 0 0 0 3px rgba(200,149,108,0.5);
+    --ease: cubic-bezier(0.4,0,0.2,1);
+  }
   body { background: radial-gradient(1100px 520px at 50% -8%, rgba(200,149,108,0.07), transparent 62%), var(--bg-deep); }
   .ico { width:1em; height:1em; stroke:currentColor; fill:none; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; display:inline-block; vertical-align:-0.12em; }
   .header { background:rgba(23,18,16,0.92); }
   .icon-btn .ico { width:18px; height:18px; }
 
   /* Sections become soft cards — the organization layer */
-  .section { background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius); padding:2px 18px; margin-bottom:14px; box-shadow:var(--card-edge), 0 1px 3px rgba(0,0,0,0.28); }
+  .section { background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius); padding:2px 18px; margin-bottom:14px; box-shadow:var(--elev-1); }
   .section-header { border-bottom:none; padding:15px 0; }
   .section-body { padding:4px 0 18px; }
   .section.collapsed { padding-bottom:2px; }
   .section-icon { width:34px; height:34px; background:linear-gradient(135deg, rgba(200,149,108,0.22), rgba(200,149,108,0.07)); border:1px solid rgba(200,149,108,0.18); color:var(--accent-bright); border-radius:10px; }
   .section-icon .ico { width:16px; height:16px; }
-  .info-card { box-shadow:var(--card-edge), 0 1px 3px rgba(0,0,0,0.28); }
+  .info-card { box-shadow:var(--elev-1); }
 
   /* Inputs sit darker than cards for instant depth */
   .field input, .field select, .field textarea, .pour-card-grid input, .stepper input,
@@ -690,6 +749,24 @@
     #printCard h2 { font-size:15px; margin:14px 0 6px; }
     #printCard .pc-notes { font-size:12px; line-height:1.6; }
   }
+
+  /* ===== Accessibility & polish (Cycle 2 foundation) ===== */
+  /* A single, visible keyboard-focus ring — only for keyboard users (not on mouse click) */
+  :focus-visible { outline: none; box-shadow: var(--focus-ring); }
+  a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible,
+  textarea:focus-visible, [tabindex]:focus-visible, .tab-btn:focus-visible,
+  .bb-stat:focus-visible, .method-card:focus-visible, .qrec-card:focus-visible,
+  .preset-chip:focus-visible, .ruler:focus-visible { box-shadow: var(--focus-ring); outline: none; }
+  /* Warm text selection + thin themed scrollbars */
+  ::selection { background: rgba(200,149,108,0.30); color: var(--text-primary); }
+  * { scrollbar-width: thin; scrollbar-color: var(--border-light) transparent; }
+  ::-webkit-scrollbar { width: 9px; height: 9px; }
+  ::-webkit-scrollbar-thumb { background: var(--border-light); border-radius: 8px; border: 2px solid transparent; background-clip: padding-box; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+  /* Respect reduced-motion preference */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
+  }
 </style>
 </head>
 <body>
@@ -764,6 +841,10 @@
   <div class="info-card diff-card" id="versionDiffCard" style="display:none">
     <h3 id="versionDiffTitle">Changes from previous version</h3>
     <div id="versionDiffBody"></div>
+    <div class="ai-explain-row" id="diffExplainRow" style="margin-top:12px;display:none">
+      <button class="ai-explain-btn" id="diffExplainBtn" onclick="explainDiff()" aria-expanded="false" aria-controls="diffExplainPanel"><svg class="ico"><use href="#i-spark"/></svg> Explain this change</button>
+    </div>
+    <div class="ai-panel" id="diffExplainPanel" role="region" aria-live="polite" hidden></div>
   </div>
 
   <div class="section" id="sec-method">
@@ -925,6 +1006,12 @@
         <div class="qrec-label">Quick recipes <span class="qrec-label-sub">· tap to load</span></div>
         <div class="qrec-rail" id="quickRecipes"></div>
       </div>
+      <div class="ai-explain-row">
+        <button class="ai-explain-btn" id="suggestStartBtn" onclick="openSuggest()" aria-expanded="false" aria-controls="suggestPanel"><svg class="ico"><use href="#i-spark"/></svg> Suggest a starting point</button>
+        <button class="ai-explain-btn" id="explainParamsBtn" onclick="explainParams()" aria-expanded="false" aria-controls="paramsExplain"><svg class="ico"><use href="#i-info"/></svg> What do these mean?</button>
+      </div>
+      <div class="ai-panel" id="suggestPanel" role="region" aria-live="polite" hidden></div>
+      <div class="ai-panel" id="paramsExplain" role="region" aria-live="polite" hidden></div>
       <div class="field-grid" style="margin-bottom:10px">
         <div class="field">
           <div class="dial-head"><label>Coffee Dose <span class="unit">(g)</span></label>
@@ -1374,7 +1461,9 @@
   <div id="libraryList"></div>
   <div class="library-empty" id="libraryEmpty">
     <div class="empty-icon"><svg class="ico" style="width:40px;height:40px"><use href="#i-book"/></svg></div>
-    No saved recipes yet.<br>Fill in the Recipe tab and hit Save.
+    <div class="empty-title">Your journal is empty</div>
+    <p>Every brew you save lands here — with its rating, notes, and the thread of versions as you dial it in.</p>
+    <button class="btn btn-primary btn-sm" onclick="switchTab('recipe')"><svg class="ico"><use href="#i-bean"/></svg> Build your first recipe</button>
   </div>
 
   <div class="section collapsed" id="sec-sharehub">
@@ -1437,6 +1526,10 @@
     <div class="section-body">
       <div class="field-hint" id="statsMsg" style="margin-bottom:12px"></div>
       <div class="insight-row" id="statsInsights"></div>
+      <div class="ai-explain-row">
+        <button class="ai-explain-btn" id="patternBtn" onclick="detectPatterns()" aria-expanded="false" aria-controls="patternPanel"><svg class="ico"><use href="#i-spark"/></svg> Find my patterns</button>
+      </div>
+      <div class="ai-panel" id="patternPanel" role="region" aria-live="polite" hidden></div>
       <canvas class="stats-canvas" id="statsCanvas1" width="900" height="240"></canvas>
       <div class="stats-caption">Extraction Yield (%) vs Rating — sweet spot hunting</div>
       <canvas class="stats-canvas" id="statsCanvas2" width="900" height="240"></canvas>
@@ -1829,7 +1922,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.1.0';
+const APP_VERSION = '2.2.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0;
 let wakeLock = null;
@@ -2942,6 +3035,321 @@ async function getDialinAdvice() {
   btn.disabled = false; btn.textContent = '\u26a1 Get Dial-In Advice';
 }
 
+/* ======= AI HELPER (shared fetch \u2014 reuses the dial-in pattern) ======= */
+function aiHasKey() { return !!(settings.apiKey && settings.apiKey.trim()); }
+async function aiComplete(system, userMsg, maxTokens) {
+  const resp = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': settings.apiKey,
+      'anthropic-version': '2023-06-01',
+      'anthropic-dangerous-direct-browser-access': 'true'
+    },
+    body: JSON.stringify({
+      model: settings.model || 'claude-sonnet-4-6',
+      max_tokens: maxTokens || 400,
+      system: system,
+      messages: [{ role:'user', content: userMsg }]
+    })
+  });
+  if (!resp.ok) throw new Error('API ' + resp.status);
+  const data = await resp.json();
+  const text = (data.content || []).filter(function(b){ return b.type === 'text'; }).map(function(b){ return b.text; }).join('\n').trim();
+  if (!text) throw new Error('empty response');
+  return text;
+}
+
+/* ======= AI: "What do these settings mean?" \u2014 plain-language explainer ======= */
+function ruleExplainParams(d) {
+  const dose = parseFloat(d.coffeeDose) || 0;
+  const ratio = parseFloat(d.brewRatio) || 0;
+  const water = parseFloat(d.totalWater) || (dose && ratio ? dose * ratio : 0);
+  const tempC = parseFloat(d.waterTemp);
+  const lines = [];
+  if (d.method === 'Espresso') {
+    const yld = parseFloat(d.espYield) || (dose && ratio ? dose * ratio : 0);
+    lines.push('\u2022 Dose ' + (dose || '\u2014') + 'g \u2014 how much ground coffee goes in the basket. A bigger dose makes a more intense shot.');
+    lines.push('\u2022 Ratio 1:' + (ratio || '\u2014') + (yld ? ' (about ' + Math.round(yld) + 'g out)' : '') + ' \u2014 how much liquid you pull. Shorter (1:1.5) is thick and intense; longer (1:3) is lighter and easier to drink.');
+    if (isFinite(tempC)) lines.push('\u2022 Temp ' + tempC + '\u00b0C \u2014 hotter pulls more from the coffee (good for light roasts); cooler tames bitterness (good for dark roasts).');
+    lines.push('\u2022 Grind \u2014 the biggest lever. Finer slows the shot and extracts more; coarser speeds it up. Dial grind until the shot time lands in range.');
+  } else {
+    const cups = water ? Math.max(1, Math.round(water / 220)) : 0;
+    lines.push('\u2022 Dose ' + (dose || '\u2014') + 'g \u2014 the amount of ground coffee. With your ratio that makes about ' + (water ? Math.round(water) + 'g of coffee' + (cups ? ' (~' + cups + ' cup' + (cups > 1 ? 's' : '') + ')' : '') : '\u2014') + '.');
+    lines.push('\u2022 Ratio 1:' + (ratio || '\u2014') + ' \u2014 grams of water per gram of coffee. Lower brews stronger and heavier; higher brews lighter and more tea-like. Most pour-over sits around 1:15\u20131:17.');
+    if (isFinite(tempC)) lines.push('\u2022 Temp ' + tempC + '\u00b0C \u2014 hotter water extracts faster: more body and sweetness, but too hot turns bitter. Cooler stays bright and delicate. 90\u201396\u00b0C suits most coffees.');
+    lines.push('\u2022 Grind \u2014 finer grounds slow the water and pull out more (risking bitter); coarser runs faster and lighter (risking sour). Adjust grind first when a brew tastes off.');
+  }
+  return lines.join('\n');
+}
+async function explainParams() {
+  const btn = document.getElementById('explainParamsBtn');
+  const panel = document.getElementById('paramsExplain');
+  if (!panel || !btn) return;
+  if (!panel.hidden) { panel.hidden = true; btn.setAttribute('aria-expanded', 'false'); btn.classList.remove('open'); return; }
+  const d = gatherRecipeData();
+  const rule = ruleExplainParams(d);
+  btn.classList.add('open'); btn.setAttribute('aria-expanded', 'true');
+  panel.hidden = false;
+  vibrate(8);
+  if (!aiHasKey()) {
+    panel.innerHTML = '<h4>Your settings, in plain language</h4>' + escapeHtml(rule).replace(/\n/g, '<br>') + '<span class="src">Built-in guide. Add an API key in Settings for an explanation tuned to your exact bean.</span>';
+    return;
+  }
+  panel.innerHTML = '<h4>Your settings, in plain language</h4>Reading your recipe\u2026';
+  try {
+    const sys = 'You are a warm, encouraging specialty-coffee teacher explaining a brew recipe to a beginner. Given the recipe JSON, explain in plain, friendly language what each key setting (dose, ratio, water, temperature, grind) means and how it shapes the cup for THIS specific recipe and bean. Be concrete about their actual numbers. Define any term you use. 4-6 short bullet points starting with the bullet character, under 150 words, plain text, no markdown.';
+    const userMsg = 'RECIPE JSON:\n' + JSON.stringify(stripForShare(d)) + (d.method === 'Espresso' ? '\nNOTE: ESPRESSO \u2014 talk dose, yield (g out), shot time and grind; never pours, swirls or blooms.' : '');
+    const text = await aiComplete(sys, userMsg, 400);
+    panel.innerHTML = '<h4>Your settings, in plain language</h4>' + escapeHtml(text).replace(/\n/g, '<br>') + '<span class="src">AI \u00b7 ' + escapeHtml(settings.model || 'claude-sonnet-4-6') + '</span>';
+  } catch(e) {
+    panel.innerHTML = '<h4>Your settings, in plain language</h4>' + escapeHtml(rule).replace(/\n/g, '<br>') + '<span class="src">AI unavailable (' + escapeHtml(e.message) + ') \u2014 showing the built-in guide instead.</span>';
+  }
+}
+
+/* ======= AI: "Suggest a starting point" ======= */
+let _lastSuggestion = null;
+const SUGGEST_GOALS = ['Balanced', 'Brighter', 'Sweeter', 'Stronger'];
+const GRIND_ORDER = ['extra fine', 'espresso-fine', 'fine', 'medium-fine', 'medium', 'medium-coarse', 'coarse', 'extra coarse'];
+function coarserStep(g) { const i = GRIND_ORDER.indexOf((g || 'medium').toLowerCase()); return (i >= 0 && i < GRIND_ORDER.length - 1) ? GRIND_ORDER[i + 1] : (g || 'medium'); }
+function finerStep(g) { const i = GRIND_ORDER.indexOf((g || 'medium').toLowerCase()); return i > 0 ? GRIND_ORDER[i - 1] : (g || 'medium'); }
+function ruleSuggest(method, goal) {
+  const base = (QUICK_RECIPES[method] && QUICK_RECIPES[method][0]) || { doseG: 15, ratio: 16.5, tempC: 93, grind: 'medium-fine' };
+  const isEsp = method === 'Espresso';
+  const s = { doseG: base.doseG, ratio: base.ratio, tempC: base.tempC, grind: base.grind, espYield: base.espYield, espShot: base.espShot, rationale: '' };
+  if (goal === 'Brighter') {
+    s.tempC = Math.max(80, base.tempC - 2);
+    s.ratio = +(base.ratio + (isEsp ? 0.3 : 0.5)).toFixed(1);
+    s.grind = coarserStep(base.grind);
+    s.rationale = 'Cooler water, a touch more water and a hair coarser grind lift acidity and clarity.';
+  } else if (goal === 'Sweeter') {
+    s.tempC = Math.min(100, base.tempC + 1);
+    s.grind = finerStep(base.grind);
+    s.rationale = 'Slightly hotter and a touch finer to push extraction toward the sweet middle.';
+  } else if (goal === 'Stronger') {
+    s.ratio = isEsp ? Math.max(1.3, +(base.ratio - 0.3).toFixed(1)) : Math.max(10, +(base.ratio - 1).toFixed(1));
+    s.grind = finerStep(base.grind);
+    s.rationale = 'Less water (a lower ratio) and a finer grind for more body and intensity.';
+  } else {
+    s.rationale = 'A balanced, forgiving starting point for this method.';
+  }
+  if (isEsp) { s.espYield = Math.round((parseFloat(s.doseG) || 18) * s.ratio); s.espShot = base.espShot || 28; }
+  return s;
+}
+function parseJSONLoose(text) {
+  let t = String(text || '').trim().replace(/^```(?:json)?/i, '').replace(/```$/, '').trim();
+  const m = t.match(/\{[\s\S]*\}/);
+  if (m) t = m[0];
+  return JSON.parse(t);
+}
+function renderSuggestGoals() {
+  const panel = document.getElementById('suggestPanel');
+  if (!panel) return;
+  const method = getSelectedMethod() || 'your method';
+  panel.innerHTML = '<h4>Suggest a starting point</h4>What are you chasing in the cup for ' + escapeHtml(method) + '?' +
+    '<div class="suggest-goals">' + SUGGEST_GOALS.map(function(g) { return '<button class="preset-chip" onclick="runSuggest(\'' + g + '\')">' + g + '</button>'; }).join('') + '</div>';
+}
+function openSuggest() {
+  const btn = document.getElementById('suggestStartBtn');
+  const panel = document.getElementById('suggestPanel');
+  if (!panel || !btn) return;
+  if (!panel.hidden) { panel.hidden = true; btn.setAttribute('aria-expanded', 'false'); btn.classList.remove('open'); return; }
+  btn.classList.add('open'); btn.setAttribute('aria-expanded', 'true');
+  panel.hidden = false; vibrate(8);
+  renderSuggestGoals();
+}
+async function runSuggest(goal) {
+  const panel = document.getElementById('suggestPanel');
+  if (!panel) return;
+  const method = getSelectedMethod();
+  if (!method) { panel.innerHTML = '<h4>Suggest a starting point</h4>Pick a brew method first, then I can suggest a recipe.'; return; }
+  const d = gatherRecipeData();
+  vibrate(8);
+  const renderResult = function(s, srcNote) {
+    _lastSuggestion = s;
+    const isEsp = method === 'Espresso';
+    const t = settings.tempUnit === 'F' ? Math.round(cToF(s.tempC)) + '\u00b0F' : s.tempC + '\u00b0C';
+    const stats = s.doseG + 'g \u00b7 1:' + s.ratio + (isEsp && s.espYield ? ' (' + s.espYield + 'g out)' : '') + ' \u00b7 ' + t + ' \u00b7 ' + (s.grind || 'medium') + (isEsp && s.espShot ? ' \u00b7 ' + s.espShot + 's' : '');
+    panel.innerHTML = '<h4>Starting point \u00b7 ' + escapeHtml(goal) + '</h4>' +
+      (s.rationale ? '<div style="margin-bottom:8px">' + escapeHtml(s.rationale) + '</div>' : '') +
+      '<div class="suggest-stats">' + escapeHtml(stats) + '</div>' +
+      '<button class="btn btn-primary btn-sm" onclick="applySuggestion()"><svg class="ico"><use href="#i-spark"/></svg> Apply to dials</button>' +
+      '<button class="btn btn-ghost btn-sm" onclick="renderSuggestGoals()">Try another goal</button>' +
+      '<span class="src">' + srcNote + '</span>';
+  };
+  if (!aiHasKey()) {
+    renderResult(ruleSuggest(method, goal), 'Built-in starting point (from a trusted recipe for this method). Add an API key in Settings for a suggestion tuned to your exact bean.');
+    return;
+  }
+  panel.innerHTML = '<h4>Starting point \u00b7 ' + escapeHtml(goal) + '</h4>Thinking about your ' + escapeHtml(method) + '\u2026';
+  try {
+    const sys = 'You are a specialty coffee expert. Given a bean, brew method, the user skill level, and a taste goal, propose ONE realistic starting recipe. Reply ONLY with minified JSON (no prose, no markdown, no code fence). Keys: doseG (number, grams), ratio (number, water:coffee e.g. 16.5; for espresso the brew ratio e.g. 2.0), tempC (number, Celsius), grind (one of EXACTLY: "extra fine","espresso-fine","fine","medium-fine","medium","medium-coarse","coarse","extra coarse"), rationale (one short plain-text sentence). For espresso ALSO include espYield (grams out) and espShot (seconds). Keep values realistic for the method and bean.';
+    const beanBits = { origin: d.beanOrigin, roaster: d.roaster, process: d.beanProcess, roastLevel: d.roastLevel };
+    const userMsg = 'METHOD: ' + method + '\nBEAN: ' + JSON.stringify(beanBits) + '\nSKILL: ' + (settings.skill || 'beginner') + '\nTASTE GOAL: ' + goal;
+    const text = await aiComplete(sys, userMsg, 350);
+    let s = null;
+    try { s = parseJSONLoose(text); } catch(_) { s = null; }
+    if (!s || !(parseFloat(s.doseG) > 0) || !(parseFloat(s.ratio) > 0)) throw new Error('could not read a recipe');
+    s.doseG = parseFloat(s.doseG); s.ratio = parseFloat(s.ratio); s.tempC = parseFloat(s.tempC) || 93;
+    if (s.espYield) s.espYield = parseFloat(s.espYield);
+    if (s.espShot) s.espShot = parseFloat(s.espShot);
+    renderResult(s, 'AI \u00b7 ' + escapeHtml(settings.model || 'claude-sonnet-4-6') + ' \u00b7 tuned to your bean & goal');
+  } catch(e) {
+    renderResult(ruleSuggest(method, goal), 'AI unavailable (' + escapeHtml(e.message) + ') \u2014 showing a trusted built-in starting point instead.');
+  }
+}
+function applySuggestion() {
+  const s = _lastSuggestion;
+  if (!s) return;
+  document.getElementById('coffeeDose').value = s.doseG;
+  document.getElementById('brewRatio').value = s.ratio;
+  document.getElementById('waterTemp').value = settings.tempUnit === 'F' ? Math.round(cToF(s.tempC)) : s.tempC;
+  if (s.grind) document.getElementById('grindCoarseness').value = grindDescriptorToLevel(s.grind);
+  if (s.espYield) document.getElementById('espYield').value = s.espYield;
+  if (s.espShot) document.getElementById('espShotTime').value = s.espShot;
+  recalcFromDose();
+  renderAllScrubbers();
+  renderBrewBar();
+  updateGrindVisual();
+  markDirty();
+  vibrate(12);
+  showToast('Starting point applied \u2014 tweak from here', 'success');
+}
+
+/* ======= AI: pattern detection across saved brews ======= */
+function ruleDetectPatterns(rated) {
+  const num = function(v) { return parseFloat(v); };
+  const top = rated.filter(function(r) { return (r.rating || 0) >= 4; });
+  const pool = top.length >= 2 ? top : rated;
+  const label = top.length >= 2 ? 'best-rated cups (\u26054+)' : 'rated cups';
+  const avg = function(key) {
+    const xs = pool.map(function(r) { return num(r[key]); }).filter(function(x) { return isFinite(x) && x > 0; });
+    return xs.length ? xs.reduce(function(a, b) { return a + b; }, 0) / xs.length : null;
+  };
+  const aRatio = avg('brewRatio'), aTemp = avg('waterTemp'), aDose = avg('coffeeDose');
+  const counts = {}; pool.forEach(function(r) { if (r.method) counts[r.method] = (counts[r.method] || 0) + 1; });
+  const topMethod = Object.keys(counts).sort(function(a, b) { return counts[b] - counts[a]; })[0];
+  const fc = {}; pool.forEach(function(r) { (r.flavorTags || []).forEach(function(f) { fc[f] = (fc[f] || 0) + 1; }); });
+  const topFlavors = Object.keys(fc).sort(function(a, b) { return fc[b] - fc[a]; }).slice(0, 3);
+  const lines = ['Across your ' + pool.length + ' ' + label + ':'];
+  const bits = [];
+  if (aRatio) bits.push('a ratio around 1:' + aRatio.toFixed(1));
+  if (aTemp) bits.push(Math.round(aTemp) + '\u00b0C');
+  if (aDose) bits.push(aDose.toFixed(1) + 'g dose');
+  if (bits.length) lines.push('\u2022 They cluster at ' + bits.join(', ') + '.');
+  if (topMethod) lines.push('\u2022 Most are brewed on ' + topMethod + '.');
+  if (topFlavors.length) lines.push('\u2022 Recurring notes: ' + topFlavors.join(', ') + '.');
+  lines.push('\u2022 Next time, start near these numbers and change one variable at a time.');
+  return lines.join('\n');
+}
+async function detectPatterns() {
+  const btn = document.getElementById('patternBtn');
+  const panel = document.getElementById('patternPanel');
+  if (!panel || !btn) return;
+  if (!panel.hidden) { panel.hidden = true; btn.setAttribute('aria-expanded', 'false'); btn.classList.remove('open'); return; }
+  btn.classList.add('open'); btn.setAttribute('aria-expanded', 'true');
+  panel.hidden = false; vibrate(8);
+  const rated = recipes.filter(function(r) { return (r.rating || 0) > 0; });
+  if (rated.length < 3) {
+    panel.innerHTML = '<h4>Your patterns</h4>Rate a few more brews and I can spot what your best cups have in common \u2014 I need about 3 rated brews, and you have ' + rated.length + '.';
+    return;
+  }
+  if (!aiHasKey()) {
+    panel.innerHTML = '<h4>Your patterns</h4>' + escapeHtml(ruleDetectPatterns(rated)).replace(/\n/g, '<br>') + '<span class="src">Computed from your saved ratings. Add an API key in Settings for a deeper read.</span>';
+    return;
+  }
+  panel.innerHTML = '<h4>Your patterns</h4>Reading ' + rated.length + ' rated brews\u2026';
+  try {
+    const compact = rated.map(function(r) {
+      return {
+        method: r.method,
+        ratio: parseFloat(r.brewRatio) || null,
+        tempC: parseFloat(r.waterTemp) || null,
+        doseG: parseFloat(r.coffeeDose) || null,
+        ey: (typeof computeEY === 'function' ? computeEY(r) : null) || null,
+        rating: r.rating || 0,
+        notes: (r.flavorTags || []).slice(0, 4)
+      };
+    });
+    const sys = 'You are a specialty coffee analyst. The user gives a JSON array of their rated brews (method, ratio, tempC, doseG, ey = extraction yield %, rating 1-5, notes). Find genuine patterns that separate their highly-rated cups from lower-rated ones. Reply with 2-4 short plain-text bullet insights (start each line with the bullet character) plus one concrete suggestion for the next brew. Be specific with numbers. Under 130 words, no markdown.';
+    const text = await aiComplete(sys, 'RATED BREWS:\n' + JSON.stringify(compact), 450);
+    panel.innerHTML = '<h4>Your patterns</h4>' + escapeHtml(text).replace(/\n/g, '<br>') + '<span class="src">AI \u00b7 ' + escapeHtml(settings.model || 'claude-sonnet-4-6') + ' \u00b7 from ' + rated.length + ' rated brews</span>';
+  } catch(e) {
+    panel.innerHTML = '<h4>Your patterns</h4>' + escapeHtml(ruleDetectPatterns(rated)).replace(/\n/g, '<br>') + '<span class="src">AI unavailable (' + escapeHtml(e.message) + ') \u2014 showing computed stats instead.</span>';
+  }
+}
+
+/* ======= AI: explain a version change ======= */
+let _lastDiff = null;
+function syncDiffExplain(r, parent) {
+  const row = document.getElementById('diffExplainRow');
+  const panel = document.getElementById('diffExplainPanel');
+  const btn = document.getElementById('diffExplainBtn');
+  if (panel) panel.hidden = true;
+  if (btn) { btn.classList.remove('open'); btn.setAttribute('aria-expanded', 'false'); }
+  const changes = [];
+  DIFF_FIELDS.forEach(function(f) {
+    const a = fmtDiffVal(f[0], parent[f[0]]);
+    const b = fmtDiffVal(f[0], r[f[0]]);
+    if (a !== b) changes.push({ label: f[1], key: f[0], from: a, to: b });
+  });
+  _lastDiff = { changes: changes, ratingFrom: parent.rating || 0, ratingTo: r.rating || 0, method: r.method, fromVer: (parent.version || 1), toVer: (r.version || 2) };
+  if (row) row.style.display = changes.length ? 'flex' : 'none';
+}
+function diffEffect(key, fromStr, toStr) {
+  const fa = parseFloat(fromStr), fb = parseFloat(toStr);
+  const up = (isFinite(fa) && isFinite(fb)) ? fb > fa : null;
+  if (key === 'brewRatio' || key === 'totalWater') return up === null ? null : (up ? 'more water relative to coffee \u2014 a lighter, cleaner, more delicate cup' : 'less water relative to coffee \u2014 a stronger, heavier, more intense cup');
+  if (key === 'coffeeDose') return up === null ? null : (up ? 'a bigger dose \u2014 more strength and body' : 'a smaller dose \u2014 a lighter cup');
+  if (key === 'waterTemp') return up === null ? null : (up ? 'hotter water \u2014 faster extraction, more body and sweetness (watch for bitterness)' : 'cooler water \u2014 gentler extraction, brighter and more acidic');
+  if (key === 'espShotTime') return up === null ? null : (up ? 'a longer shot \u2014 more extraction and body (can turn bitter)' : 'a shorter shot \u2014 brighter and less extracted');
+  if (key === 'espYield') return up === null ? null : (up ? 'a longer ratio \u2014 a lighter, more drinkable shot' : 'a shorter ratio \u2014 a thicker, more intense shot');
+  if (key === 'grindCoarseness') {
+    const la = (typeof COARSE_LABELS !== 'undefined') ? COARSE_LABELS.indexOf(fromStr) : -1;
+    const lb = (typeof COARSE_LABELS !== 'undefined') ? COARSE_LABELS.indexOf(toStr) : -1;
+    if (la < 0 || lb < 0 || la === lb) return 'a grind change \u2014 tune flow and extraction';
+    return lb > la ? 'a coarser grind \u2014 faster flow, brighter and lighter (less extraction)' : 'a finer grind \u2014 slower flow, sweeter and stronger (more extraction)';
+  }
+  if (key === 'grindSize') return 'a grind-setting change \u2014 finer slows flow and extracts more, coarser does the opposite';
+  if (key === 'method') return 'a different brew method \u2014 expect a different body and clarity';
+  return null;
+}
+function ruleExplainDiff(diff) {
+  if (!diff || !diff.changes || !diff.changes.length) return 'No parameter changes to explain yet.';
+  const out = ['From v' + diff.fromVer + ' to v' + diff.toVer + ':'];
+  diff.changes.forEach(function(c) {
+    const eff = diffEffect(c.key, c.from, c.to);
+    out.push('\u2022 ' + c.label + ' ' + c.from + ' \u2192 ' + c.to + (eff ? ': ' + eff + '.' : '.'));
+  });
+  if (diff.ratingFrom && diff.ratingTo) {
+    out.push(diff.ratingTo > diff.ratingFrom ? '\u2022 The cup scored higher (' + diff.ratingFrom + '\u2605 \u2192 ' + diff.ratingTo + '\u2605) \u2014 keep this direction.' : diff.ratingTo < diff.ratingFrom ? '\u2022 The cup scored lower (' + diff.ratingFrom + '\u2605 \u2192 ' + diff.ratingTo + '\u2605) \u2014 consider reverting.' : '\u2022 Rating unchanged so far.');
+  }
+  return out.join('\n');
+}
+async function explainDiff() {
+  const btn = document.getElementById('diffExplainBtn');
+  const panel = document.getElementById('diffExplainPanel');
+  if (!panel || !btn) return;
+  if (!panel.hidden) { panel.hidden = true; btn.classList.remove('open'); btn.setAttribute('aria-expanded', 'false'); return; }
+  const diff = _lastDiff;
+  panel.hidden = false; btn.classList.add('open'); btn.setAttribute('aria-expanded', 'true'); vibrate(8);
+  if (!diff || !diff.changes || !diff.changes.length) { panel.innerHTML = '<h4>What changed in the cup</h4>No parameter changes to explain yet.'; return; }
+  const rule = ruleExplainDiff(diff);
+  if (!aiHasKey()) {
+    panel.innerHTML = '<h4>What changed in the cup</h4>' + escapeHtml(rule).replace(/\n/g, '<br>') + '<span class="src">Built-in read. Add an API key in Settings for a bean-aware explanation.</span>';
+    return;
+  }
+  panel.innerHTML = '<h4>What changed in the cup</h4>Thinking\u2026';
+  try {
+    const sys = 'You are a specialty coffee expert. The user turned one brewing recipe into a new version. Given the parameter changes (from \u2192 to) and any rating change, explain in plain, friendly language what each change likely did to the cup (flavour, body, acidity, sweetness, extraction). Be concrete and brief. 2-4 short bullets starting with the bullet character, under 120 words, no markdown.';
+    const userMsg = 'METHOD: ' + (diff.method || '') + '\nCHANGES: ' + diff.changes.map(function(c) { return c.label + ': ' + c.from + ' -> ' + c.to; }).join('; ') + ((diff.ratingFrom && diff.ratingTo) ? '\nRATING: ' + diff.ratingFrom + ' -> ' + diff.ratingTo : '');
+    const text = await aiComplete(sys, userMsg, 350);
+    panel.innerHTML = '<h4>What changed in the cup</h4>' + escapeHtml(text).replace(/\n/g, '<br>') + '<span class="src">AI \u00b7 ' + escapeHtml(settings.model || 'claude-sonnet-4-6') + '</span>';
+  } catch(e) {
+    panel.innerHTML = '<h4>What changed in the cup</h4>' + escapeHtml(rule).replace(/\n/g, '<br>') + '<span class="src">AI unavailable (' + escapeHtml(e.message) + ') \u2014 showing the built-in read.</span>';
+  }
+}
+
 /* ======= PERSISTENCE (with backup safety net) ======= */
 function loadFromStorage() {
   recipes = [];
@@ -3103,6 +3511,7 @@ function renderVersionDiff(r) {
   document.getElementById('versionDiffBody').innerHTML =
     lines.length ? lines.join('') : '<div class="diff-line">No parameter changes yet \u2014 adjust one variable.</div>';
   card.style.display = 'block';
+  syncDiffExplain(r, parent);
 }
 
 function brewAgain() {
@@ -3343,7 +3752,7 @@ function renderLibrary() {
   if (recipes.length && !list.length) {
     const div = document.createElement('div');
     div.className = 'library-empty';
-    div.textContent = 'No recipes match your search.';
+    div.innerHTML = '<div class="empty-title">No matches</div><p>Nothing fits that search or filter — try a different term, or clear them to see everything.</p>';
     listEl.appendChild(div);
   }
 }
