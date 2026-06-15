@@ -1941,7 +1941,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.11.0';
+const APP_VERSION = '2.12.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0;
 let wakeLock = null;
@@ -4185,7 +4185,7 @@ function drawScatterEY() {
   const b = chartBase('statsCanvas1');
   const pts = recipes.map(function(r) { return { x: computeEY(r), y: r.rating || 0 }; })
     .filter(function(p) { return p.x !== null && p.y > 0; });
-  if (pts.length < 2) { chartEmpty(b, 'Need 2+ brews with extraction % AND a star rating'); return pts.length; }
+  if (pts.length < 2) { chartEmpty(b, 'Log a few rated brews with extraction % — your sweet spot maps here'); return pts.length; }
   const x0 = 14, x1 = 26;
   const W = b.W - b.padL - b.padR, H = b.H - b.padT - b.padB;
   function mx(x) { return b.padL + (Math.min(Math.max(x, x0), x1) - x0) / (x1 - x0) * W; }
@@ -4231,7 +4231,7 @@ function drawRatingTimeline() {
   const b = chartBase('statsCanvas2');
   const rated = recipes.filter(function(r) { return (r.rating || 0) > 0 && r.createdAt; })
     .sort(function(a, c) { return a.createdAt.localeCompare(c.createdAt); });
-  if (rated.length < 2) { chartEmpty(b, 'Need 2+ rated brews to draw a timeline'); return rated.length; }
+  if (rated.length < 2) { chartEmpty(b, 'Rate a couple of brews — your progress curve grows here'); return rated.length; }
   const W = b.W - b.padL - b.padR, H = b.H - b.padT - b.padB;
   function mx(i) { return b.padL + i / (rated.length - 1) * W; }
   function my(y) { return b.padT + H - (y - 0.5) / 5 * H; }

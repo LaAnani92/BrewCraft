@@ -295,3 +295,9 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] Verified: aiThinking() outputs heading + label + 3 dots resolving the aiDot animation
 - [ ] npm run check green (2.11.0 synced)
 - [ ] Update toast after deploy (cache v2.11.0)
+
+## Sprint 24 (v2.12.0) — v5.0 sprint, Cycle 4: warmer empty states (Insights)
+- [ ] The two Stats charts now use journey-framed empty copy instead of deficiency-framed: scatter "Log a few rated brews with extraction % — your sweet spot maps here"; timeline "Rate a couple of brews — your progress curve grows here" (was "Need 2+…")
+- [ ] Rendered in the muted chart-text colour so they read as calm guidance, not errors; drawStats runs clean on the empty path (verified 0/0 points, no error)
+- [ ] npm run check green (2.12.0 synced)
+- [ ] Update toast after deploy (cache v2.12.0)
