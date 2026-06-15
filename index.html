@@ -330,6 +330,9 @@
   .taste-prompt { font-family:var(--font-display); font-size:var(--text-md); line-height:1.55; color:var(--text-secondary); font-style:italic; margin:2px 0 20px; }
   .link-btn { background:none; border:none; padding:0; margin:0; color:var(--accent-bright); font:inherit; cursor:pointer; text-decoration:underline; text-underline-offset:2px; }
   .link-btn:hover, .link-btn:focus-visible { color:var(--accent); }
+  .tier-pill { font-family:var(--font-sans); font-size:var(--text-2xs); font-weight:700; letter-spacing:0.7px; text-transform:uppercase; color:var(--accent-bright); background:var(--accent-glow); border:1px solid rgba(200,149,108,0.28); border-radius:999px; padding:5px 11px; cursor:pointer; white-space:nowrap; transition:all 0.15s; }
+  .tier-pill:hover, .tier-pill:focus-visible { border-color:var(--accent); background:var(--bg-card-hover); }
+  .tier-pill[hidden] { display:none; }
   .recipe-card {
     background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius);
     padding:15px 16px; margin-bottom:10px; cursor:pointer; transition:all var(--transition);
@@ -826,6 +829,7 @@
     </div>
   </div>
   <div class="header-save">
+    <button class="tier-pill" id="tierPill" onclick="openSettingsToSkill()" title="Your experience level — tap to change how much the app shows" aria-label="Experience level, tap to change" hidden></button>
     <button class="icon-btn" onclick="openSettings()" aria-label="Settings" title="Settings"><svg class="ico"><use href="#i-gear"/></svg></button>
     <span class="autosave-status" id="autosaveStatus"></span>
     <button class="btn btn-primary" onclick="saveRecipe()">Save</button>
@@ -1932,7 +1936,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.9.0';
+const APP_VERSION = '2.10.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0;
 let wakeLock = null;
@@ -4703,6 +4707,7 @@ function applyMode() {
   document.body.classList.remove('show-bean-extra');
   document.body.classList.remove('skill-beginner', 'skill-enthusiast', 'skill-expert');
   if (settings.skill) document.body.classList.add('skill-' + settings.skill);
+  updateTierPill();
   const sel = document.getElementById('labSkill');
   if (sel) sel.value = settings.skill || (settings.mode === 'pro' ? 'expert' : 'beginner');
 }
@@ -5167,6 +5172,25 @@ function openSettingsToKey() {
     const k = document.getElementById('labApiKey');
     if (k) { k.scrollIntoView({ block: 'center' }); k.focus(); }
   }, 120);
+}
+/* Open Settings straight to the experience-level picker — from the header tier pill. */
+function openSettingsToSkill() {
+  openSettings();
+  setTimeout(function() {
+    const sec = document.getElementById('sec-settings');
+    if (sec && sec.classList.contains('collapsed')) toggleSection('sec-settings');
+    const s = document.getElementById('labSkill');
+    if (s) { s.scrollIntoView({ block: 'center' }); s.focus(); }
+  }, 120);
+}
+/* Header pill that shows the current experience level (so it's visible, not buried in Settings). */
+function updateTierPill() {
+  const pill = document.getElementById('tierPill');
+  if (!pill) return;
+  const labels = { beginner: 'Beginner', enthusiast: 'Enthusiast', expert: 'Expert' };
+  const label = labels[settings.skill];
+  if (label) { pill.textContent = label; pill.hidden = false; }
+  else { pill.hidden = true; }
 }
 
 /* ======= v10: THEATER, CELEBRATION, SWIPE ======= */

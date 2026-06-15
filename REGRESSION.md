@@ -281,3 +281,10 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] Covers dial-in, parameter explainer, suggester, pattern-detection, version-diff — the AI is no longer silently rule-based with no obvious path to unlock it
 - [ ] npm run check green (2.9.0 synced); existing no-key fallbacks still work
 - [ ] Update toast after deploy (cache v2.9.0)
+
+## Sprint 22 (v2.10.0) — v5.0 sprint, Cycle 2: skill-tier discoverability
+- [ ] A compact tier pill in the header shows the current experience level (Beginner/Enthusiast/Expert) — previously invisible after onboarding (updateTierPill, called from applyMode so it tracks every change)
+- [ ] Tapping the pill opens Settings and focuses the level picker (openSettingsToSkill); changing the level updates the pill text + the skill-* body class live (verified beginner↔expert)
+- [ ] Header does not overflow at 375px (measured: headerScrollW==clientW; logo truncates, pill 76px); pill hidden only if no skill set
+- [ ] npm run check green (2.10.0 synced)
+- [ ] Update toast after deploy (cache v2.10.0)
