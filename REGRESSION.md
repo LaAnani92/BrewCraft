@@ -275,3 +275,9 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] Intentionally left as typographic prose (not button icons): the onboarding feature mnemonics were converted; the ba-hint "‹ tap the screen edges ›" stays as instructional prose; "×2 pts" in cupping labels is a multiplication sign, not an icon
 - [ ] npm run check green (2.8.0 synced, 180 IDs / 92 handlers); verified icons render in preview (Start/Lap/section-toggle/bloom/pour-remove all SVG, no broken <use>)
 - [ ] Update toast after deploy (cache v2.8.0)
+
+## Sprint 21 (v2.9.0) — v5.0 sprint, Cycle 1: AI discoverability
+- [ ] Every AI panel's no-key footnote ("Add an API key in Settings…") is now a one-tap link (.link-btn → openSettingsToKey) that opens Settings and focuses the API-key field (verified: explainer link opens settings, labApiKey focused)
+- [ ] Covers dial-in, parameter explainer, suggester, pattern-detection, version-diff — the AI is no longer silently rule-based with no obvious path to unlock it
+- [ ] npm run check green (2.9.0 synced); existing no-key fallbacks still work
+- [ ] Update toast after deploy (cache v2.9.0)

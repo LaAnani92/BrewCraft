@@ -328,6 +328,8 @@
   .library-empty .btn { margin-top:18px; }
   .water-sub { font-family:var(--font-display); font-size:var(--text-md); color:var(--text-primary); margin:20px 0 12px; padding-top:16px; border-top:1px solid var(--border); }
   .taste-prompt { font-family:var(--font-display); font-size:var(--text-md); line-height:1.55; color:var(--text-secondary); font-style:italic; margin:2px 0 20px; }
+  .link-btn { background:none; border:none; padding:0; margin:0; color:var(--accent-bright); font:inherit; cursor:pointer; text-decoration:underline; text-underline-offset:2px; }
+  .link-btn:hover, .link-btn:focus-visible { color:var(--accent); }
   .recipe-card {
     background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius);
     padding:15px 16px; margin-bottom:10px; cursor:pointer; transition:all var(--transition);
@@ -1930,7 +1932,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.8.0';
+const APP_VERSION = '2.9.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0;
 let wakeLock = null;
@@ -3120,7 +3122,7 @@ async function getDialinAdvice() {
     }
     if (hist.length) txt += '\n\nIteration memory: ' + hist[0];
     outEl.textContent = txt;
-    outEl.innerHTML += '<span class="src">Built-in expert rules (extraction compass). Add an API key in Settings (gear icon, top right) for AI analysis of your exact recipe.</span>';
+    outEl.innerHTML += '<span class="src">Built-in expert rules (extraction compass). <button type="button" class="link-btn" onclick="openSettingsToKey()">Add an API key</button> (gear icon, top right) for AI analysis of your exact recipe.</span>';
     outEl.classList.add('show');
     document.getElementById('dialinNext').style.display = 'block';
     return;
@@ -3222,7 +3224,7 @@ async function explainParams() {
   panel.hidden = false;
   vibrate(8);
   if (!aiHasKey()) {
-    panel.innerHTML = '<h4>Your settings, in plain language</h4>' + escapeHtml(rule).replace(/\n/g, '<br>') + '<span class="src">Built-in guide. Add an API key in Settings for an explanation tuned to your exact bean.</span>';
+    panel.innerHTML = '<h4>Your settings, in plain language</h4>' + escapeHtml(rule).replace(/\n/g, '<br>') + '<span class="src">Built-in guide. <button type="button" class="link-btn" onclick="openSettingsToKey()">Add an API key</button> for an explanation tuned to your exact bean.</span>';
     return;
   }
   panel.innerHTML = '<h4>Your settings, in plain language</h4>Reading your recipe\u2026';
@@ -3307,7 +3309,7 @@ async function runSuggest(goal) {
       '<span class="src">' + srcNote + '</span>';
   };
   if (!aiHasKey()) {
-    renderResult(ruleSuggest(method, goal), 'Built-in starting point (from a trusted recipe for this method). Add an API key in Settings for a suggestion tuned to your exact bean.');
+    renderResult(ruleSuggest(method, goal), 'Built-in starting point (from a trusted recipe for this method). <button type="button" class="link-btn" onclick="openSettingsToKey()">Add an API key</button> for a suggestion tuned to your exact bean.');
     return;
   }
   panel.innerHTML = '<h4>Starting point \u00b7 ' + escapeHtml(goal) + '</h4>Thinking about your ' + escapeHtml(method) + '\u2026';
@@ -3384,7 +3386,7 @@ async function detectPatterns() {
     return;
   }
   if (!aiHasKey()) {
-    panel.innerHTML = '<h4>Your patterns</h4>' + escapeHtml(ruleDetectPatterns(rated)).replace(/\n/g, '<br>') + '<span class="src">Computed from your saved ratings. Add an API key in Settings for a deeper read.</span>';
+    panel.innerHTML = '<h4>Your patterns</h4>' + escapeHtml(ruleDetectPatterns(rated)).replace(/\n/g, '<br>') + '<span class="src">Computed from your saved ratings. <button type="button" class="link-btn" onclick="openSettingsToKey()">Add an API key</button> for a deeper read.</span>';
     return;
   }
   panel.innerHTML = '<h4>Your patterns</h4>Reading ' + rated.length + ' rated brews\u2026';
@@ -3465,7 +3467,7 @@ async function explainDiff() {
   if (!diff || !diff.changes || !diff.changes.length) { panel.innerHTML = '<h4>What changed in the cup</h4>No parameter changes to explain yet.'; return; }
   const rule = ruleExplainDiff(diff);
   if (!aiHasKey()) {
-    panel.innerHTML = '<h4>What changed in the cup</h4>' + escapeHtml(rule).replace(/\n/g, '<br>') + '<span class="src">Built-in read. Add an API key in Settings for a bean-aware explanation.</span>';
+    panel.innerHTML = '<h4>What changed in the cup</h4>' + escapeHtml(rule).replace(/\n/g, '<br>') + '<span class="src">Built-in read. <button type="button" class="link-btn" onclick="openSettingsToKey()">Add an API key</button> for a bean-aware explanation.</span>';
     return;
   }
   panel.innerHTML = '<h4>What changed in the cup</h4>Thinking\u2026';
@@ -5156,6 +5158,16 @@ function bbFocus(id) {
 }
 function openSettings() { document.getElementById('settingsModal').classList.add('show'); }
 function closeSettings() { document.getElementById('settingsModal').classList.remove('show'); }
+/* Open Settings straight to the API-key field — used by the inline "Add an API key" links in AI panels. */
+function openSettingsToKey() {
+  openSettings();
+  setTimeout(function() {
+    const sec = document.getElementById('sec-settings');
+    if (sec && sec.classList.contains('collapsed')) toggleSection('sec-settings');
+    const k = document.getElementById('labApiKey');
+    if (k) { k.scrollIntoView({ block: 'center' }); k.focus(); }
+  }, 120);
+}
 
 /* ======= v10: THEATER, CELEBRATION, SWIPE ======= */
 function updateBATheater(sec) {
@@ -5342,7 +5354,7 @@ function scanFilePicked(evt) {
     document.getElementById('scanPreview').src = dataUrl;
     document.getElementById('scanStep1').style.display = 'none';
     document.getElementById('scanStep2').style.display = 'block';
-    document.getElementById('scanStatus').textContent = settings.apiKey ? 'Ready to read.' : 'Add an API key in Settings to read this.';
+    document.getElementById('scanStatus').textContent = settings.apiKey ? 'Ready to read.' : '<button type="button" class="link-btn" onclick="openSettingsToKey()">Add an API key</button> to read this.';
   });
 }
 function downscaleImage(file, cb) {
