@@ -333,6 +333,11 @@
   .tier-pill { font-family:var(--font-sans); font-size:var(--text-2xs); font-weight:700; letter-spacing:0.7px; text-transform:uppercase; color:var(--accent-bright); background:var(--accent-glow); border:1px solid rgba(200,149,108,0.28); border-radius:999px; padding:5px 11px; cursor:pointer; white-space:nowrap; transition:all 0.15s; }
   .tier-pill:hover, .tier-pill:focus-visible { border-color:var(--accent); background:var(--bg-card-hover); }
   .tier-pill[hidden] { display:none; }
+  .ai-dots { display:inline-flex; gap:4px; vertical-align:middle; margin-left:5px; }
+  .ai-dots span { width:6px; height:6px; border-radius:50%; background:var(--accent); display:inline-block; animation:aiDot 1.2s infinite ease-in-out; }
+  .ai-dots span:nth-child(2) { animation-delay:0.18s; }
+  .ai-dots span:nth-child(3) { animation-delay:0.36s; }
+  @keyframes aiDot { 0%,100% { opacity:0.3; transform:translateY(0); } 50% { opacity:1; transform:translateY(-3px); } }
   .recipe-card {
     background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius);
     padding:15px 16px; margin-bottom:10px; cursor:pointer; transition:all var(--transition);
@@ -1936,7 +1941,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.10.0';
+const APP_VERSION = '2.11.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0;
 let wakeLock = null;
@@ -3132,7 +3137,7 @@ async function getDialinAdvice() {
     return;
   }
   btn.disabled = true; btn.textContent = '\u2026 thinking';
-  outEl.textContent = 'Analyzing your recipe\u2026';
+  outEl.innerHTML = 'Analyzing your recipe <span class="ai-dots" aria-hidden="true"><span></span><span></span><span></span></span>';
   outEl.classList.add('show');
   try {
     const r = stripForShare(data);
@@ -3172,6 +3177,10 @@ async function getDialinAdvice() {
 
 /* ======= AI HELPER (shared fetch \u2014 reuses the dial-in pattern) ======= */
 function aiHasKey() { return !!(settings.apiKey && settings.apiKey.trim()); }
+/* A calm pending state for AI panels — heading + label + an animated three-dot pulse (decorative, SR-hidden). */
+function aiThinking(heading, label) {
+  return '<h4>' + heading + '</h4>' + label + ' <span class="ai-dots" aria-hidden="true"><span></span><span></span><span></span></span>';
+}
 async function aiComplete(system, userMsg, maxTokens) {
   const resp = await fetch('https://api.anthropic.com/v1/messages', {
     method: 'POST',
@@ -3231,7 +3240,7 @@ async function explainParams() {
     panel.innerHTML = '<h4>Your settings, in plain language</h4>' + escapeHtml(rule).replace(/\n/g, '<br>') + '<span class="src">Built-in guide. <button type="button" class="link-btn" onclick="openSettingsToKey()">Add an API key</button> for an explanation tuned to your exact bean.</span>';
     return;
   }
-  panel.innerHTML = '<h4>Your settings, in plain language</h4>Reading your recipe\u2026';
+  panel.innerHTML = aiThinking('Your settings, in plain language', 'Reading your recipe');
   try {
     const sys = 'You are a warm, encouraging specialty-coffee teacher explaining a brew recipe to a beginner. Given the recipe JSON, explain in plain, friendly language what each key setting (dose, ratio, water, temperature, grind) means and how it shapes the cup for THIS specific recipe and bean. Be concrete about their actual numbers. Define any term you use. 4-6 short bullet points starting with the bullet character, under 150 words, plain text, no markdown.';
     const userMsg = 'RECIPE JSON:\n' + JSON.stringify(stripForShare(d)) + (d.method === 'Espresso' ? '\nNOTE: ESPRESSO \u2014 talk dose, yield (g out), shot time and grind; never pours, swirls or blooms.' : '');
@@ -3316,7 +3325,7 @@ async function runSuggest(goal) {
     renderResult(ruleSuggest(method, goal), 'Built-in starting point (from a trusted recipe for this method). <button type="button" class="link-btn" onclick="openSettingsToKey()">Add an API key</button> for a suggestion tuned to your exact bean.');
     return;
   }
-  panel.innerHTML = '<h4>Starting point \u00b7 ' + escapeHtml(goal) + '</h4>Thinking about your ' + escapeHtml(method) + '\u2026';
+  panel.innerHTML = aiThinking('Starting point \u00b7 ' + escapeHtml(goal), 'Thinking about your ' + escapeHtml(method));
   try {
     const sys = 'You are a specialty coffee expert. Given a bean, brew method, the user skill level, and a taste goal, propose ONE realistic starting recipe. Reply ONLY with minified JSON (no prose, no markdown, no code fence). Keys: doseG (number, grams), ratio (number, water:coffee e.g. 16.5; for espresso the brew ratio e.g. 2.0), tempC (number, Celsius), grind (one of EXACTLY: "extra fine","espresso-fine","fine","medium-fine","medium","medium-coarse","coarse","extra coarse"), rationale (one short plain-text sentence). For espresso ALSO include espYield (grams out) and espShot (seconds). Keep values realistic for the method and bean.';
     const beanBits = { origin: d.beanOrigin, roaster: d.roaster, process: d.beanProcess, roastLevel: d.roastLevel };
@@ -3393,7 +3402,7 @@ async function detectPatterns() {
     panel.innerHTML = '<h4>Your patterns</h4>' + escapeHtml(ruleDetectPatterns(rated)).replace(/\n/g, '<br>') + '<span class="src">Computed from your saved ratings. <button type="button" class="link-btn" onclick="openSettingsToKey()">Add an API key</button> for a deeper read.</span>';
     return;
   }
-  panel.innerHTML = '<h4>Your patterns</h4>Reading ' + rated.length + ' rated brews\u2026';
+  panel.innerHTML = aiThinking('Your patterns', 'Reading ' + rated.length + ' rated brews');
   try {
     const compact = rated.map(function(r) {
       return {
@@ -3474,7 +3483,7 @@ async function explainDiff() {
     panel.innerHTML = '<h4>What changed in the cup</h4>' + escapeHtml(rule).replace(/\n/g, '<br>') + '<span class="src">Built-in read. <button type="button" class="link-btn" onclick="openSettingsToKey()">Add an API key</button> for a bean-aware explanation.</span>';
     return;
   }
-  panel.innerHTML = '<h4>What changed in the cup</h4>Thinking\u2026';
+  panel.innerHTML = aiThinking('What changed in the cup', 'Thinking');
   try {
     const sys = 'You are a specialty coffee expert. The user turned one brewing recipe into a new version. Given the parameter changes (from \u2192 to) and any rating change, explain in plain, friendly language what each change likely did to the cup (flavour, body, acidity, sweetness, extraction). Be concrete and brief. 2-4 short bullets starting with the bullet character, under 120 words, no markdown.';
     const userMsg = 'METHOD: ' + (diff.method || '') + '\nCHANGES: ' + diff.changes.map(function(c) { return c.label + ': ' + c.from + ' -> ' + c.to; }).join('; ') + ((diff.ratingFrom && diff.ratingTo) ? '\nRATING: ' + diff.ratingFrom + ' -> ' + diff.ratingTo : '');

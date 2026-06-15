@@ -288,3 +288,10 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] Header does not overflow at 375px (measured: headerScrollW==clientW; logo truncates, pill 76px); pill hidden only if no skill set
 - [ ] npm run check green (2.10.0 synced)
 - [ ] Update toast after deploy (cache v2.10.0)
+
+## Sprint 23 (v2.11.0) — v5.0 sprint, Cycle 3: AI loading states
+- [ ] All AI panels now show a calm animated three-dot pulse while thinking instead of flat "Thinking…" text — explainer, suggester, pattern-detection, version-diff (via aiThinking helper) and the dial-in ("Analyzing your recipe …")
+- [ ] Dots are decorative (aria-hidden); the live region still announces the label only; respects prefers-reduced-motion (dots go static)
+- [ ] Verified: aiThinking() outputs heading + label + 3 dots resolving the aiDot animation
+- [ ] npm run check green (2.11.0 synced)
+- [ ] Update toast after deploy (cache v2.11.0)
