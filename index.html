@@ -338,6 +338,8 @@
   .ai-dots span:nth-child(2) { animation-delay:0.18s; }
   .ai-dots span:nth-child(3) { animation-delay:0.36s; }
   @keyframes aiDot { 0%,100% { opacity:0.3; transform:translateY(0); } 50% { opacity:1; transform:translateY(-3px); } }
+  /* Desktop: the saved-recipe List view goes 2-up so cards don't stretch to 980px (mobile + Timeline unchanged) */
+  @media (min-width:900px) { #libraryList.list-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; align-items:start; } }
   .recipe-card {
     background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius);
     padding:15px 16px; margin-bottom:10px; cursor:pointer; transition:all var(--transition);
@@ -1942,7 +1944,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.13.0';
+const APP_VERSION = '2.14.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0;
 let wakeLock = null;
@@ -3823,6 +3825,7 @@ function renderLibrary() {
   if (libraryView === 'journal') { renderJournal(); return; }
   const listEl = document.getElementById('libraryList');
   const empty = document.getElementById('libraryEmpty');
+  listEl.classList.add('list-grid');
   listEl.innerHTML = '';
   empty.style.display = recipes.length ? 'none' : 'block';
   const list = getFilteredRecipes();
@@ -5027,6 +5030,7 @@ function fmtDay(iso) {
 function renderJournal() {
   const listEl = document.getElementById('libraryList');
   const empty = document.getElementById('libraryEmpty');
+  listEl.classList.remove('list-grid');
   listEl.innerHTML = '';
   empty.style.display = recipes.length ? 'none' : 'block';
   const q = (document.getElementById('librarySearch').value || '').toLowerCase();

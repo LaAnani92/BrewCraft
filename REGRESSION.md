@@ -307,3 +307,9 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] openDialinFromNudge now switches to the Taste tab first (works from anywhere, not just the rating nudge) and sets aria-expanded on the dial-in header
 - [ ] npm run check green (2.13.0 synced, 93 handlers)
 - [ ] Update toast after deploy (cache v2.13.0)
+
+## Sprint 26 (v2.14.0) — v5.0 sprint, Cycle 6: desktop 2-col Journal list
+- [ ] On wide screens (≥900px) the saved-recipe List view renders 2-up instead of stretching cards to 980px (#libraryList.list-grid → grid; verified 460px×2 at 1120px)
+- [ ] Scoped to the List view only — the Timeline view (date-grouped) stays single-column (class toggled in renderLibrary vs renderJournal); mobile (<900px) unchanged (block)
+- [ ] npm run check green (2.14.0 synced)
+- [ ] Update toast after deploy (cache v2.14.0)
