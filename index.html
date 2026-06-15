@@ -1037,6 +1037,7 @@
       <div class="ai-explain-row">
         <button class="ai-explain-btn" id="suggestStartBtn" onclick="openSuggest()" aria-expanded="false" aria-controls="suggestPanel"><svg class="ico"><use href="#i-spark"/></svg> Suggest a starting point</button>
         <button class="ai-explain-btn" id="explainParamsBtn" onclick="explainParams()" aria-expanded="false" aria-controls="paramsExplain"><svg class="ico"><use href="#i-info"/></svg> What do these mean?</button>
+        <button class="ai-explain-btn" onclick="openDialinFromNudge()" title="Already brewed and the cup was off? Jump to the dial-in assistant"><svg class="ico"><use href="#i-bolt"/></svg> Dial in a cup</button>
       </div>
       <div class="ai-panel" id="suggestPanel" role="region" aria-live="polite" hidden></div>
       <div class="ai-panel" id="paramsExplain" role="region" aria-live="polite" hidden></div>
@@ -1941,7 +1942,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.12.0';
+const APP_VERSION = '2.13.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0;
 let wakeLock = null;
@@ -4674,9 +4675,13 @@ function brewPick(key) {
 }
 
 function openDialinFromNudge() {
+  switchTab('evaluate');
   const sec = document.getElementById('sec-dialin');
+  if (!sec) return;
   sec.classList.remove('collapsed');
-  sec.scrollIntoView({ behavior: 'smooth' });
+  const h = sec.querySelector('.section-header');
+  if (h) h.setAttribute('aria-expanded', 'true');
+  setTimeout(function() { sec.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 60);
 }
 
 /* ======= v6: TODAY, MODE, UNITS, SAFETY ======= */

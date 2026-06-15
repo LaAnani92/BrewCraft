@@ -301,3 +301,9 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] Rendered in the muted chart-text colour so they read as calm guidance, not errors; drawStats runs clean on the empty path (verified 0/0 points, no error)
 - [ ] npm run check green (2.12.0 synced)
 - [ ] Update toast after deploy (cache v2.12.0)
+
+## Sprint 25 (v2.13.0) — v5.0 sprint, Cycle 5: dial-in cross-link from Recipe
+- [ ] The Recipe → Brew Parameters AI row has a third pill "Dial in a cup" (bolt icon) that jumps to Taste and opens the dial-in assistant — fixes the board's "weak dial-in scent" (verified: from Recipe, click → evaluate tab active + sec-dialin open)
+- [ ] openDialinFromNudge now switches to the Taste tab first (works from anywhere, not just the rating nudge) and sets aria-expanded on the dial-in header
+- [ ] npm run check green (2.13.0 synced, 93 handlers)
+- [ ] Update toast after deploy (cache v2.13.0)
