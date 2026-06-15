@@ -802,6 +802,17 @@
 <symbol id="i-aero" viewBox="0 0 24 24"><rect x="7.5" y="10" width="9" height="10" rx="1.5"/><path d="M12 3v5"/><path d="M9.5 6L12 8.5 14.5 6"/></symbol>
 <symbol id="i-esp" viewBox="0 0 24 24"><path d="M5.5 7h10v5a5 5 0 0 1-10 0z"/><path d="M15.5 8h1.6a2.5 2.5 0 0 1 0 5h-1.6"/><path d="M7 20h9"/></symbol>
 <symbol id="i-camera" viewBox="0 0 24 24"><path d="M3.5 8.5h3l1.5-2.2h8l1.5 2.2h3v10.5h-17z"/><circle cx="12" cy="13.5" r="3.6"/></symbol>
+<symbol id="i-play" viewBox="0 0 24 24"><path d="M8 5.5l11 6.5-11 6.5z"/></symbol>
+<symbol id="i-pause" viewBox="0 0 24 24"><path d="M9.5 5.5v13"/><path d="M14.5 5.5v13"/></symbol>
+<symbol id="i-lap" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="2.8"/></symbol>
+<symbol id="i-bolt" viewBox="0 0 24 24"><path d="M13 3l-7 10h5l-1 8 7-10h-5z"/></symbol>
+<symbol id="i-copy" viewBox="0 0 24 24"><rect x="8.5" y="8.5" width="10.5" height="10.5" rx="2"/><path d="M14.5 8.5V6.5a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2V13a2 2 0 0 0 2 2h2"/></symbol>
+<symbol id="i-trash" viewBox="0 0 24 24"><path d="M5 7h14"/><path d="M9 7V5h6v2"/><path d="M6.5 7l1 12.5h9l1-12.5"/><path d="M10 10.5v6"/><path d="M14 10.5v6"/></symbol>
+<symbol id="i-close" viewBox="0 0 24 24"><path d="M6 6l12 12"/><path d="M18 6L6 18"/></symbol>
+<symbol id="i-chev-left" viewBox="0 0 24 24"><path d="M14.5 5.5l-7 6.5 7 6.5"/></symbol>
+<symbol id="i-chev-right" viewBox="0 0 24 24"><path d="M9.5 5.5l7 6.5-7 6.5"/></symbol>
+<symbol id="i-chev-down" viewBox="0 0 24 24"><path d="M5.5 9l6.5 6 6.5-6"/></symbol>
+<symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14"/><path d="M5 12h14"/></symbol>
 </defs></svg>
 
 <header class="header">
@@ -857,14 +868,14 @@
     <div class="section-header" onclick="toggleSection('sec-method')">
       <div class="section-icon"><svg class="ico"><use href="#i-cone"/></svg></div>
       <div><div class="section-title">Brew Method</div><div class="section-subtitle">Select your brewing device</div></div>
-      <div class="section-toggle">▾</div>
+      <div class="section-toggle"><svg class="ico"><use href="#i-chev-down"/></svg></div>
     </div>
     <div class="section-body">
       <div class="method-cats" id="methodCats">
         <div class="method-cat" data-cat="gravity">
           <button type="button" class="method-cat-head" onclick="toggleMethodCat(this)" aria-expanded="true">
             <span class="method-cat-name">Gravity <span class="method-cat-sub">· pour-over, percolation</span></span>
-            <span class="method-cat-toggle">▾</span>
+            <span class="method-cat-toggle"><svg class="ico"><use href="#i-chev-down"/></svg></span>
           </button>
           <div class="method-grid">
             <div class="method-card active" data-method="V60" onclick="selectMethod(this)"><span class="method-icon"><svg class="ico"><use href="#i-cone"/></svg></span><span class="method-name">V60</span></div>
@@ -879,7 +890,7 @@
         <div class="method-cat collapsed" data-cat="pressure">
           <button type="button" class="method-cat-head" onclick="toggleMethodCat(this)" aria-expanded="false">
             <span class="method-cat-name">Pressure <span class="method-cat-sub">· forced through the bed</span></span>
-            <span class="method-cat-toggle">▾</span>
+            <span class="method-cat-toggle"><svg class="ico"><use href="#i-chev-down"/></svg></span>
           </button>
           <div class="method-grid">
             <div class="method-card" data-method="Espresso" onclick="selectMethod(this)"><span class="method-icon"><svg class="ico"><use href="#i-esp"/></svg></span><span class="method-name">Espresso</span></div>
@@ -892,7 +903,7 @@
         <div class="method-cat collapsed" data-cat="immersion">
           <button type="button" class="method-cat-head" onclick="toggleMethodCat(this)" aria-expanded="false">
             <span class="method-cat-name">Immersion <span class="method-cat-sub">· full steep, then separate</span></span>
-            <span class="method-cat-toggle">▾</span>
+            <span class="method-cat-toggle"><svg class="ico"><use href="#i-chev-down"/></svg></span>
           </button>
           <div class="method-grid">
             <div class="method-card" data-method="French Press" onclick="selectMethod(this)"><span class="method-icon"><svg class="ico"><use href="#i-press"/></svg></span><span class="method-name">French Press</span></div>
@@ -913,7 +924,7 @@
     <div class="section-header" onclick="toggleSection('sec-bean')">
       <div class="section-icon"><svg class="ico"><use href="#i-bean"/></svg></div>
       <div><div class="section-title">Bean & Recipe Details</div><div class="section-subtitle">Origin, roaster, and processing</div></div>
-      <div class="section-toggle">▾</div>
+      <div class="section-toggle"><svg class="ico"><use href="#i-chev-down"/></svg></div>
     </div>
     <div class="section-body">
       <button class="btn btn-scan" onclick="openScan()" id="scanBagBtn"><svg class="ico"><use href="#i-camera"/></svg> Scan bag</button>
@@ -922,7 +933,7 @@
           <option value="">Saved beans…</option>
         </select>
         <input type="number" inputmode="decimal" enterkeyhint="done" id="bagSizeInput" placeholder="Bag g" min="0" step="10" oninput="updateBagSize()" aria-label="Bag size in grams" title="Bag size in grams">
-        <button class="btn btn-sm btn-secondary" onclick="saveBeanProfile()">＋ Save bean</button>
+        <button class="btn btn-sm btn-secondary" onclick="saveBeanProfile()"><svg class="ico"><use href="#i-plus"/></svg> Save bean</button>
         <button class="btn btn-sm btn-ghost" onclick="deleteBeanProfile()" title="Delete selected bean" aria-label="Delete selected bean">Del</button>
         <button class="btn btn-sm btn-ghost" id="bagResetBtn" onclick="newBag()" style="display:none" title="Refilled? Reset the grams counter" aria-label="New bag">New bag</button>
       </div>
@@ -997,7 +1008,7 @@
         </div>
         <div class="field bean-extra"><label>Elevation <span class="unit">(masl)</span></label><input type="number" inputmode="decimal" enterkeyhint="done" id="beanElevation" placeholder="e.g., 1900" oninput="markDirty()"></div>
       </div>
-      <button class="btn btn-sm btn-ghost simple-only" id="moreBeanBtn" onclick="toggleBeanExtra()" style="margin-top:12px">More details ▾</button>
+      <button class="btn btn-sm btn-ghost simple-only" id="moreBeanBtn" onclick="toggleBeanExtra()" style="margin-top:12px">More details <svg class="ico"><use href="#i-chev-down"/></svg></button>
     </div>
   </div>
 
@@ -1005,7 +1016,7 @@
     <div class="section-header" onclick="toggleSection('sec-params')">
       <div class="section-icon"><svg class="ico"><use href="#i-sliders"/></svg></div>
       <div><div class="section-title">Brew Parameters</div><div class="section-subtitle">Dose, ratio, grind & temperature</div></div>
-      <div class="section-toggle">▾</div>
+      <div class="section-toggle"><svg class="ico"><use href="#i-chev-down"/></svg></div>
     </div>
     <div class="section-body">
       <div class="qrec-wrap" id="quickRecipesWrap" hidden>
@@ -1083,7 +1094,7 @@
         <select id="gearProfileSelect" onchange="applyGearProfile()">
           <option value="">Saved setups…</option>
         </select>
-        <button class="btn btn-sm btn-secondary" onclick="saveGearProfile()">＋ Save setup</button>
+        <button class="btn btn-sm btn-secondary" onclick="saveGearProfile()"><svg class="ico"><use href="#i-plus"/></svg> Save setup</button>
         <button class="btn btn-sm btn-ghost" onclick="deleteGearProfile()" title="Delete selected setup" aria-label="Delete selected setup">Del</button>
       </div>
       <div class="profile-row beginner-hide" id="gearNameRow" style="display:none">
@@ -1212,7 +1223,7 @@
     <div class="section-header" onclick="toggleSection('sec-water')">
       <div class="section-icon"><svg class="ico"><use href="#i-drop"/></svg></div>
       <div><div class="section-title">Water</div><div class="section-subtitle">Optional — measure your water, or mix it to target</div></div>
-      <div class="section-toggle">▾</div>
+      <div class="section-toggle"><svg class="ico"><use href="#i-chev-down"/></svg></div>
     </div>
     <div class="section-body">
       <div class="field-grid">
@@ -1251,8 +1262,8 @@
     <div class="brew-thread" id="todayThread" style="display:none"></div>
     <div id="todayBest" style="display:none;margin-top:14px;padding-top:12px;border-top:1px solid var(--border)"></div>
     <div class="today-actions" style="margin-top:14px">
-      <button class="btn btn-sm btn-ghost" onclick="switchTab('recipe')">✎ Edit recipe</button>
-      <button class="btn btn-sm btn-ghost" onclick="toggleBrewQuickPick()">↺ Switch recipe</button>
+      <button class="btn btn-sm btn-ghost" onclick="switchTab('recipe')"><svg class="ico"><use href="#i-pencil"/></svg> Edit recipe</button>
+      <button class="btn btn-sm btn-ghost" onclick="toggleBrewQuickPick()"><svg class="ico"><use href="#i-reset"/></svg> Switch recipe</button>
     </div>
     <div class="template-row" id="brewQuickPick" hidden style="margin-top:12px">
       <button class="preset-chip" onclick="brewPick('hoffmann')">Hoffmann V60</button>
@@ -1269,7 +1280,7 @@
     <button class="bb-stat" onclick="switchTab('recipe');bbFocus('waterTemp')"><span class="bb-label">Temp</span><span class="bb-val" id="bb2Temp">—</span></button>
   </div>
 
-  <button class="btn btn-primary btn-block" style="margin-bottom:16px;padding:14px" onclick="enterBrewAlong()">▶ Brew-Along Mode (guided, keeps screen on)</button>
+  <button class="btn btn-primary btn-block" style="margin-bottom:16px;padding:14px" onclick="enterBrewAlong()"><svg class="ico"><use href="#i-play"/></svg> Brew-Along Mode (guided, keeps screen on)</button>
 
   <div class="timer-section">
     <div class="timer-ring-wrap">
@@ -1284,9 +1295,9 @@
     </div>
     <div class="brew-guide" id="brewGuide" aria-live="polite"></div>
     <div class="timer-buttons">
-      <button class="btn btn-primary" id="timerStartBtn" onclick="toggleTimer()">▶ Start</button>
-      <button class="btn btn-secondary" onclick="resetTimer()">↺ Reset</button>
-      <button class="btn btn-secondary" onclick="lapTimer()">◎ Lap</button>
+      <button class="btn btn-primary" id="timerStartBtn" onclick="toggleTimer()"><svg class="ico"><use href="#i-play"/></svg> Start</button>
+      <button class="btn btn-secondary" onclick="resetTimer()"><svg class="ico"><use href="#i-reset"/></svg> Reset</button>
+      <button class="btn btn-secondary" onclick="lapTimer()"><svg class="ico"><use href="#i-lap"/></svg> Lap</button>
     </div>
     <div class="timer-current-pour" id="timerPourInfo"></div>
   </div>
@@ -1295,7 +1306,7 @@
     <div class="section-header" onclick="toggleSection('sec-pours')">
       <div class="section-icon"><svg class="ico"><use href="#i-wave"/></svg></div>
       <div><div class="section-title">Pour Schedule</div><div class="section-subtitle">Bloom + pours — Lap fills times; start times trigger sound cues</div></div>
-      <div class="section-toggle">▾</div>
+      <div class="section-toggle"><svg class="ico"><use href="#i-chev-down"/></svg></div>
     </div>
     <div class="section-body">
       <div class="pour-table-wrapper">
@@ -1303,7 +1314,7 @@
         <div class="pour-controls">
           <div class="pour-controls-left">
             <button class="btn btn-sm btn-secondary" onclick="addPour()">+ Add Pour</button>
-            <button class="btn btn-sm btn-ghost" onclick="autoDistributePours()">⟳ Auto-Distribute</button>
+            <button class="btn btn-sm btn-ghost" onclick="autoDistributePours()"><svg class="ico"><use href="#i-reset"/></svg> Auto-Distribute</button>
           </div>
           <div class="pour-total" id="pourTotal">Total: <strong>0g</strong> / 0g</div>
         </div>
@@ -1319,7 +1330,7 @@
     <div class="section-header" onclick="toggleSection('sec-tasting')">
       <div class="section-icon"><svg class="ico"><use href="#i-star"/></svg></div>
       <div><div class="section-title">Tasting &amp; Scoring</div><div class="section-subtitle">Taste it first — then let the numbers agree</div></div>
-      <div class="section-toggle">▾</div>
+      <div class="section-toggle"><svg class="ico"><use href="#i-chev-down"/></svg></div>
     </div>
     <div class="section-body">
       <div class="taste-prompt">First, just taste it. Sweet or sharp, bright or heavy — what jumps out? Then let the scores below back up what your mouth already knows.</div>
@@ -1371,7 +1382,7 @@
     <div class="section-header" onclick="toggleSection('sec-notes')">
       <div class="section-icon"><svg class="ico"><use href="#i-pencil"/></svg></div>
       <div><div class="section-title">Brewer's Notes</div><div class="section-subtitle">Observations & next steps</div></div>
-      <div class="section-toggle">▾</div>
+      <div class="section-toggle"><svg class="ico"><use href="#i-chev-down"/></svg></div>
     </div>
     <div class="section-body">
       <div class="notes-box">
@@ -1384,7 +1395,7 @@
     <div class="section-header" onclick="toggleSection('sec-dialin')">
       <div class="section-icon"><svg class="ico"><use href="#i-spark"/></svg></div>
       <div><div class="section-title">Dial-In Assistant</div><div class="section-subtitle">Tell it what's wrong — get the next adjustment</div></div>
-      <div class="section-toggle">▾</div>
+      <div class="section-toggle"><svg class="ico"><use href="#i-chev-down"/></svg></div>
     </div>
     <div class="section-body">
       <span class="eval-label">What's off about the cup? <span style="font-weight:400;color:var(--text-muted);text-transform:none;letter-spacing:0">(tap all that apply)</span></span>
@@ -1402,11 +1413,11 @@
       </div>
       <textarea class="dialin-textarea" id="dialinNotes" placeholder="Optional: describe the cup in your own words… e.g., 'juicy start but the finish turns drying, sweetness disappears as it cools'"></textarea>
       <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
-        <button class="btn btn-primary" id="dialinBtn" onclick="getDialinAdvice()">⚡ Get Dial-In Advice</button>
+        <button class="btn btn-primary" id="dialinBtn" onclick="getDialinAdvice()"><svg class="ico"><use href="#i-bolt"/></svg> Get Dial-In Advice</button>
         <span class="field-hint" id="dialinModeHint" style="align-self:center"></span>
       </div>
       <div class="dialin-out" id="dialinOut" role="status" aria-live="polite"></div>
-      <div id="dialinNext" style="display:none;margin-top:10px"><button class="btn btn-secondary" onclick="brewAgain()">↻ Brew Again with this plan</button></div>
+      <div id="dialinNext" style="display:none;margin-top:10px"><button class="btn btn-secondary" onclick="brewAgain()"><svg class="ico"><use href="#i-reset"/></svg> Brew Again with this plan</button></div>
     </div>
   </div>
 
@@ -1414,7 +1425,7 @@
     <div class="section-header" onclick="toggleSection('sec-extract')">
       <div class="section-icon"><svg class="ico"><use href="#i-chart"/></svg></div>
       <div><div class="section-title">Extraction & Results</div><div class="section-subtitle">Measure extraction quality</div></div>
-      <div class="section-toggle">▾</div>
+      <div class="section-toggle"><svg class="ico"><use href="#i-chev-down"/></svg></div>
     </div>
     <div class="section-body">
       <div class="field-grid">
@@ -1438,17 +1449,17 @@
   </div>
 
   <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:20px">
-    <button class="btn btn-primary" onclick="brewAgain()">↻ Brew Again (new version)</button>
-    <button class="btn btn-secondary" onclick="duplicateRecipe()">⧉ Duplicate</button>
-    <button class="btn btn-danger" id="deleteBtn" onclick="confirmDelete()" style="display:none">✕ Delete</button>
+    <button class="btn btn-primary" onclick="brewAgain()"><svg class="ico"><use href="#i-reset"/></svg> Brew Again (new version)</button>
+    <button class="btn btn-secondary" onclick="duplicateRecipe()"><svg class="ico"><use href="#i-copy"/></svg> Duplicate</button>
+    <button class="btn btn-danger" id="deleteBtn" onclick="confirmDelete()" style="display:none"><svg class="ico"><use href="#i-trash"/></svg> Delete</button>
   </div>
 
 </div>
 
 <div class="tab-panel" id="tab-library">
   <div class="library-toolbar">
-    <button class="btn btn-primary" onclick="newRecipe()">✦ New Recipe</button>
-    <button class="btn btn-secondary" onclick="quickBrew()">⚡ Brew last again</button>
+    <button class="btn btn-primary" onclick="newRecipe()"><svg class="ico"><use href="#i-spark"/></svg> New Recipe</button>
+    <button class="btn btn-secondary" onclick="quickBrew()"><svg class="ico"><use href="#i-bolt"/></svg> Brew last again</button>
     <button class="btn btn-secondary" onclick="exportAllRecipes()">↓ Export All</button>
     <button class="btn btn-secondary" onclick="document.getElementById('importFile').click()">↑ Import File</button>
     <input type="file" id="importFile" accept=".json" style="display:none" onchange="importRecipesFile(event)">
@@ -1484,7 +1495,7 @@
     <div class="section-header" onclick="toggleSection('sec-sharehub')">
       <div class="section-icon"><svg class="ico"><use href="#i-share"/></svg></div>
       <div><div class="section-title">Share &amp; Receive</div><div class="section-subtitle">Send recipes to friends, import theirs, share the app</div></div>
-      <div class="section-toggle">▾</div>
+      <div class="section-toggle"><svg class="ico"><use href="#i-chev-down"/></svg></div>
     </div>
     <div class="section-body">
 
@@ -1535,7 +1546,7 @@
     <div class="section-header" onclick="toggleSection('sec-stats')">
       <div class="section-icon"><svg class="ico"><use href="#i-chart"/></svg></div>
       <div><div class="section-title">Stats Dashboard</div><div class="section-subtitle">Patterns across your saved brews</div></div>
-      <div class="section-toggle">▾</div>
+      <div class="section-toggle"><svg class="ico"><use href="#i-chev-down"/></svg></div>
     </div>
     <div class="section-body">
       <div class="field-hint" id="statsMsg" style="margin-bottom:12px"></div>
@@ -1555,7 +1566,7 @@
     <div class="section-header" onclick="toggleSection('sec-cupping')">
       <div class="section-icon"><svg class="ico"><use href="#i-spoon"/></svg></div>
       <div><div class="section-title">SCA Cupping Score</div><div class="section-subtitle">Legacy 2004 form (pre-CVA) — saves with current recipe</div></div>
-      <div class="section-toggle">▾</div>
+      <div class="section-toggle"><svg class="ico"><use href="#i-chev-down"/></svg></div>
     </div>
     <div class="section-body">
       <div class="field-grid">
@@ -1580,7 +1591,7 @@
     <div class="section-header" onclick="toggleSection('sec-print')">
       <div class="section-icon"><svg class="ico"><use href="#i-print"/></svg></div>
       <div><div class="section-title">Print Recipe Card</div><div class="section-subtitle">Clean card for the bar — or save as PDF</div></div>
-      <div class="section-toggle">▾</div>
+      <div class="section-toggle"><svg class="ico"><use href="#i-chev-down"/></svg></div>
     </div>
     <div class="section-body">
       <button class="btn btn-secondary" onclick="printRecipe()"><svg class="ico"><use href="#i-print"/></svg> Print current recipe</button>
@@ -1596,7 +1607,7 @@
   <div class="ba-tap left" onclick="baPrev()" aria-hidden="true"></div>
   <div class="ba-tap right" onclick="baNext()" aria-hidden="true"></div>
   <div class="ba-hint" id="baHint" hidden>‹ tap the screen edges to move between pours ›</div>
-  <button class="btn btn-secondary ba-exit" onclick="exitBrewAlong()">✕ Exit</button>
+  <button class="btn btn-secondary ba-exit" onclick="exitBrewAlong()"><svg class="ico"><use href="#i-close"/></svg> Exit</button>
   <div class="ba-step" id="baStepLabel">Step 1 · Bloom</div>
   <div class="ba-target" id="baTarget">Pour to 45 g</div>
   <div class="ba-window" id="baWindow"></div>
@@ -1612,9 +1623,9 @@
   <div class="ba-technique" id="baTechnique"></div>
   <div class="ba-progress" id="baProgress"></div>
   <div class="ba-buttons">
-    <button class="btn btn-primary" id="baTimerBtn" onclick="toggleTimer()">▶ Start</button>
-    <button class="btn btn-secondary" onclick="baPrev()">‹ Prev</button>
-    <button class="btn btn-secondary" onclick="baNext()">Next ›</button>
+    <button class="btn btn-primary" id="baTimerBtn" onclick="toggleTimer()"><svg class="ico"><use href="#i-play"/></svg> Start</button>
+    <button class="btn btn-secondary" onclick="baPrev()"><svg class="ico"><use href="#i-chev-left"/></svg> Prev</button>
+    <button class="btn btn-secondary" onclick="baNext()">Next <svg class="ico"><use href="#i-chev-right"/></svg></button>
   </div>
 </div>
 
@@ -1635,7 +1646,7 @@
   <div class="modal scan-modal">
     <div class="scan-head">
       <h3 id="scanTitle">Scan a coffee bag</h3>
-      <button class="icon-btn" onclick="closeScan()" aria-label="Close">✕</button>
+      <button class="icon-btn" onclick="closeScan()" aria-label="Close"><svg class="ico"><use href="#i-close"/></svg></button>
     </div>
 
     <div id="scanStep1" class="scan-step">
@@ -1682,13 +1693,13 @@
   <div class="modal" style="max-width:620px">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
       <h3 style="margin:0">Settings</h3>
-      <button class="icon-btn" onclick="closeSettings()" aria-label="Close settings">✕</button>
+      <button class="icon-btn" onclick="closeSettings()" aria-label="Close settings"><svg class="ico"><use href="#i-close"/></svg></button>
     </div>
   <div class="section" id="sec-settings">
     <div class="section-header" onclick="toggleSection('sec-settings')">
       <div class="section-icon"><svg class="ico"><use href="#i-gear"/></svg></div>
       <div><div class="section-title">Settings</div><div class="section-subtitle">AI assistant & app preferences</div></div>
-      <div class="section-toggle">▾</div>
+      <div class="section-toggle"><svg class="ico"><use href="#i-chev-down"/></svg></div>
     </div>
     <div class="section-body">
       <div class="field-grid field-grid-2">
@@ -1740,7 +1751,7 @@
         </div>
         <div class="field">
           <label>Gesture tips</label>
-          <button class="btn btn-sm btn-secondary" onclick="resetHints()" style="align-self:flex-start">↻ Show tips again</button>
+          <button class="btn btn-sm btn-secondary" onclick="resetHints()" style="align-self:flex-start"><svg class="ico"><use href="#i-reset"/></svg> Show tips again</button>
           <div class="field-hint">Re-show the drag-the-dial and edge-tap hints (they fade after you use them).</div>
         </div>
       </div>
@@ -1751,7 +1762,7 @@
     <div class="section-header" onclick="toggleSection('sec-about')">
       <div class="section-icon"><svg class="ico"><use href="#i-info"/></svg></div>
       <div><div class="section-title">About &amp; Feedback</div><div class="section-subtitle">Version, diagnostics, and how to reach the maker</div></div>
-      <div class="section-toggle">▾</div>
+      <div class="section-toggle"><svg class="ico"><use href="#i-chev-down"/></svg></div>
     </div>
     <div class="section-body">
       <p style="font-size:14px;color:var(--text-secondary);line-height:1.7;margin-bottom:14px">
@@ -1779,10 +1790,10 @@
     <div id="obStep2" hidden>
       <h2>The improvement loop</h2>
       <div class="ob-loop">
-        <div><strong>▶ Brew-Along</strong> guides every pour, hands-free</div>
+        <div><strong><svg class="ico"><use href="#i-play"/></svg> Brew-Along</strong> guides every pour, hands-free</div>
         <div><strong>★ Rate</strong> the cup honestly</div>
-        <div><strong>⚡ Dial-In</strong> tells you the one thing to change</div>
-        <div><strong>↻ Brew Again</strong> logs the iteration</div>
+        <div><strong><svg class="ico"><use href="#i-bolt"/></svg> Dial-In</strong> tells you the one thing to change</div>
+        <div><strong><svg class="ico"><use href="#i-reset"/></svg> Brew Again</strong> logs the iteration</div>
       </div>
       <p style="margin-top:12px">One variable at a time — that is how cups get great.</p>
     </div>
@@ -1919,7 +1930,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.7.0';
+const APP_VERSION = '2.8.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0;
 let wakeLock = null;
@@ -2631,9 +2642,9 @@ function addPourRow(isBloom) {
   card.dataset.isBloom = isBloom ? 'true' : 'false';
   card.innerHTML =
     '<div class="pour-card-head">' +
-      '<span class="pour-card-title">' + (isBloom ? '\u2727 Bloom' : 'Pour ' + pourCount) + '</span>' +
+      '<span class="pour-card-title">' + (isBloom ? '<svg class="ico"><use href="#i-drop"/></svg> Bloom' : 'Pour ' + pourCount) + '</span>' +
       '<span class="pour-card-cum">\u2014</span>' +
-      '<button class="pour-remove-btn" onclick="removePour(this)" title="Remove" aria-label="Remove pour">\u2715</button>' +
+      '<button class="pour-remove-btn" onclick="removePour(this)" title="Remove" aria-label="Remove pour"><svg class="ico"><use href="#i-close"/></svg></button>' +
     '</div>' +
     '<div class="pour-card-grid">' +
       '<label>Weight (g)<input type="number" inputmode="decimal" enterkeyhint="done" class="pour-weight" placeholder="g" step="1" min="0" oninput="updatePourTotals(); markDirty()"></label>' +
@@ -2759,7 +2770,7 @@ function toggleTimer() {
     clearInterval(timerInterval);
     timerRunning = false;
     timerElapsed += Date.now() - timerStartTime;
-    setTimerBtns('\u25b6 Resume');
+    setTimerBtns(ICON_PLAY + ' Resume');
     document.getElementById('timerDisplay').classList.remove('running');
     document.getElementById('baTimer').classList.remove('running');
     document.getElementById('brewLiveDot').classList.remove('show');
@@ -2773,7 +2784,7 @@ function toggleTimer() {
     if (timerElapsed === 0) { cachePourCues(); computeBrewTarget(); }
     timerStartTime = Date.now();
     timerRunning = true;
-    setTimerBtns('\u275a\u275a Pause');
+    setTimerBtns(ICON_PAUSE + ' Pause');
     document.getElementById('timerDisplay').classList.add('running');
     document.getElementById('baTimer').classList.add('running');
     document.getElementById('brewLiveDot').classList.add('show');
@@ -2781,6 +2792,8 @@ function toggleTimer() {
   }
 }
 
+const ICON_PLAY = '<svg class="ico"><use href="#i-play"/></svg>';
+const ICON_PAUSE = '<svg class="ico"><use href="#i-pause"/></svg>';
 function setTimerBtns(label) {
   document.getElementById('timerStartBtn').innerHTML = label;
   document.getElementById('baTimerBtn').innerHTML = label;
@@ -2797,7 +2810,7 @@ function resetTimer() {
   brewCompleteFired = false;
   document.getElementById('timerDisplay').classList.remove('running');
   document.getElementById('baTimer').classList.remove('running');
-  setTimerBtns('\u25b6 Start');
+  setTimerBtns(ICON_PLAY + ' Start');
   document.getElementById('timerPourInfo').innerHTML = '';
   document.getElementById('brewLiveDot').classList.remove('show');
   cueTimes = []; cueFired = [];
@@ -3856,7 +3869,7 @@ function renderLibrary() {
     delBtn.className = 'icon-btn danger';
     delBtn.title = 'Delete';
     delBtn.setAttribute('aria-label', 'Delete recipe');
-    delBtn.textContent = '\u2715';
+    delBtn.innerHTML = '<svg class="ico"><use href="#i-close"/></svg>';
     delBtn.onclick = function(ev) { ev.stopPropagation(); confirmDelete(r.id); };
     actions.appendChild(shareBtn);
     actions.appendChild(cmpBtn);

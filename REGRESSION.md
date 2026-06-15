@@ -266,3 +266,12 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] npm run check green (2.7.0 synced); verified the personal-best logic in preview (ancestorBestRating, fire/no-fire/once)
 - [ ] Still DEFERRED (a dedicated pass): full raw-glyph→SVG icon sweep (needs dynamic Start/Pause label handled + ~10 symbols + ~50 swaps), consolidating the 4 :root token blocks, the bean-over-its-life arc
 - [ ] Update toast after deploy (cache v2.7.0)
+
+## Sprint 20 (v2.8.0) — Full glyph→SVG icon sweep
+- [ ] 11 new sprite symbols added: i-play, i-pause, i-lap, i-bolt, i-copy, i-trash, i-close, i-chev-left, i-chev-right, i-chev-down, i-plus
+- [ ] Every raw-glyph UI icon is now an SVG <use> matching the existing 1.8px-stroke set: timer Start/Reset/Lap (Start/Pause/Resume update via setTimerBtns + ICON_PLAY/ICON_PAUSE), Brew-Along, Edit/Switch recipe, New/Duplicate/Delete, Get Dial-In Advice, Brew Again (×2 + plan), Brew last again, Save bean/setup, Auto-Distribute, Show tips again, modal/scan/settings/exit closes, Prev/Next, "More details"
+- [ ] Section headers and method-category headers use an SVG chevron that still rotates on collapse (transform applies to the element); verified .section-toggle svg + .method-cat-toggle svg
+- [ ] Pour cards: bloom marker is a water-drop icon, each pour-remove is a close icon; library card delete is a close icon (delBtn now innerHTML)
+- [ ] Intentionally left as typographic prose (not button icons): the onboarding feature mnemonics were converted; the ba-hint "‹ tap the screen edges ›" stays as instructional prose; "×2 pts" in cupping labels is a multiplication sign, not an icon
+- [ ] npm run check green (2.8.0 synced, 180 IDs / 92 handlers); verified icons render in preview (Start/Lap/section-toggle/bloom/pour-remove all SVG, no broken <use>)
+- [ ] Update toast after deploy (cache v2.8.0)
