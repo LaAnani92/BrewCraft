@@ -510,6 +510,12 @@
   body.simple.show-bean-extra .bean-extra { display:flex; }
   /* Beginner tier hides precision-gear bits that Enthusiast keeps (grinder model, grind clicks, saved setups). */
   body.skill-beginner .beginner-hide { display:none !important; }
+  /* Beginner-only read-only grind readout — the full grind controls are beginner-hidden, but a beginner
+     still deserves to know how to grind. Shows the descriptor that the quick recipe / suggestion set. */
+  .grind-readout { display:none; align-items:center; gap:9px; margin:8px 0 2px; padding:11px 13px; background:var(--bg-input); border:1px solid var(--border); border-radius:var(--radius-sm); color:var(--text-secondary); font-size:var(--text-sm); }
+  body.skill-beginner .grind-readout { display:flex; }
+  .grind-readout .ico { width:16px; height:16px; color:var(--accent-bright); flex-shrink:0; }
+  .grind-readout strong { color:var(--accent-bright); font-family:var(--font-mono); font-weight:600; }
   /* Brew timer progress ring — fills toward the brew's expected finish. */
   .timer-ring-wrap { position:relative; width:230px; height:230px; margin:6px auto 18px; }
   .timer-ring { width:100%; height:100%; transform:rotate(-90deg); display:block; }
@@ -1230,6 +1236,7 @@
         <div class="grind-label-row"><span>Fine</span><span class="grind-pos" id="grindPosLabel"></span><span>Coarse</span></div>
         <input type="hidden" id="grindCoarseness">
       </div>
+      <div class="grind-readout" id="grindReadout"></div>
     </div>
   </div>
 
@@ -1944,7 +1951,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.15.0';
+const APP_VERSION = '2.16.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0;
 let wakeLock = null;
@@ -2598,7 +2605,19 @@ function grindDescriptorToLevel(d) {
   return 0;
 }
 /* Dynamic fine→coarse bar: caret from the setting vs the grinder's range; band = method target. */
+/* Beginner-only grind readout: the descriptor (set by the chosen quick recipe / suggestion), shown plainly. */
+function updateGrindReadout() {
+  const el = document.getElementById('grindReadout');
+  if (!el) return;
+  const lvl = parseInt(document.getElementById('grindCoarseness').value, 10);
+  if (lvl > 0 && COARSE_LABELS[lvl]) {
+    el.innerHTML = '<svg class="ico"><use href="#i-sliders"/></svg> Grind · <strong>' + COARSE_LABELS[lvl] + '</strong>';
+  } else {
+    el.innerHTML = '<svg class="ico"><use href="#i-sliders"/></svg> Pick a recipe and the grind comes with it';
+  }
+}
 function updateGrindVisual() {
+  updateGrindReadout();
   const bar = document.getElementById('grindBar');
   if (!bar) return;
   const caret = document.getElementById('grindCaret');

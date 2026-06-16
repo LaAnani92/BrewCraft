@@ -320,3 +320,10 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] Boot-only — does not re-collapse if the user opens it mid-session; reverts to calm default next load
 - [ ] npm run check green (2.15.0 synced)
 - [ ] Update toast after deploy (cache v2.15.0)
+
+## Sprint 28 (v2.16.0) — v5.0 sprint, Cycle 8: beginner grind readout
+- [ ] Beginners (who have the full grind controls beginner-hidden) now see a simple read-only "Grind · <descriptor>" line reading the grindCoarseness the quick recipe / suggestion set — fills the gap where a beginner saw no grind info at all (verified "Grind · Medium-Fine" after applying a V60 quick recipe)
+- [ ] Shown only for skill-beginner (updateGrindReadout via updateGrindVisual); Enthusiast/Expert keep the full grinder picker + setting + bar and do NOT see the readout (verified hidden for enthusiast)
+- [ ] When nothing is set: "Pick a recipe and the grind comes with it"
+- [ ] npm run check green (2.16.0 synced)
+- [ ] Update toast after deploy (cache v2.16.0)
