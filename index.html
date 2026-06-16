@@ -1951,7 +1951,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.16.0';
+const APP_VERSION = '2.17.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0;
 let wakeLock = null;
@@ -2798,6 +2798,19 @@ function checkCues(elapsedSec) {
 }
 
 /* ======= TIMER ======= */
+/* Keep the screen awake while a brew is live (timer running OR Brew-Along open) — real kitchen need.
+   Idempotent + guarded so it's a no-op where the Wake Lock API is absent (e.g. jsdom, older browsers). */
+async function acquireWakeLock() {
+  if (wakeLock || !navigator.wakeLock) return;
+  try { wakeLock = await navigator.wakeLock.request('screen'); } catch(e) { wakeLock = null; }
+}
+function releaseWakeLock() {
+  if (wakeLock) { try { wakeLock.release(); } catch(e) {} wakeLock = null; }
+}
+function syncWakeLock() {
+  if (timerRunning || baActive) acquireWakeLock();
+  else releaseWakeLock();
+}
 function toggleTimer() {
   if (timerRunning) {
     clearInterval(timerInterval);
@@ -2823,6 +2836,7 @@ function toggleTimer() {
     document.getElementById('brewLiveDot').classList.add('show');
     timerInterval = setInterval(updateTimerDisplay, 100);
   }
+  syncWakeLock();
 }
 
 const ICON_PLAY = '<svg class="ico"><use href="#i-play"/></svg>';
@@ -2834,6 +2848,7 @@ function setTimerBtns(label) {
 function resetTimer() {
   clearInterval(timerInterval);
   timerRunning = false; timerElapsed = 0; timerStartTime = null;
+  syncWakeLock();
   document.getElementById('timerDisplay').textContent = '00:00.0';
   document.getElementById('baTimer').textContent = '00:00.0';
   setBrewRing(0);
@@ -2923,15 +2938,13 @@ async function enterBrewAlong() {
   renderBAStep();
   updateBATheater(currentElapsedMs() / 1000);
   showBAHint();
-  try {
-    if (navigator.wakeLock) wakeLock = await navigator.wakeLock.request('screen');
-  } catch(e) { wakeLock = null; }
+  syncWakeLock();
 }
 
 function exitBrewAlong() {
   baActive = false;
   document.getElementById('baOverlay').classList.remove('show');
-  if (wakeLock) { try { wakeLock.release(); } catch(e) {} wakeLock = null; }
+  syncWakeLock();
 }
 function renderBAStep() {
   const st = baSteps[baIdx];
@@ -2969,10 +2982,9 @@ function baAutoAdvance(elapsedSec) {
     info.textContent = next ? 'Tap right side of screen for next step' : 'Final step \u2014 drawdown';
   }
 }
-document.addEventListener('visibilitychange', async function() {
-  if (baActive && document.visibilityState === 'visible' && navigator.wakeLock) {
-    try { wakeLock = await navigator.wakeLock.request('screen'); } catch(e) {}
-  }
+document.addEventListener('visibilitychange', function() {
+  /* Wake locks auto-release when the tab hides; re-sync on return if a brew is still live. */
+  if (document.visibilityState === 'visible') syncWakeLock();
 });
 
 /* ======= RATING & TAGS ======= */

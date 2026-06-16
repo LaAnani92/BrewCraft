@@ -327,3 +327,11 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] When nothing is set: "Pick a recipe and the grind comes with it"
 - [ ] npm run check green (2.16.0 synced)
 - [ ] Update toast after deploy (cache v2.16.0)
+
+## Sprint 29 (v2.17.0) — Keep screen awake for any live brew
+- [ ] The screen now stays awake whenever a brew is live — the inline Brew-tab timer (Start), not just Brew-Along (real kitchen need: phone no longer sleeps mid-pour)
+- [ ] Unified via syncWakeLock() (acquires when timerRunning || baActive, releases otherwise); wired into toggleTimer, resetTimer, enterBrewAlong, exitBrewAlong, and visibilitychange (re-acquires on return — wake locks auto-drop when hidden)
+- [ ] Fixes a latent gap: exiting Brew-Along while the timer was still running used to kill the lock; now it stays on if the timer runs
+- [ ] Idempotent + guarded (navigator.wakeLock absent → no-op); on iPhone Safari (secure context) it holds; verified no errors + correct wiring (preview is visibilityState:hidden so it can't hold a lock, as expected)
+- [ ] npm run check green (2.17.0 synced)
+- [ ] Update toast after deploy (cache v2.17.0)
