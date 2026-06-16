@@ -343,3 +343,12 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] Still guarded: removing the last remaining pour is blocked with a "Need at least one pour" toast (unchanged)
 - [ ] npm run check green (2.18.0 synced); verified rendered button = 44×44 via DOM measurement
 - [ ] Update toast after deploy (cache v2.18.0)
+
+## Sprint 31 (v2.19.0) — AI dial-in now knows bean freshness
+- [ ] With an API key set + a Roast Date logged, dial-in advice factors in degassing/staleness (previously the AI got the raw roast date but no "today," so it couldn't compute days-off-roast)
+- [ ] getDialinAdvice() computes freshnessInfo(roastDate) and passes a "FRESHNESS: Day N · <state>" line to the model; system prompt now tells it how freshness shifts the diagnosis (very fresh → sour/gassy/uneven; past ~5 weeks → flat/hollow, not fixable by grind alone)
+- [ ] Freshness clause is method-neutral → espresso advice stays espresso-specific (no bloom/pour language leaks in)
+- [ ] No roast date logged → "FRESHNESS: roast date not logged" (no crash, no false precision); invalid date handled the same
+- [ ] No-key rule fallback unchanged; AI source line still notes when advice is "informed by N past iterations"
+- [ ] npm run check green (2.19.0 synced); freshness line verified for degassing/peak/fading/no-date via preview eval
+- [ ] Update toast after deploy (cache v2.19.0)

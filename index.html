@@ -1952,7 +1952,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.18.0';
+const APP_VERSION = '2.19.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0;
 let wakeLock = null;
@@ -3176,8 +3176,10 @@ async function getDialinAdvice() {
   outEl.classList.add('show');
   try {
     const r = stripForShare(data);
-    const sys = 'You are a world-class specialty coffee dial-in expert combining the extraction science of Scott Rao and Jonathan Gagne with the practical approach of James Hoffmann and Tetsu Kasuya. The user gives their recipe as JSON, taste feedback, and an iteration history of past changes with rating outcomes. Use the history: do not repeat changes that made things worse, and build on changes that helped. Reply with: (1) THE single most impactful change, with direction and concrete magnitude (clicks, degrees C, grams, seconds), (2) one or two secondary options, (3) one thing to watch during the next brew. Under 180 words, plain text, no markdown. Respect one-variable-at-a-time.';
-    const userMsg = 'RECIPE JSON:\n' + JSON.stringify(r) + '\n\nTASTE ISSUES: ' + (issues.join(', ') || 'none selected') + '\nUSER DESCRIPTION: ' + (notes || 'none') + '\nITERATION HISTORY (most recent first): ' + (hist.length ? hist.join(' | ') : 'none') + (r.method === 'Espresso' ? '\nNOTE: This is ESPRESSO. Advise on dose, yield (g out), shot time, temperature and grind ONLY. No pour-over advice (no pours, swirls, blooms, drawdown).' : '');
+    const fresh = freshnessInfo(data.roastDate);
+    const freshLine = fresh ? '\nFRESHNESS: ' + fresh.label : '\nFRESHNESS: roast date not logged';
+    const sys = 'You are a world-class specialty coffee dial-in expert combining the extraction science of Scott Rao and Jonathan Gagne with the practical approach of James Hoffmann and Tetsu Kasuya. The user gives their recipe as JSON, taste feedback, bean freshness, and an iteration history of past changes with rating outcomes. Use the history: do not repeat changes that made things worse, and build on changes that helped. Factor in freshness: very fresh coffee that is still degassing can read sour, gassy or uneven; coffee past about five weeks off roast reads flat or hollow and will not be fixed by grind alone. Reply with: (1) THE single most impactful change, with direction and concrete magnitude (clicks, degrees C, grams, seconds), (2) one or two secondary options, (3) one thing to watch during the next brew. Under 180 words, plain text, no markdown. Respect one-variable-at-a-time.';
+    const userMsg = 'RECIPE JSON:\n' + JSON.stringify(r) + freshLine + '\n\nTASTE ISSUES: ' + (issues.join(', ') || 'none selected') + '\nUSER DESCRIPTION: ' + (notes || 'none') + '\nITERATION HISTORY (most recent first): ' + (hist.length ? hist.join(' | ') : 'none') + (r.method === 'Espresso' ? '\nNOTE: This is ESPRESSO. Advise on dose, yield (g out), shot time, temperature and grind ONLY. No pour-over advice (no pours, swirls, blooms, drawdown).' : '');
     const resp = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: {
