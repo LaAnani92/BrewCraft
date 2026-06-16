@@ -247,8 +247,9 @@
   .pour-table input:focus { border-color:var(--accent); box-shadow:0 0 0 2px var(--accent-glow); }
   .pour-table .pour-technique { width:118px; text-align:left; }
   .pour-table .cumulative { font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--text-muted); white-space:nowrap; }
-  .pour-remove-btn { background:none; border:none; color:var(--text-muted); cursor:pointer; font-size:15px; padding:5px 7px; border-radius:4px; transition:all 0.15s; line-height:1; }
-  .pour-remove-btn:hover { color:var(--danger); background:rgba(196,107,94,0.1); }
+  /* 44x44 touch target for a destructive control; negative margins absorb the extra so the header keeps its compact visual height. */
+  .pour-remove-btn { background:none; border:none; color:var(--text-muted); cursor:pointer; font-size:15px; padding:0; border-radius:8px; transition:all 0.15s; line-height:1; display:inline-flex; align-items:center; justify-content:center; min-width:44px; min-height:44px; margin:-10px -8px -10px 0; flex-shrink:0; }
+  .pour-remove-btn:hover, .pour-remove-btn:focus-visible { color:var(--danger); background:rgba(196,107,94,0.1); }
   .pour-controls { display:flex; gap:8px; padding:12px 14px; background:var(--bg-surface); border-top:1px solid var(--border); align-items:center; justify-content:space-between; flex-wrap:wrap; }
   .pour-controls-left { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
   .pour-total { font-family:'JetBrains Mono',monospace; font-size:13px; color:var(--text-secondary); }
@@ -1951,7 +1952,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.17.0';
+const APP_VERSION = '2.18.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0;
 let wakeLock = null;

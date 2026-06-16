@@ -335,3 +335,11 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] Idempotent + guarded (navigator.wakeLock absent → no-op); on iPhone Safari (secure context) it holds; verified no errors + correct wiring (preview is visibilityState:hidden so it can't hold a lock, as expected)
 - [ ] npm run check green (2.17.0 synced)
 - [ ] Update toast after deploy (cache v2.17.0)
+
+## Sprint 30 (v2.18.0) — Bigger tap target for the destructive "Remove pour" X
+- [ ] In the pour-schedule editor, each pour card's "Remove pour" X now has a 44×44 touch target (was ~29×25) — easier one-handed in the kitchen, harder to fat-finger a destructive delete
+- [ ] Visual unchanged: `.pour-card-head` stays ~24px tall (negative margins absorb the larger hit box); icon still right-aligned
+- [ ] Added :focus-visible styling to match :hover (keyboard parity on the destructive control)
+- [ ] Still guarded: removing the last remaining pour is blocked with a "Need at least one pour" toast (unchanged)
+- [ ] npm run check green (2.18.0 synced); verified rendered button = 44×44 via DOM measurement
+- [ ] Update toast after deploy (cache v2.18.0)
