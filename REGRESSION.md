@@ -437,3 +437,10 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] Surfaces the app's moat (the iterative dialing-in story) that was previously fed only to the AI
 - [ ] npm run check green (2.31.0 synced); verified via preview with a synthetic 3-version chain
 - [ ] Update toast after deploy (cache v2.31.0)
+
+## Sprint 44 (v2.32.0) — align the beginner starter hint with the guided path
+- [ ] The brand-new-user starter hint now reads "...A forgiving first brew — tap Brew-Along below and it guides every pour." (was "just press Start below")
+- [ ] Fixes two issues: (1) the copy said "Start" while the dominant primary button is "Brew-Along Mode"; (2) it contradicted onboarding step 2 ("Brew-Along guides every pour") by steering novices to the bare stopwatch instead of the guided path built for them
+- [ ] Copy-only; still only shows when isStarter && allSamples (seeded pour-over/immersion samples, which have pour weights so Brew-Along works); hides once the user edits/switches off a sample
+- [ ] npm run check green (2.32.0 synced); verified hint text + starter-only visibility via preview
+- [ ] Update toast after deploy (cache v2.32.0)

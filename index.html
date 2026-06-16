@@ -1967,7 +1967,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.31.0';
+const APP_VERSION = '2.32.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0;
 let wakeLock = null;
@@ -4827,7 +4827,7 @@ function renderToday() {
   const starterHint = document.getElementById('todayStarterHint');
   if (isStarter && allSamples) {
     starterHint.hidden = false;
-    starterHint.textContent = 'New to BrewCraft? A forgiving first brew \u2014 just press Start below.';
+    starterHint.textContent = 'New to BrewCraft? A forgiving first brew \u2014 tap Brew-Along below and it guides every pour.';
   } else {
     starterHint.hidden = true;
   }
