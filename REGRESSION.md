@@ -401,3 +401,9 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] These were the last raw-glyph UI icons (set at runtime, so the v2.8.0 static sweep missed them); also removes two raw pictographs from source (corruption-risk per project convention)
 - [ ] npm run check green (2.26.0 synced; 183 IDs present, parses, boots clean); compare icon render verified via preview
 - [ ] Update toast after deploy (cache v2.26.0)
+
+## Sprint 39 (v2.27.0) — 44px targets for the AI-invocation buttons
+- [ ] The shared .ai-explain-btn pills (Suggest a starting point, What do these mean?, Dial in a cup, Explain this change, Find my patterns) are now ≥44px tall (were ~35px) — they're AI entry points tapped across Recipe/Insights
+- [ ] One scoped rule (min-height on .ai-explain-btn); already inline-flex+centered so content stays centered; pill look unchanged
+- [ ] npm run check green (2.27.0 synced); rendered heights verified via DOM measurement
+- [ ] Update toast after deploy (cache v2.27.0)
