@@ -313,3 +313,10 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] Scoped to the List view only — the Timeline view (date-grouped) stays single-column (class toggled in renderLibrary vs renderJournal); mobile (<900px) unchanged (block)
 - [ ] npm run check green (2.14.0 synced)
 - [ ] Update toast after deploy (cache v2.14.0)
+
+## Sprint 27 (v2.15.0) — v5.0 sprint, Cycle 7: Recipe progressive disclosure (part 1)
+- [ ] Calm beginner default: a Beginner opens the Recipe tab to Method + Brew Parameters, with the optional Bean & Recipe Details collapsed (one tap to open) — applyInitialDisclosure at boot, skill-beginner only
+- [ ] Enthusiast/Expert keep Bean details expanded; Method + Parameters stay open for everyone (essentials); Water already hidden in simple mode (verified beginner collapsed/expert open, aria-expanded synced)
+- [ ] Boot-only — does not re-collapse if the user opens it mid-session; reverts to calm default next load
+- [ ] npm run check green (2.15.0 synced)
+- [ ] Update toast after deploy (cache v2.15.0)

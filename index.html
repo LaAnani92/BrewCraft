@@ -1944,7 +1944,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.14.0';
+const APP_VERSION = '2.15.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0;
 let wakeLock = null;
@@ -4728,6 +4728,17 @@ function applyMode() {
   const sel = document.getElementById('labSkill');
   if (sel) sel.value = settings.skill || (settings.mode === 'pro' ? 'expert' : 'beginner');
 }
+/* Calm default for the Recipe tab: a Beginner opens to Method + Brew Parameters, with the optional
+   Bean & Recipe Details collapsed (one tap to open). Enthusiast/Expert keep it expanded. Boot-only,
+   so it never re-collapses on someone who opened it mid-session. */
+function applyInitialDisclosure() {
+  const bean = document.getElementById('sec-bean');
+  if (!bean) return;
+  const collapse = document.body.classList.contains('skill-beginner');
+  bean.classList.toggle('collapsed', collapse);
+  const h = bean.querySelector('.section-header');
+  if (h) h.setAttribute('aria-expanded', String(!collapse));
+}
 function toggleBeanExtra() {
   document.body.classList.toggle('show-bean-extra');
   document.getElementById('moreBeanBtn').textContent =
@@ -5555,6 +5566,7 @@ function init() {
   initControlsA11y();
   initFieldLabels();
   initModalA11y();
+  applyInitialDisclosure();
   loadHintState();
   bumpHintsSeen();
   showDialHint();
