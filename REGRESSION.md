@@ -421,3 +421,11 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] Only shows when recipes exist but the search/filter excludes all; the no-recipes empty state (libraryEmpty CTA) is unchanged
 - [ ] npm run check green (2.29.0 synced); verified via preview (filter to zero in Journal)
 - [ ] Update toast after deploy (cache v2.29.0)
+
+## Sprint 42 (v2.30.0) — gentle target ranges on the espresso fields
+- [ ] Shot Time field shows "Typical: 25-32s" and Pressure shows "Typical: ~9 bar" inline, parallel to the Water section's range hints; espresso-specific (only shown when Espresso is the selected method — #espressoFields display:grid)
+- [ ] Yield Out intentionally has no fixed hint (it's dose×ratio, recipe-derived); Pre-infusion left unhinted (machine-dependent)
+- [ ] No behavior change; respects espresso-as-distinct-workflow
+- [ ] Accessibility note (this iteration's lens): computed --text-muted is #9a8a76 → 5.08:1 on cards / 5.55:1 on deep bg (passes AA); only 4.44:1 on the rarely-used --bg-surface — a global recolor was REJECTED as unwarranted + taste-territory
+- [ ] npm run check green (2.30.0 synced); verified hints render under espresso via preview
+- [ ] Update toast after deploy (cache v2.30.0)
