@@ -394,3 +394,10 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] Water section still collapsed by default + hidden in Simple mode (beginners unaffected); no behavior change
 - [ ] npm run check green (2.25.0 synced)
 - [ ] Update toast after deploy (cache v2.25.0)
+
+## Sprint 38 (v2.26.0) — finish the glyph→SVG icon sweep (2 runtime icons)
+- [ ] Dial-in button: after running, it reset to a raw ⚡ glyph via textContent; now restores its SVG #i-bolt via innerHTML (matches the button's initial markup) — icon no longer degrades after first use
+- [ ] Compare button (Library cards): replaced the raw ⚖ glyph with a new stroke SVG symbol #i-compare (two-way swap arrows, matches the icon set)
+- [ ] These were the last raw-glyph UI icons (set at runtime, so the v2.8.0 static sweep missed them); also removes two raw pictographs from source (corruption-risk per project convention)
+- [ ] npm run check green (2.26.0 synced; 183 IDs present, parses, boots clean); compare icon render verified via preview
+- [ ] Update toast after deploy (cache v2.26.0)
