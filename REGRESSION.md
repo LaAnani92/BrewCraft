@@ -352,3 +352,10 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] No-key rule fallback unchanged; AI source line still notes when advice is "informed by N past iterations"
 - [ ] npm run check green (2.19.0 synced); freshness line verified for degassing/peak/fading/no-date via preview eval
 - [ ] Update toast after deploy (cache v2.19.0)
+
+## Sprint 32 (v2.20.0) — AI suggester also knows bean freshness
+- [ ] The "Suggest a starting point" AI now receives bean freshness (days off roast) in beanBits, matching the dial-in; system prompt tells it very fresh coffee brews unevenly / aged coffee has faded aromatics
+- [ ] No roast date → freshness "roast date not logged" (no crash); rule-based ruleSuggest fallback unchanged
+- [ ] Espresso still gets espYield/espShot keys; grind enum unchanged
+- [ ] npm run check green (2.20.0 synced)
+- [ ] Update toast after deploy (cache v2.20.0)

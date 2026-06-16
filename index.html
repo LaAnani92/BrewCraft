@@ -1952,7 +1952,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.19.0';
+const APP_VERSION = '2.20.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0;
 let wakeLock = null;
@@ -3364,8 +3364,9 @@ async function runSuggest(goal) {
   }
   panel.innerHTML = aiThinking('Starting point \u00b7 ' + escapeHtml(goal), 'Thinking about your ' + escapeHtml(method));
   try {
-    const sys = 'You are a specialty coffee expert. Given a bean, brew method, the user skill level, and a taste goal, propose ONE realistic starting recipe. Reply ONLY with minified JSON (no prose, no markdown, no code fence). Keys: doseG (number, grams), ratio (number, water:coffee e.g. 16.5; for espresso the brew ratio e.g. 2.0), tempC (number, Celsius), grind (one of EXACTLY: "extra fine","espresso-fine","fine","medium-fine","medium","medium-coarse","coarse","extra coarse"), rationale (one short plain-text sentence). For espresso ALSO include espYield (grams out) and espShot (seconds). Keep values realistic for the method and bean.';
-    const beanBits = { origin: d.beanOrigin, roaster: d.roaster, process: d.beanProcess, roastLevel: d.roastLevel };
+    const sys = 'You are a specialty coffee expert. Given a bean (including its freshness / days off roast), brew method, the user skill level, and a taste goal, propose ONE realistic starting recipe. Account for freshness when given: very fresh coffee still degassing brews unevenly, while coffee well past roast has faded aromatics. Reply ONLY with minified JSON (no prose, no markdown, no code fence). Keys: doseG (number, grams), ratio (number, water:coffee e.g. 16.5; for espresso the brew ratio e.g. 2.0), tempC (number, Celsius), grind (one of EXACTLY: "extra fine","espresso-fine","fine","medium-fine","medium","medium-coarse","coarse","extra coarse"), rationale (one short plain-text sentence). For espresso ALSO include espYield (grams out) and espShot (seconds). Keep values realistic for the method and bean.';
+    const fresh = freshnessInfo(d.roastDate);
+    const beanBits = { origin: d.beanOrigin, roaster: d.roaster, process: d.beanProcess, roastLevel: d.roastLevel, freshness: fresh ? fresh.label : 'roast date not logged' };
     const userMsg = 'METHOD: ' + method + '\nBEAN: ' + JSON.stringify(beanBits) + '\nSKILL: ' + (settings.skill || 'beginner') + '\nTASTE GOAL: ' + goal;
     const text = await aiComplete(sys, userMsg, 350);
     let s = null;
