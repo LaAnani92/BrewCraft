@@ -372,3 +372,10 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] Tier pill left as-is (a persistent-background chip; min-height would balloon it — not worth a pseudo-element hack for a minor secondary control)
 - [ ] npm run check green (2.22.0 synced); rendered heights verified via DOM measurement
 - [ ] Update toast after deploy (cache v2.22.0)
+
+## Sprint 35 (v2.23.0) — accessible names for 10 unlabeled form controls
+- [ ] Screen readers now announce a name for: recipeName, beanProfileSelect (Recipe); customTagInput, brewerNotes, dialinNotes (Taste); librarySearch, libraryMethodFilter, librarySort, shareCodeBox, importCodeBox (Library)
+- [ ] All via aria-label (placeholders are not a reliable accessible name); no visible layout or behavior change
+- [ ] Flavor-tag chips (33px) and ratio chips (28px) left as-is — they pass WCAG AA target-size (≥24px) and their dense layout is intentional
+- [ ] npm run check green (2.23.0 synced); verified via DOM accessible-name audit
+- [ ] Update toast after deploy (cache v2.23.0)

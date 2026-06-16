@@ -871,7 +871,7 @@
 
 <div class="tab-panel" id="tab-recipe">
 
-  <input type="text" id="recipeName" class="name-hero" placeholder="Name this recipe…" oninput="markDirty(); syncHeaderName()">
+  <input type="text" id="recipeName" class="name-hero" aria-label="Recipe name"placeholder="Name this recipe…" oninput="markDirty(); syncHeaderName()">
   <div class="brewbar" id="brewBar">
     <button class="bb-stat" onclick="bbFocus('coffeeDose')"><span class="bb-label">Dose</span><span class="bb-val" id="bbDose">—</span></button>
     <button class="bb-stat" onclick="bbFocus('brewRatio')"><span class="bb-label">Ratio</span><span class="bb-val" id="bbRatio">—</span></button>
@@ -953,7 +953,7 @@
     <div class="section-body">
       <button class="btn btn-scan" onclick="openScan()" id="scanBagBtn"><svg class="ico"><use href="#i-camera"/></svg> Scan bag</button>
       <div class="profile-row">
-        <select id="beanProfileSelect" onchange="applyBeanProfile()">
+        <select id="beanProfileSelect" aria-label="Saved bean profiles" onchange="applyBeanProfile()">
           <option value="">Saved beans…</option>
         </select>
         <input type="number" inputmode="decimal" enterkeyhint="done" id="bagSizeInput" placeholder="Bag g" min="0" step="10" oninput="updateBagSize()" aria-label="Bag size in grams" title="Bag size in grams">
@@ -1391,7 +1391,7 @@
           <span class="tag" onclick="toggleTag(this)">Smoky</span><span class="tag" onclick="toggleTag(this)">Earthy</span>
         </div>
         <div class="tag-input-wrapper">
-          <input type="text" id="customTagInput" placeholder="Add custom descriptor…" onkeydown="if(event.key==='Enter')addCustomTag()">
+          <input type="text" id="customTagInput" aria-label="Add a custom flavor descriptor" placeholder="Add custom descriptor…" onkeydown="if(event.key==='Enter')addCustomTag()">
           <button class="btn btn-sm btn-secondary" onclick="addCustomTag()">+ Add</button>
         </div>
       </div>
@@ -1412,7 +1412,7 @@
     </div>
     <div class="section-body">
       <div class="notes-box">
-        <textarea id="brewerNotes" placeholder="How was it? Sweet or sharp, thin or full — what jumped out, and what you'd change next time." oninput="markDirty()"></textarea>
+        <textarea id="brewerNotes" aria-label="Tasting notes" placeholder="How was it? Sweet or sharp, thin or full — what jumped out, and what you'd change next time." oninput="markDirty()"></textarea>
       </div>
     </div>
   </div>
@@ -1437,7 +1437,7 @@
         <span class="tag issue" data-issue="salty" onclick="toggleTag(this)">Salty</span>
         <span class="tag issue" data-issue="unbalanced" onclick="toggleTag(this)">Unbalanced</span>
       </div>
-      <textarea class="dialin-textarea" id="dialinNotes" placeholder="Optional: describe the cup in your own words… e.g., 'juicy start but the finish turns drying, sweetness disappears as it cools'"></textarea>
+      <textarea class="dialin-textarea" id="dialinNotes" aria-label="Describe the cup for dial-in advice" placeholder="Optional: describe the cup in your own words… e.g., 'juicy start but the finish turns drying, sweetness disappears as it cools'"></textarea>
       <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
         <button class="btn btn-primary" id="dialinBtn" onclick="getDialinAdvice()"><svg class="ico"><use href="#i-bolt"/></svg> Get Dial-In Advice</button>
         <span class="field-hint" id="dialinModeHint" style="align-self:center"></span>
@@ -1495,13 +1495,13 @@
     <button class="preset-chip" id="viewJournalBtn" onclick="setLibraryView('journal')">Timeline</button>
   </div>
   <div class="library-filters">
-    <input type="text" id="librarySearch" placeholder="Search name, origin, roaster…" oninput="renderLibrary()">
-    <select id="libraryMethodFilter" onchange="renderLibrary()">
+    <input type="text" id="librarySearch" aria-label="Search recipes" placeholder="Search name, origin, roaster…" oninput="renderLibrary()">
+    <select id="libraryMethodFilter" aria-label="Filter by brew method" onchange="renderLibrary()">
       <option value="">All methods</option>
       <option>V60</option><option>Chemex</option><option>Kalita Wave</option><option>AeroPress</option>
       <option>French Press</option><option>Clever</option><option>Siphon</option><option>Espresso</option>
     </select>
-    <select id="librarySort" onchange="renderLibrary()">
+    <select id="librarySort" aria-label="Sort recipes" onchange="renderLibrary()">
       <option value="new">Newest first</option>
       <option value="old">Oldest first</option>
       <option value="rating">Highest rated</option>
@@ -1529,7 +1529,7 @@
   <div class="share-card">
     <h3>Share this recipe</h3>
     <div class="share-sub">Currently sharing: <strong class="share-recipe-name" id="shareRecipeName">Untitled recipe</strong></div>
-    <textarea class="share-code-box" id="shareCodeBox" rows="4" readonly onclick="this.select()"></textarea>
+    <textarea class="share-code-box" id="shareCodeBox" rows="4" aria-label="Recipe share code" readonly onclick="this.select()"></textarea>
     <div class="share-actions">
       <button class="btn btn-secondary" onclick="copyShareCode()">Copy Code</button>
       <button class="btn btn-secondary" id="copyLinkBtn" onclick="copyShareLink()" style="display:none">Copy Link</button>
@@ -1547,7 +1547,7 @@
   <div class="share-card">
     <h3>Receive a recipe</h3>
     <div class="share-sub">Paste a code or link a friend sent you</div>
-    <textarea class="share-code-box" id="importCodeBox" rows="4" placeholder="Paste share code or link here…"></textarea>
+    <textarea class="share-code-box" id="importCodeBox" rows="4" aria-label="Paste a share code or link to import" placeholder="Paste share code or link here…"></textarea>
     <div class="share-actions">
       <button class="btn btn-primary" onclick="importFromCode()">↓ Import Recipe</button>
     </div>
@@ -1956,7 +1956,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.22.0';
+const APP_VERSION = '2.23.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0;
 let wakeLock = null;
