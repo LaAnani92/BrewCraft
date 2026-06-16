@@ -536,6 +536,9 @@
   .brew-guide .bg-add { color:var(--accent-warm); font-family:'JetBrains Mono',monospace; }
   .brew-guide .bg-next { display:block; font-size:11px; color:var(--text-muted); margin-top:3px; }
   .brew-guide .bg-done { color:var(--success); font-size:17px; }
+  /* Quiet, optional path from a finished brew into rating it — closes the brew->taste loop without nagging */
+  .brew-guide .bg-rate-link { display:inline-block; margin-top:11px; font-size:12px; color:var(--text-muted); background:none; border:none; border-bottom:1px solid var(--border-light); padding:2px 0; cursor:pointer; font-family:var(--font-sans); transition:color 0.15s,border-color 0.15s; }
+  .brew-guide .bg-rate-link:hover, .brew-guide .bg-rate-link:focus-visible { color:var(--accent-bright); border-color:var(--accent); }
   /* a flex .template-row otherwise overrides the [hidden] attribute */
   .template-row[hidden] { display:none; }
   /* Brew-landing context: freshness-as-guidance + carry-the-thread */
@@ -1906,7 +1909,8 @@ function updateBrewGuide(sec) {
       beep(660, 0.18); setTimeout(function() { beep(880, 0.2); }, 200); vibrate(140);
     }
     el.innerHTML = '<strong class="bg-done">✓ That’s brewed</strong>' +
-      '<span class="bg-next">Let it settle. Take the first sip before you judge it.</span>';
+      '<span class="bg-next">Let it settle. Take the first sip before you judge it.</span>' +
+      '<button class="bg-rate-link" onclick="switchTab(\'evaluate\')">Rate this cup &rarr;</button>';
     el.classList.add('show');
     return;
   }
@@ -1956,7 +1960,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.23.0';
+const APP_VERSION = '2.24.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0;
 let wakeLock = null;

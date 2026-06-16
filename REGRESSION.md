@@ -379,3 +379,11 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] Flavor-tag chips (33px) and ratio chips (28px) left as-is — they pass WCAG AA target-size (≥24px) and their dense layout is intentional
 - [ ] npm run check green (2.23.0 synced); verified via DOM accessible-name audit
 - [ ] Update toast after deploy (cache v2.23.0)
+
+## Sprint 36 (v2.24.0) — quiet "Rate this cup" link at brew-complete
+- [ ] When the main Brew-tab timer passes the target finish, the calm done-state ("That's brewed / let it settle") now offers a quiet, optional text link "Rate this cup →" that switches to the Taste tab
+- [ ] Closes the brew→rate→dial-in loop the onboarding promises, without nagging: it's a muted underlined link (not a CTA button), appears only after completion, honors "take the first sip before you judge it"
+- [ ] Only shows where guideSteps exist (pour-schedule methods); espresso/immersion without a schedule unaffected; resets/hides when the timer resets
+- [ ] :focus-visible parity for keyboard; arrow via &rarr; entity (no raw glyph in source)
+- [ ] npm run check green (2.24.0 synced); link presence + tab switch verified via preview
+- [ ] Update toast after deploy (cache v2.24.0)
