@@ -387,3 +387,10 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] :focus-visible parity for keyboard; arrow via &rarr; entity (no raw glyph in source)
 - [ ] npm run check green (2.24.0 synced); link presence + tab switch verified via preview
 - [ ] Update toast after deploy (cache v2.24.0)
+
+## Sprint 37 (v2.25.0) — inline ideal-range hints on Water GH/KH
+- [ ] GH field now shows "Ideal: 50-175 ppm" and KH shows "Ideal: ~40 ppm" inline, matching the TDS field's existing "Ideal range" hint and the section's own SCA-target footnote
+- [ ] Helps a user judge their measured water as they type instead of cross-referencing the footnote below the mixing calculator
+- [ ] Water section still collapsed by default + hidden in Simple mode (beginners unaffected); no behavior change
+- [ ] npm run check green (2.25.0 synced)
+- [ ] Update toast after deploy (cache v2.25.0)

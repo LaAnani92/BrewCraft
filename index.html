@@ -1261,8 +1261,8 @@
           <input type="number" inputmode="decimal" enterkeyhint="done" id="waterTDS" placeholder="e.g., 120" min="0" oninput="markDirty()">
           <div class="field-hint">Ideal range: 75–150 ppm</div>
         </div>
-        <div class="field"><label>GH <span class="unit">(ppm as CaCO₃)</span></label><input type="number" inputmode="decimal" enterkeyhint="done" id="waterGH" placeholder="e.g., 70" min="0" oninput="markDirty()"></div>
-        <div class="field"><label>KH <span class="unit">(ppm as CaCO₃)</span></label><input type="number" inputmode="decimal" enterkeyhint="done" id="waterKH" placeholder="e.g., 40" min="0" oninput="markDirty()"></div>
+        <div class="field"><label>GH <span class="unit">(ppm as CaCO₃)</span></label><input type="number" inputmode="decimal" enterkeyhint="done" id="waterGH" placeholder="e.g., 70" min="0" oninput="markDirty()"><div class="field-hint">Ideal: 50-175 ppm</div></div>
+        <div class="field"><label>KH <span class="unit">(ppm as CaCO₃)</span></label><input type="number" inputmode="decimal" enterkeyhint="done" id="waterKH" placeholder="e.g., 40" min="0" oninput="markDirty()"><div class="field-hint">Ideal: ~40 ppm</div></div>
         <div class="field"><label>Water Recipe / Brand</label><input type="text" id="waterRecipe" placeholder="e.g., Third Wave Water, Custom" oninput="markDirty()"></div>
       </div>
       <div class="water-sub">Mix your water — two-concentrate method</div>
@@ -1960,7 +1960,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.24.0';
+const APP_VERSION = '2.25.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0;
 let wakeLock = null;
