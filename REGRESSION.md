@@ -365,3 +365,10 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] Completes the pour-editor touch-target pass started in v2.18.0 (Remove-X)
 - [ ] npm run check green (2.21.0 synced); rendered heights verified via DOM measurement
 - [ ] Update toast after deploy (cache v2.21.0)
+
+## Sprint 34 (v2.22.0) — 44px targets for the primary in-kitchen controls
+- [ ] Brew-tab timer buttons (Start/Pause, Reset, Lap) are now ≥44px tall (scoped `.timer-buttons .btn`) — the most-tapped controls during a live brew, often one-handed
+- [ ] Settings gear is now 44×44 (was 42) with the icon flex-centered
+- [ ] Tier pill left as-is (a persistent-background chip; min-height would balloon it — not worth a pseudo-element hack for a minor secondary control)
+- [ ] npm run check green (2.22.0 synced); rendered heights verified via DOM measurement
+- [ ] Update toast after deploy (cache v2.22.0)

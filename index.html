@@ -225,6 +225,8 @@
   .timer-display.running { color:var(--accent-bright); }
   .timer-label { font-size:11px; color:var(--text-muted); text-transform:uppercase; letter-spacing:1.5px; font-weight:600; }
   .timer-buttons { display:flex; gap:10px; justify-content:center; margin-top:12px; flex-wrap:wrap; }
+  /* The most-tapped controls during a live brew — meet the 44px target for one-handed use */
+  .timer-buttons .btn { min-height:44px; }
   .timer-current-pour { font-size:13px; color:var(--text-secondary); margin-top:10px; font-weight:500; min-height:20px; }
   .timer-current-pour strong { color:var(--accent-warm); }
 
@@ -442,7 +444,7 @@
   /* ===== v5 ergonomics ===== */
   .btn { min-height:44px; }
   .btn-sm { min-height:38px; }
-  .icon-btn { min-width:42px; min-height:42px; font-size:16px; }
+  .icon-btn { min-width:44px; min-height:44px; font-size:16px; display:inline-flex; align-items:center; justify-content:center; }
   .autosave-status { font-size:11px; color:var(--text-muted); min-width:64px; text-align:right; }
   .autosave-status.saved { color:var(--success); }
   .stepper { display:flex; align-items:stretch; gap:6px; }
@@ -1954,7 +1956,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.21.0';
+const APP_VERSION = '2.22.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0;
 let wakeLock = null;
