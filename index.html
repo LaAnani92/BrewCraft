@@ -1327,7 +1327,7 @@
     <div class="timer-buttons">
       <button class="btn btn-primary" id="timerStartBtn" onclick="toggleTimer()"><svg class="ico"><use href="#i-play"/></svg> Start</button>
       <button class="btn btn-secondary" onclick="resetTimer()"><svg class="ico"><use href="#i-reset"/></svg> Reset</button>
-      <button class="btn btn-secondary" onclick="lapTimer()"><svg class="ico"><use href="#i-lap"/></svg> Lap</button>
+      <button class="btn btn-secondary" onclick="lapTimer()" title="Lap — stamp the current time onto the next pour as you brew" aria-label="Lap — record the current time onto the next pour"><svg class="ico"><use href="#i-lap"/></svg> Lap</button>
     </div>
     <div class="timer-current-pour" id="timerPourInfo"></div>
   </div>
@@ -1961,7 +1961,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.27.0';
+const APP_VERSION = '2.28.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0;
 let wakeLock = null;

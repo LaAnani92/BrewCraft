@@ -407,3 +407,10 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] One scoped rule (min-height on .ai-explain-btn); already inline-flex+centered so content stays centered; pill look unchanged
 - [ ] npm run check green (2.27.0 synced); rendered heights verified via DOM measurement
 - [ ] Update toast after deploy (cache v2.27.0)
+
+## Sprint 40 (v2.28.0) — clarify the "Lap" timer button
+- [ ] The Lap button now has a title + aria-label ("Lap — record the current time onto the next pour") — "Start"/"Reset" are self-explanatory but "Lap" was opaque to newcomers and screen-reader users
+- [ ] Matches what lapTimer() actually does (stamps the live time into the next empty pour start/end as you brew)
+- [ ] No behavior or layout change
+- [ ] npm run check green (2.28.0 synced)
+- [ ] Update toast after deploy (cache v2.28.0)
