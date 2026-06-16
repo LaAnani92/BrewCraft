@@ -414,3 +414,10 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] No behavior or layout change
 - [ ] npm run check green (2.28.0 synced)
 - [ ] Update toast after deploy (cache v2.28.0)
+
+## Sprint 41 (v2.29.0) — warmer, actionable Journal no-match state
+- [ ] Journal/Timeline view's "no results" state now matches the Library List view: an "No matches" title + helpful recovery line ("Try a different term, or clear them to see your whole journal") instead of the curt "No brews match your search."
+- [ ] Consistency between the two views of the same data + clearer path out of a dead-end filter
+- [ ] Only shows when recipes exist but the search/filter excludes all; the no-recipes empty state (libraryEmpty CTA) is unchanged
+- [ ] npm run check green (2.29.0 synced); verified via preview (filter to zero in Journal)
+- [ ] Update toast after deploy (cache v2.29.0)

@@ -1961,7 +1961,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.28.0';
+const APP_VERSION = '2.29.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0;
 let wakeLock = null;
@@ -5139,7 +5139,7 @@ function renderJournal() {
   if (recipes.length && !list.length) {
     const d = document.createElement('div');
     d.className = 'library-empty';
-    d.textContent = 'No brews match your search.';
+    d.innerHTML = '<div class="empty-title">No matches</div><p>Nothing fits that search or filter. Try a different term, or clear them to see your whole journal.</p>';
     listEl.appendChild(d);
   }
 }
