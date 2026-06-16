@@ -252,6 +252,8 @@
   .pour-remove-btn:hover, .pour-remove-btn:focus-visible { color:var(--danger); background:rgba(196,107,94,0.1); }
   .pour-controls { display:flex; gap:8px; padding:12px 14px; background:var(--bg-surface); border-top:1px solid var(--border); align-items:center; justify-content:space-between; flex-wrap:wrap; }
   .pour-controls-left { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+  /* 44px tap targets for the pour-editor actions (scoped — no global .btn-sm change) */
+  .pour-controls .btn { min-height:44px; }
   .pour-total { font-family:'JetBrains Mono',monospace; font-size:13px; color:var(--text-secondary); }
   .pour-total strong { color:var(--accent-bright); }
 
@@ -1952,7 +1954,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.20.0';
+const APP_VERSION = '2.21.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0;
 let wakeLock = null;

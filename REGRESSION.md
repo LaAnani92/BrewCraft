@@ -359,3 +359,9 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] Espresso still gets espYield/espShot keys; grind enum unchanged
 - [ ] npm run check green (2.20.0 synced)
 - [ ] Update toast after deploy (cache v2.20.0)
+
+## Sprint 33 (v2.21.0) — 44px tap targets for the pour-editor actions
+- [ ] "+ Add Pour" and "Auto-Distribute" in the Pour Schedule controls are now ≥44px tall (were 38px), scoped via `.pour-controls .btn { min-height:44px }` — no change to the global `.btn-sm`
+- [ ] Completes the pour-editor touch-target pass started in v2.18.0 (Remove-X)
+- [ ] npm run check green (2.21.0 synced); rendered heights verified via DOM measurement
+- [ ] Update toast after deploy (cache v2.21.0)
