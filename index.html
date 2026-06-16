@@ -214,6 +214,12 @@
   .diff-card { border-color:rgba(200,149,108,0.35); background:var(--accent-glow); }
   .diff-card .diff-line { font-size:13px; color:var(--text-secondary); font-family:'JetBrains Mono',monospace; padding:2px 0; }
   .diff-card .diff-line strong { color:var(--accent-bright); font-weight:500; }
+  /* Progressive-disclosure view of the full dial-in lineage (the moat) — collapsed, calm, reuses iterationHistory */
+  .diff-card .diff-journey { margin-top:11px; }
+  .diff-card .diff-journey summary { cursor:pointer; font-size:12px; font-weight:600; color:var(--text-secondary); padding:5px 0; }
+  .diff-card .diff-journey summary:hover, .diff-card .diff-journey[open] summary { color:var(--accent-bright); }
+  .diff-card .diff-journey[open] summary { margin-bottom:5px; }
+  .diff-card .diff-journey .diff-line { color:var(--text-muted); }
   .version-badge {
     display:inline-block; font-family:'JetBrains Mono',monospace; font-size:10px;
     background:var(--accent-glow); color:var(--accent-bright); border:1px solid rgba(200,149,108,0.3);
@@ -1961,7 +1967,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.30.0';
+const APP_VERSION = '2.31.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0;
 let wakeLock = null;
@@ -3701,6 +3707,11 @@ function renderVersionDiff(r) {
     'v' + (r.version || 2) + ' \u2014 changes from v' + (parent.version || 1);
   document.getElementById('versionDiffBody').innerHTML =
     lines.length ? lines.join('') : '<div class="diff-line">No parameter changes yet \u2014 adjust one variable.</div>';
+  const hist = iterationHistory(r);
+  if (hist.length >= 2) {
+    const steps = hist.map(function(l) { return '<div class="diff-line">' + escapeHtml(l) + '</div>'; }).join('');
+    document.getElementById('versionDiffBody').insertAdjacentHTML('beforeend', '<details class="diff-journey"><summary>Dial-in journey &middot; ' + hist.length + ' steps</summary>' + steps + '</details>');
+  }
   card.style.display = 'block';
   syncDiffExplain(r, parent);
 }

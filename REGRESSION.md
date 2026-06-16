@@ -429,3 +429,11 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] Accessibility note (this iteration's lens): computed --text-muted is #9a8a76 → 5.08:1 on cards / 5.55:1 on deep bg (passes AA); only 4.44:1 on the rarely-used --bg-surface — a global recolor was REJECTED as unwarranted + taste-territory
 - [ ] npm run check green (2.30.0 synced); verified hints render under espresso via preview
 - [ ] Update toast after deploy (cache v2.30.0)
+
+## Sprint 43 (v2.31.0) — surface the dial-in journey (version lineage)
+- [ ] The version-diff card (Recipe tab) now offers a collapsed "Dial-in journey · N steps" <details> listing the full lineage iterationHistory already computes (vN: what changed → improved/worse N→M★), not just the immediate parent diff
+- [ ] Shown only for genuinely multi-step lineages (iterationHistory length ≥ 2); reuses existing computed data, no new storage; collapsed by default (progressive disclosure, calm)
+- [ ] Appended via insertAdjacentHTML (existing immediate-diff lines + AI "Explain this change" unchanged); native <details> = accessible + zero-JS
+- [ ] Surfaces the app's moat (the iterative dialing-in story) that was previously fed only to the AI
+- [ ] npm run check green (2.31.0 synced); verified via preview with a synthetic 3-version chain
+- [ ] Update toast after deploy (cache v2.31.0)
