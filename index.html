@@ -1968,7 +1968,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.35.0';
+const APP_VERSION = '2.36.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null;
 let wakeLock = null;
@@ -2837,11 +2837,21 @@ function toggleTimer() {
     document.getElementById('timerDisplay').classList.remove('running');
     document.getElementById('baTimer').classList.remove('running');
     document.getElementById('brewLiveDot').classList.remove('show');
-    const tbt = document.getElementById('totalBrewTime');
-    if (!tbt.value && timerElapsed >= 20000) {
-      tbt.value = formatTimeShort(timerElapsed);
-      markDirty();
-      showActionToast('Brew time ' + tbt.value + ' logged', 'Taste \u203a', function() { switchTab('evaluate'); }, 'success', 6000);
+    if (getSelectedMethod() === 'Espresso') {
+      /* Espresso: the timed shot belongs in espShotTime (seconds) \u2014 the field the dial-in reads \u2014 not the generic brew-time. */
+      const est = document.getElementById('espShotTime');
+      if (est && !est.value && timerElapsed >= 8000) {
+        est.value = Math.round(timerElapsed / 1000);
+        markDirty();
+        showActionToast('Shot time ' + est.value + 's logged', 'Taste \u203a', function() { switchTab('evaluate'); }, 'success', 6000);
+      }
+    } else {
+      const tbt = document.getElementById('totalBrewTime');
+      if (!tbt.value && timerElapsed >= 20000) {
+        tbt.value = formatTimeShort(timerElapsed);
+        markDirty();
+        showActionToast('Brew time ' + tbt.value + ' logged', 'Taste \u203a', function() { switchTab('evaluate'); }, 'success', 6000);
+      }
     }
   } else {
     if (timerElapsed === 0) { cachePourCues(); computeBrewTarget(); }

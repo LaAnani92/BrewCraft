@@ -467,3 +467,10 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] Muted .field-hint styling, only shown on low ratings; flows into the existing dial-in CTA; no behavior change
 - [ ] npm run check green (2.35.0 synced); verified nudge shows on ≤3★ and hides on 4-5★ via preview
 - [ ] Update toast after deploy (cache v2.35.0)
+
+## Sprint 48 (v2.36.0) — timed espresso shot auto-logs to Shot Time
+- [ ] Advanced Coffee audit (lens): verified the timer already auto-fills totalBrewTime on stop (>=20s, only if empty, with a "Taste >" jump toast), Extraction & Results is expanded by default, number fields use decimal keyboards — the expert post-brew flow is efficient
+- [ ] Espresso-specific gap fixed: timing a shot used to log to the generic Total Brew Time while espShotTime (the field espressoDialIn reads) stayed empty, forcing manual re-entry. Now on timer-stop with method===Espresso, espShotTime is filled in seconds (>=8s floor, only if empty) with a "Shot time Ns logged · Taste >" toast; non-espresso still fills totalBrewTime mm:ss (unchanged)
+- [ ] Respects espresso-as-distinct-workflow; consent-safe (never overwrites an existing value); strengthens the espresso dial-in (no manual shot-time entry needed)
+- [ ] npm run check green (2.36.0 synced); verified espresso fills espShotTime / non-espresso fills totalBrewTime via preview
+- [ ] Update toast after deploy (cache v2.36.0)
