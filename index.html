@@ -1639,7 +1639,7 @@
 
 </main>
 
-<div class="ba-overlay" id="baOverlay">
+<div class="ba-overlay" id="baOverlay" role="dialog" aria-modal="true" aria-label="Brew-Along guided brewing">
   <div class="ba-tap left" onclick="baPrev()" aria-hidden="true"></div>
   <div class="ba-tap right" onclick="baNext()" aria-hidden="true"></div>
   <div class="ba-hint" id="baHint" hidden>‹ tap the screen edges to move between pours ›</div>
@@ -1967,9 +1967,9 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.32.0';
+const APP_VERSION = '2.33.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
-let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0;
+let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null;
 let wakeLock = null;
 let audioCtx = null;
 let cueTimes = [], cueFired = [];
@@ -2939,6 +2939,7 @@ async function enterBrewAlong() {
   baSteps = buildBASteps();
   if (!baSteps.length) { showToast('Add pour weights first (try Auto-Distribute)','warning'); return; }
   baIdx = 0; baActive = true;
+  baOpener = document.activeElement;
   baTotalSec = 0;
   baSteps.forEach(function(st) {
     if (st.end !== null) baTotalSec = Math.max(baTotalSec, st.end);
@@ -2954,6 +2955,8 @@ async function enterBrewAlong() {
   renderBAStep();
   updateBATheater(currentElapsedMs() / 1000);
   showBAHint();
+  const _baStart = document.getElementById('baTimerBtn');
+  if (_baStart) { try { _baStart.focus({ preventScroll: true }); } catch(e) { _baStart.focus(); } }
   syncWakeLock();
 }
 
@@ -2961,6 +2964,8 @@ function exitBrewAlong() {
   baActive = false;
   document.getElementById('baOverlay').classList.remove('show');
   syncWakeLock();
+  if (baOpener && typeof baOpener.focus === 'function') { try { baOpener.focus({ preventScroll: true }); } catch(e) {} }
+  baOpener = null;
 }
 function renderBAStep() {
   const st = baSteps[baIdx];
@@ -5588,6 +5593,7 @@ function applyScan() {
 document.addEventListener('keydown', function(e) {
   if ((e.metaKey || e.ctrlKey) && e.key === 's') { e.preventDefault(); saveRecipe(); }
   if ((e.metaKey || e.ctrlKey) && e.key === 'n') { e.preventDefault(); newRecipe(); }
+  if (e.key === 'Escape' && baActive) { e.preventDefault(); exitBrewAlong(); }
 });
 window.addEventListener('beforeunload', function(e) {
   if (isDirty) { e.preventDefault(); e.returnValue = ''; }

@@ -444,3 +444,12 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] Copy-only; still only shows when isStarter && allSamples (seeded pour-over/immersion samples, which have pour weights so Brew-Along works); hides once the user edits/switches off a sample
 - [ ] npm run check green (2.32.0 synced); verified hint text + starter-only visibility via preview
 - [ ] Update toast after deploy (cache v2.32.0)
+
+## Sprint 45 (v2.33.0) — Brew-Along is now a proper dialog (a11y)
+- [ ] Mobile Kitchen audit (this iteration's lens): verified at 375x812 the Brew-Along bottom buttons (y688-732) clear the edge tap-zones (end y682) — no overlap/hijack; ergonomics rejected as already-solid
+- [ ] Adjacent a11y gap shipped: .ba-overlay is not a .modal-overlay, so initModalA11y's dialog handling never applied. Added role="dialog" aria-modal="true" aria-label="Brew-Along guided brewing"
+- [ ] Escape now exits Brew-Along (global keydown, guarded by baActive); focus moves to the Start button on open and restores to the opener (the Brew-Along button) on close — both with preventScroll
+- [ ] Full Tab focus-trap deferred (residual: keyboard Tab can still reach background controls; aria-modal hides them from SR) — flagged as follow-up
+- [ ] timer/wake-lock/advance behavior unchanged; exit still preserves the running timer
+- [ ] npm run check green (2.33.0 synced); verified Escape-exit + focus move/restore via preview
+- [ ] Update toast after deploy (cache v2.33.0)
