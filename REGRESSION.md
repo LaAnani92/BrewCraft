@@ -495,3 +495,9 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] Low-risk: scroll-margin only affects where scrollIntoView lands, no layout change; benefits the low-rating "Get dial-in advice" jump and any future block:start section scroll
 - [ ] npm run check green (2.39.0 synced); computed scroll-margin-top + post-scroll section position verified via preview
 - [ ] Update toast after deploy (cache v2.39.0)
+
+## Sprint 52 (v2.40.0) — announce scan status + fix raw-HTML in the scanner
+- [ ] Accessibility audit (lens): the 4 AI panels (suggest/explain/patterns/diff) already have role=region aria-live=polite, and dialinOut/toast are role=status — dynamic AI announcements are covered. The gap was #scanStatus (camera OCR: "Reading the label…", errors, success) with no live-region; added role=status aria-live=polite so SR users hear scan progress/results
+- [ ] BUG fixed (found while auditing): the photo-selected handler set scanStatus.textContent to a string containing a <button>, so a keyless user saw raw HTML ("<button ...>Add an API key</button> to read this.") instead of a clickable link. Switched to innerHTML so the link renders (matches the 5 AI-panel no-key prompts); static string, no user input
+- [ ] npm run check green (2.40.0 synced); verified scanStatus has role=status + aria-live, and the no-key status renders a real button (no literal "<button" text) via preview
+- [ ] Update toast after deploy (cache v2.40.0)

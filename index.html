@@ -1701,7 +1701,7 @@
 
     <div id="scanStep2" class="scan-step" style="display:none">
       <img id="scanPreview" class="scan-preview" alt="bag photo preview">
-      <div id="scanStatus" class="scan-status"></div>
+      <div id="scanStatus" class="scan-status" role="status" aria-live="polite"></div>
       <div class="scan-actions">
         <button class="btn btn-secondary" id="scanReadBtn" onclick="runScanRead()">Read this label</button>
         <button class="btn btn-ghost" onclick="scanReset()">Retake</button>
@@ -1971,7 +1971,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.39.0';
+const APP_VERSION = '2.40.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null;
 let wakeLock = null;
@@ -5494,7 +5494,7 @@ function scanFilePicked(evt) {
     document.getElementById('scanPreview').src = dataUrl;
     document.getElementById('scanStep1').style.display = 'none';
     document.getElementById('scanStep2').style.display = 'block';
-    document.getElementById('scanStatus').textContent = settings.apiKey ? 'Ready to read.' : '<button type="button" class="link-btn" onclick="openSettingsToKey()">Add an API key</button> to read this.';
+    document.getElementById('scanStatus').innerHTML = settings.apiKey ? 'Ready to read.' : '<button type="button" class="link-btn" onclick="openSettingsToKey()">Add an API key</button> to read this.';
   });
 }
 function downscaleImage(file, cb) {
