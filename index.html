@@ -1967,7 +1967,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.33.0';
+const APP_VERSION = '2.34.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null;
 let wakeLock = null;
@@ -3225,7 +3225,7 @@ async function getDialinAdvice() {
     let txt = ruleDialIn(issues);
     if (hist.length) txt += '\n\nIteration memory: ' + hist[0];
     outEl.textContent = txt;
-    outEl.innerHTML += '<span class="src">AI call failed (' + escapeHtml(e.message) + ') \u2014 showing built-in expert rules instead. Check your key, model name, and internet connection.</span>';
+    outEl.innerHTML += '<span class="src">AI call failed (' + escapeHtml(aiErrorHint(e)) + ') \u2014 showing built-in expert rules instead. Check your key, model name, and internet connection.</span>';
   }
   outEl.classList.add('show');
   document.getElementById('dialinNext').style.display = 'block';
@@ -3259,6 +3259,17 @@ async function aiComplete(system, userMsg, maxTokens) {
   const text = (data.content || []).filter(function(b){ return b.type === 'text'; }).map(function(b){ return b.text; }).join('\n').trim();
   if (!text) throw new Error('empty response');
   return text;
+}
+/* Turn an API/network error into a plain, actionable hint instead of a raw status code. */
+function aiErrorHint(e) {
+  const m = String((e && e.message) || e || '');
+  if (/\b401\b|\b403\b/.test(m)) return 'API key not accepted - check it in Settings';
+  if (/\b404\b/.test(m)) return 'model name not found - check the AI Model field in Settings';
+  if (/\b429\b/.test(m)) return 'rate limited - wait a moment and retry';
+  if (/\b5\d\d\b/.test(m)) return 'the AI service had a hiccup - try again shortly';
+  if (/failed to fetch|networkerror|network|load failed/i.test(m)) return 'no network connection';
+  if (/empty response|could not read/i.test(m)) return 'unexpected AI response';
+  return m || 'unknown error';
 }
 
 /* ======= AI: "What do these settings mean?" \u2014 plain-language explainer ======= */
@@ -3304,7 +3315,7 @@ async function explainParams() {
     const text = await aiComplete(sys, userMsg, 400);
     panel.innerHTML = '<h4>Your settings, in plain language</h4>' + escapeHtml(text).replace(/\n/g, '<br>') + '<span class="src">AI \u00b7 ' + escapeHtml(settings.model || 'claude-sonnet-4-6') + '</span>';
   } catch(e) {
-    panel.innerHTML = '<h4>Your settings, in plain language</h4>' + escapeHtml(rule).replace(/\n/g, '<br>') + '<span class="src">AI unavailable (' + escapeHtml(e.message) + ') \u2014 showing the built-in guide instead.</span>';
+    panel.innerHTML = '<h4>Your settings, in plain language</h4>' + escapeHtml(rule).replace(/\n/g, '<br>') + '<span class="src">AI unavailable (' + escapeHtml(aiErrorHint(e)) + ') \u2014 showing the built-in guide instead.</span>';
   }
 }
 
@@ -3397,7 +3408,7 @@ async function runSuggest(goal) {
     if (s.espShot) s.espShot = parseFloat(s.espShot);
     renderResult(s, 'AI \u00b7 ' + escapeHtml(settings.model || 'claude-sonnet-4-6') + ' \u00b7 tuned to your bean & goal');
   } catch(e) {
-    renderResult(ruleSuggest(method, goal), 'AI unavailable (' + escapeHtml(e.message) + ') \u2014 showing a trusted built-in starting point instead.');
+    renderResult(ruleSuggest(method, goal), 'AI unavailable (' + escapeHtml(aiErrorHint(e)) + ') \u2014 showing a trusted built-in starting point instead.');
   }
 }
 function applySuggestion() {
@@ -3477,7 +3488,7 @@ async function detectPatterns() {
     const text = await aiComplete(sys, 'RATED BREWS:\n' + JSON.stringify(compact), 450);
     panel.innerHTML = '<h4>Your patterns</h4>' + escapeHtml(text).replace(/\n/g, '<br>') + '<span class="src">AI \u00b7 ' + escapeHtml(settings.model || 'claude-sonnet-4-6') + ' \u00b7 from ' + rated.length + ' rated brews</span>';
   } catch(e) {
-    panel.innerHTML = '<h4>Your patterns</h4>' + escapeHtml(ruleDetectPatterns(rated)).replace(/\n/g, '<br>') + '<span class="src">AI unavailable (' + escapeHtml(e.message) + ') \u2014 showing computed stats instead.</span>';
+    panel.innerHTML = '<h4>Your patterns</h4>' + escapeHtml(ruleDetectPatterns(rated)).replace(/\n/g, '<br>') + '<span class="src">AI unavailable (' + escapeHtml(aiErrorHint(e)) + ') \u2014 showing computed stats instead.</span>';
   }
 }
 
@@ -3548,7 +3559,7 @@ async function explainDiff() {
     const text = await aiComplete(sys, userMsg, 350);
     panel.innerHTML = '<h4>What changed in the cup</h4>' + escapeHtml(text).replace(/\n/g, '<br>') + '<span class="src">AI \u00b7 ' + escapeHtml(settings.model || 'claude-sonnet-4-6') + '</span>';
   } catch(e) {
-    panel.innerHTML = '<h4>What changed in the cup</h4>' + escapeHtml(rule).replace(/\n/g, '<br>') + '<span class="src">AI unavailable (' + escapeHtml(e.message) + ') \u2014 showing the built-in read.</span>';
+    panel.innerHTML = '<h4>What changed in the cup</h4>' + escapeHtml(rule).replace(/\n/g, '<br>') + '<span class="src">AI unavailable (' + escapeHtml(aiErrorHint(e)) + ') \u2014 showing the built-in read.</span>';
   }
 }
 

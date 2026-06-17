@@ -453,3 +453,10 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] timer/wake-lock/advance behavior unchanged; exit still preserves the running timer
 - [ ] npm run check green (2.33.0 synced); verified Escape-exit + focus move/restore via preview
 - [ ] Update toast after deploy (cache v2.33.0)
+
+## Sprint 46 (v2.34.0) — friendlier, actionable AI error messages
+- [ ] AI Product audit (this iteration's lens): the no-key fallbacks (ruleSuggest is goal-aware, ruleDialIn is expert-level, ruleDetectPatterns computes real stats) and the calm muted upsells are well-built — rejected the "nagging keyless users" critique
+- [ ] Weak moment fixed: all 5 AI features showed the raw error (e.message → "API 401"/"API 404") on failure. Added aiErrorHint(e) mapping 401/403→key not accepted, 404→model name not found, 429→rate limited, 5xx→service hiccup, network→no connection; routed all 5 catches (dial-in, explain, suggest, patterns, diff) through it
+- [ ] Every feature still falls back to its rule output on error (unchanged); only the parenthetical reason is now actionable
+- [ ] npm run check green (2.34.0 synced); verified aiErrorHint mapping via preview
+- [ ] Update toast after deploy (cache v2.34.0)
