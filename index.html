@@ -1972,7 +1972,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.42.0';
+const APP_VERSION = '2.43.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null;
 let wakeLock = null;
@@ -4192,8 +4192,8 @@ function addImportedRecipe(raw) {
   loadRecipeData(r);
   clearDirty();
   renderLibrary();
-  switchTab('recipe');
-  showToast('Recipe imported \u2713','success');
+  switchTab('brew');
+  showToast((r.name || 'Recipe') + ' is yours, ready to brew', 'success');
 }
 
 function checkHashImport() {

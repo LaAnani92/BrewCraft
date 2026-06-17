@@ -515,3 +515,10 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] Activates the dormant intended th style; openCompare builds the header via textContent (safe); diff-row highlighting unchanged
 - [ ] npm run check green (2.42.0 synced); header names + removed body row verified via preview
 - [ ] Update toast after deploy (cache v2.42.0)
+
+## Sprint 55 (v2.43.0) — warm the received-recipe hand-off
+- [ ] Emotional Design audit (lens): the receive modal ("A friend shared X with you. Add it to your library?") is warm, but accepting landed the user on the Recipe (editing) tab with a cold "Recipe imported ✓" toast — a data-transaction ending for what is a gift
+- [ ] addImportedRecipe now lands on the Brew threshold ("Now brewing: <gift>, ready to brew" hero) and shows a personal toast "<name> is yours, ready to brew"; switchTab('brew') refreshes the hero (renderToday/renderBrewBar) so it's not stale
+- [ ] Still consent-based (the accept/decline modal is unchanged), name shown via textContent (safe against a malicious shared name); recipe still added to library + loaded
+- [ ] npm run check green (2.43.0 synced); landing tab + toast verified via preview
+- [ ] Update toast after deploy (cache v2.43.0)
