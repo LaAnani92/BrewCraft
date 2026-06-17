@@ -481,3 +481,10 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] The printable/shareable card is part of the ownership/distinctiveness story; numbering now reads correctly
 - [ ] npm run check green (2.37.0 synced); numbering logic verified (bloom and no-bloom) via preview
 - [ ] Update toast after deploy (cache v2.37.0)
+
+## Sprint 50 (v2.38.0) — tactile grind anchor for beginners
+- [ ] The beginner-only grind readout now appends a real-world analogy: "Grind · Medium-Coarse · like raw sugar" (GRIND_ANCHORS parallel to COARSE_LABELS: powdered sugar/table salt/fine sand/coarse sand/raw sugar/sea salt/peppercorns)
+- [ ] De-mystifies grind (the most intimidating variable) for newcomers without reintroducing the grinder-aware bar we hide from them; muted .grind-anchor styling
+- [ ] Beginner-scoped (the readout only shows under body.skill-beginner); enthusiasts/experts keep the full grind controls; no behavior change
+- [ ] npm run check green (2.38.0 synced); anchor text verified across levels via preview
+- [ ] Update toast after deploy (cache v2.38.0)

@@ -527,6 +527,7 @@
   body.skill-beginner .grind-readout { display:flex; }
   .grind-readout .ico { width:16px; height:16px; color:var(--accent-bright); flex-shrink:0; }
   .grind-readout strong { color:var(--accent-bright); font-family:var(--font-mono); font-weight:600; }
+  .grind-anchor { color:var(--text-muted); font-size:0.9em; }
   /* Brew timer progress ring — fills toward the brew's expected finish. */
   .timer-ring-wrap { position:relative; width:230px; height:230px; margin:6px auto 18px; }
   .timer-ring { width:100%; height:100%; transform:rotate(-90deg); display:block; }
@@ -1968,7 +1969,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.37.0';
+const APP_VERSION = '2.38.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null;
 let wakeLock = null;
@@ -1976,6 +1977,8 @@ let audioCtx = null;
 let cueTimes = [], cueFired = [];
 
 const COARSE_LABELS = ['','Extra Fine','Fine','Medium-Fine','Medium','Medium-Coarse','Coarse','Extra Coarse'];
+/* Tactile real-world anchors for the beginner grind readout (parallel to COARSE_LABELS). */
+const GRIND_ANCHORS = ['', 'powdered sugar', 'table salt', 'fine sand', 'coarse sand', 'raw sugar', 'sea salt', 'peppercorns'];
 
 /* ======= CURATED QUICK RECIPES (researched, attributed) =======
    Per brew method; tapping one fills dose/ratio/temp/grind. ratio = the x in 1:x.
@@ -2628,7 +2631,7 @@ function updateGrindReadout() {
   if (!el) return;
   const lvl = parseInt(document.getElementById('grindCoarseness').value, 10);
   if (lvl > 0 && COARSE_LABELS[lvl]) {
-    el.innerHTML = '<svg class="ico"><use href="#i-sliders"/></svg> Grind · <strong>' + COARSE_LABELS[lvl] + '</strong>';
+    el.innerHTML = '<svg class="ico"><use href="#i-sliders"/></svg> Grind · <strong>' + COARSE_LABELS[lvl] + '</strong>' + (GRIND_ANCHORS[lvl] ? ' <span class="grind-anchor">like ' + GRIND_ANCHORS[lvl] + '</span>' : '');
   } else {
     el.innerHTML = '<svg class="ico"><use href="#i-sliders"/></svg> Pick a recipe and the grind comes with it';
   }
