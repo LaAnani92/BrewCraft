@@ -474,3 +474,10 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] Respects espresso-as-distinct-workflow; consent-safe (never overwrites an existing value); strengthens the espresso dial-in (no manual shot-time entry needed)
 - [ ] npm run check green (2.36.0 synced); verified espresso fills espShotTime / non-espresso fills totalBrewTime via preview
 - [ ] Update toast after deploy (cache v2.36.0)
+
+## Sprint 49 (v2.37.0) — fix pour numbering in the printable recipe card
+- [ ] Product Strategist audit (lens): habit/longitudinal reflection is strong (Insights sweet-spot, trend "the dial-in is working", best-origin; Brew-thread continuity) — rejected a Brew-landing stat (would break "threshold not dashboard") and a streak counter (gamification clutter)
+- [ ] Bug fixed in printRecipe(): pours were numbered by array index, so a recipe with no bloom printed "Pour 0, Pour 1, ...". Now uses a running counter — non-bloom pours number 1,2,3 regardless of whether a bloom is present (matches the editor's reindexPours)
+- [ ] The printable/shareable card is part of the ownership/distinctiveness story; numbering now reads correctly
+- [ ] npm run check green (2.37.0 synced); numbering logic verified (bloom and no-bloom) via preview
+- [ ] Update toast after deploy (cache v2.37.0)
