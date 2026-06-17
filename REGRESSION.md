@@ -488,3 +488,10 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] Beginner-scoped (the readout only shows under body.skill-beginner); enthusiasts/experts keep the full grind controls; no behavior change
 - [ ] npm run check green (2.38.0 synced); anchor text verified across levels via preview
 - [ ] Update toast after deploy (cache v2.38.0)
+
+## Sprint 51 (v2.39.0) — keep scrolled-to sections clear of the sticky header
+- [ ] Mobile Kitchen audit (lens): the scrubber/ruler dials are well-built (46px target, 30px value, reliable pointer-capture drag, clamps+step-snaps on drag AND keyboard via _scrubSnap, iOS-zoom handled). The touch-action:none scroll-trap was FLAGGED for real-device testing (pan-y fix is unverifiable in the headless preview), not shipped
+- [ ] Bug fixed: there was no scroll-margin anywhere, so scrollIntoView({block:'start'}) (e.g. openDialinFromNudge → dial-in section) landed the section title behind the ~73px sticky header. Added scroll-margin-top:84px to .section (124px on desktop where the tab-bar is also sticky-top)
+- [ ] Low-risk: scroll-margin only affects where scrollIntoView lands, no layout change; benefits the low-rating "Get dial-in advice" jump and any future block:start section scroll
+- [ ] npm run check green (2.39.0 synced); computed scroll-margin-top + post-scroll section position verified via preview
+- [ ] Update toast after deploy (cache v2.39.0)

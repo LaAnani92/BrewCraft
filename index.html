@@ -629,7 +629,9 @@
   .icon-btn .ico { width:18px; height:18px; }
 
   /* Sections become soft cards — the organization layer */
-  .section { background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius); padding:2px 18px; margin-bottom:14px; box-shadow:var(--elev-1); }
+  .section { background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius); padding:2px 18px; margin-bottom:14px; box-shadow:var(--elev-1); scroll-margin-top:84px; }
+  /* keep a section's title clear of the sticky header when scrolled into view (block:start) */
+  @media (min-width:900px) { .section { scroll-margin-top:124px; } }
   .section-header { border-bottom:none; padding:15px 0; }
   .section-body { padding:4px 0 18px; }
   .section.collapsed { padding-bottom:2px; }
@@ -1969,7 +1971,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.38.0';
+const APP_VERSION = '2.39.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null;
 let wakeLock = null;
