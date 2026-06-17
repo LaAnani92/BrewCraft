@@ -1971,7 +1971,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.40.0';
+const APP_VERSION = '2.41.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null;
 let wakeLock = null;
@@ -2237,7 +2237,7 @@ function persistSettings() {
 function updateDialinHint() {
   document.getElementById('dialinModeHint').textContent = settings.apiKey
     ? 'AI mode active (' + settings.model + ')'
-    : 'Rule-based mode \u2014 add an API key in Settings (gear icon, top right) for AI analysis';
+    : 'Built-in coach active \u2014 add an API key in Settings (gear icon, top right) for AI tuned to your bean';
 }
 
 /* ======= TABS & SECTIONS ======= */

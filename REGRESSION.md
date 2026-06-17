@@ -501,3 +501,10 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] BUG fixed (found while auditing): the photo-selected handler set scanStatus.textContent to a string containing a <button>, so a keyless user saw raw HTML ("<button ...>Add an API key</button> to read this.") instead of a clickable link. Switched to innerHTML so the link renders (matches the 5 AI-panel no-key prompts); static string, no user input
 - [ ] npm run check green (2.40.0 synced); verified scanStatus has role=status + aria-live, and the no-key status renders a real button (no literal "<button" text) via preview
 - [ ] Update toast after deploy (cache v2.40.0)
+
+## Sprint 53 (v2.41.0) — first-class framing for the keyless dial-in
+- [ ] Beginner audit (lens): the AI buttons are framed as capabilities (Suggest/Explain/Find patterns, not "AI"), and the no-key outputs lead with built-in value ("Built-in expert rules", "Built-in starting point") — keyless framing is mostly first-class. The outlier was the dial-in mode hint: "Rule-based mode — add an API key…" (jargon, reads as downgraded, upsell-first)
+- [ ] Reworded to "Built-in coach active — add an API key in Settings (gear icon, top right) for AI tuned to your bean" — parallels the key case ("AI mode active"), leads with value, keeps the optional upgrade secondary
+- [ ] Copy-only; the keyed hint ("AI mode active (model)") is unchanged
+- [ ] npm run check green (2.41.0 synced); both hint states verified via preview
+- [ ] Update toast after deploy (cache v2.41.0)
