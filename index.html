@@ -409,7 +409,8 @@
   .modal p strong { color:var(--accent-bright); }
   .modal-actions { display:flex; gap:10px; justify-content:flex-end; flex-wrap:wrap; }
   .compare-table { width:100%; border-collapse:collapse; font-size:13px; margin-bottom:16px; }
-  .compare-table th { text-align:left; padding:8px 10px; color:var(--text-muted); font-size:11px; text-transform:uppercase; letter-spacing:0.5px; border-bottom:1px solid var(--border); }
+  .compare-table th { text-align:left; padding:8px 10px; color:var(--accent-bright); font-size:13px; font-weight:600; border-bottom:1px solid var(--border); }
+  .compare-table th:first-child { color:var(--text-muted); font-size:11px; }
   .compare-table td { padding:7px 10px; border-bottom:1px solid var(--border); vertical-align:top; }
   .compare-table td:first-child { color:var(--text-muted); font-size:12px; white-space:nowrap; }
   .compare-table tr.diff td:not(:first-child) { color:var(--accent-bright); font-weight:600; }
@@ -1870,7 +1871,7 @@
 <div class="modal-overlay" id="compareModal">
   <div class="modal" style="max-width:640px">
     <h3>Recipe Comparison</h3>
-    <div style="overflow-x:auto"><table class="compare-table" id="compareTable"><tbody id="compareBody"></tbody></table></div>
+    <div style="overflow-x:auto"><table class="compare-table" id="compareTable"><thead id="compareHead"></thead><tbody id="compareBody"></tbody></table></div>
     <div class="modal-actions">
       <button class="btn btn-secondary" onclick="closeCompare()">Close</button>
     </div>
@@ -1971,7 +1972,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.41.0';
+const APP_VERSION = '2.42.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null;
 let wakeLock = null;
@@ -4020,7 +4021,11 @@ function openCompare(idA, idB) {
     tr.appendChild(td0); tr.appendChild(td1); tr.appendChild(td2);
     body.appendChild(tr);
   }
-  addRow('Recipe', a.name || 'Untitled', b.name || 'Untitled');
+  const head = document.getElementById('compareHead');
+  head.innerHTML = '';
+  const htr = document.createElement('tr');
+  ['', a.name || 'Untitled', b.name || 'Untitled'].forEach(function(t) { const th = document.createElement('th'); th.textContent = t; htr.appendChild(th); });
+  head.appendChild(htr);
   DIFF_FIELDS.forEach(function(f) {
     addRow(f[1], fmtDiffVal(f[0], a[f[0]]), fmtDiffVal(f[0], b[f[0]]));
   });

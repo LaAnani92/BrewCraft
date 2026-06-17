@@ -508,3 +508,10 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] Copy-only; the keyed hint ("AI mode active (model)") is unchanged
 - [ ] npm run check green (2.41.0 synced); both hint states verified via preview
 - [ ] Update toast after deploy (cache v2.41.0)
+
+## Sprint 54 (v2.42.0) — clear column headers on the recipe comparison
+- [ ] Advanced Coffee audit (lens): dials are already 0.1g-precise (scrubber step 0.1 for dose/ratio, arrows ±step, shift ×10), logging is espresso-aware (v2.36), dial-in reads history — precision/efficiency are well-served. FLAGGED (recommend AGAINST): grams↔ounces units — specialty coffee is gram-native worldwide; a units system risks the gram-native data model for little gain
+- [ ] Shipped: the compare table had a `.compare-table th` style defined but no <thead>, so the two recipes' columns were only identified by a plain first body row. Added a real <thead> populated with the two recipe names (accent, readable; first cell muted), removed the redundant "Recipe" body row — clearer which column is which when scanning a long comparison
+- [ ] Activates the dormant intended th style; openCompare builds the header via textContent (safe); diff-row highlighting unchanged
+- [ ] npm run check green (2.42.0 synced); header names + removed body row verified via preview
+- [ ] Update toast after deploy (cache v2.42.0)
