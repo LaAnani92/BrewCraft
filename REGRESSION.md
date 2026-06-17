@@ -522,3 +522,10 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] Still consent-based (the accept/decline modal is unchanged), name shown via textContent (safe against a malicious shared name); recipe still added to library + loaded
 - [ ] npm run check green (2.43.0 synced); landing tab + toast verified via preview
 - [ ] Update toast after deploy (cache v2.43.0)
+
+## Sprint 56 (v2.44.0) — stop the brew guide over-announcing to screen readers
+- [ ] Accessibility audit (lens): the visible #brewGuide was aria-live=polite but its content changes every second (the "next: pour 2 in 0:05" countdown), so a screen reader re-read the whole guide ~once/second during a brew — noisy
+- [ ] Removed aria-live from the visible guide; added a visually-hidden .sr-only live region (#brewGuideSr role=status aria-live=polite) that updates ONLY on meaningful transitions: each step instruction once ("Bloom, pour to 50 g"; "Pour 1, pour to 150 g") and once at completion ("That's brewed. Let it settle."). Tracked via lastGuideAnnounce; reset when the guide clears
+- [ ] Visual guide + countdown unchanged for sighted users; first .sr-only utility class added (standard clip pattern)
+- [ ] npm run check green (2.44.0 synced); announce-on-change-only (not per-tick) + completion message verified via preview
+- [ ] Update toast after deploy (cache v2.44.0)

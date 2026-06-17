@@ -543,6 +543,7 @@
   .brew-guide strong { color:var(--accent-bright); font-weight:600; }
   .brew-guide .bg-add { color:var(--accent-warm); font-family:'JetBrains Mono',monospace; }
   .brew-guide .bg-next { display:block; font-size:11px; color:var(--text-muted); margin-top:3px; }
+  .sr-only { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
   .brew-guide .bg-done { color:var(--success); font-size:17px; }
   /* Quiet, optional path from a finished brew into rating it — closes the brew->taste loop without nagging */
   .brew-guide .bg-rate-link { display:inline-block; margin-top:11px; font-size:12px; color:var(--text-muted); background:none; border:none; border-bottom:1px solid var(--border-light); padding:2px 0; cursor:pointer; font-family:var(--font-sans); transition:color 0.15s,border-color 0.15s; }
@@ -1333,7 +1334,8 @@
         <div class="timer-display" id="timerDisplay">00:00.0</div>
       </div>
     </div>
-    <div class="brew-guide" id="brewGuide" aria-live="polite"></div>
+    <div class="brew-guide" id="brewGuide"></div>
+    <div class="sr-only" id="brewGuideSr" role="status" aria-live="polite"></div>
     <div class="timer-buttons">
       <button class="btn btn-primary" id="timerStartBtn" onclick="toggleTimer()"><svg class="ico"><use href="#i-play"/></svg> Start</button>
       <button class="btn btn-secondary" onclick="resetTimer()"><svg class="ico"><use href="#i-reset"/></svg> Reset</button>
@@ -1909,16 +1911,19 @@ let timerInterval = null, timerStartTime = null, timerElapsed = 0, timerRunning 
 let brewTargetSec = 180; // expected total brew time; drives the progress ring
 let guideSteps = [];     // cached pour steps for live guidance under the timer
 let brewCompleteFired = false; // one-time "brew complete" cue guard
+let lastGuideAnnounce = ''; // last guide text spoken to screen readers (announce on change only, not every tick)
 const BREW_RING_C = 628.319; // circumference of the r=100 ring
 function updateBrewGuide(sec) {
   const el = document.getElementById('brewGuide');
   if (!el) return;
-  if (!guideSteps.length) { el.classList.remove('show'); el.innerHTML = ''; return; }
+  if (!guideSteps.length) { el.classList.remove('show'); el.innerHTML = ''; lastGuideAnnounce = ''; return; }
   // Past the expected finish → a one-time "brew complete" moment, then a calm done state.
   if (brewTargetSec > 0 && sec >= brewTargetSec) {
     if (!brewCompleteFired) {
       brewCompleteFired = true;
       beep(660, 0.18); setTimeout(function() { beep(880, 0.2); }, 200); vibrate(140);
+      const srDone = document.getElementById('brewGuideSr');
+      if (srDone) srDone.textContent = "That's brewed. Let it settle.";
     }
     el.innerHTML = '<strong class="bg-done">✓ That’s brewed</strong>' +
       '<span class="bg-next">Let it settle. Take the first sip before you judge it.</span>' +
@@ -1943,6 +1948,12 @@ function updateBrewGuide(sec) {
     html += brewTargetSec > 0
       ? '<span class="bg-next">drawing down — done ~' + secToStr(brewTargetSec) + '</span>'
       : '<span class="bg-next">last pour — let it draw down</span>';
+  }
+  const announce = st.label + ', pour to ' + st.targetCum + ' g';
+  if (announce !== lastGuideAnnounce) {
+    lastGuideAnnounce = announce;
+    const sr = document.getElementById('brewGuideSr');
+    if (sr) sr.textContent = announce;
   }
   el.innerHTML = html;
   el.classList.add('show');
@@ -1972,7 +1983,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.43.0';
+const APP_VERSION = '2.44.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null;
 let wakeLock = null;
