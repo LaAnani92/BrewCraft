@@ -460,3 +460,10 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] Every feature still falls back to its rule output on error (unchanged); only the parenthetical reason is now actionable
 - [ ] npm run check green (2.34.0 synced); verified aiErrorHint mapping via preview
 - [ ] Update toast after deploy (cache v2.34.0)
+
+## Sprint 47 (v2.35.0) — warm reframe on the low-rating nudge
+- [ ] Emotional Design audit (this iteration's lens): empty states, chart-empties, OCR errors, the taste-prompt, rating haptics/celebrate/best-toast, and the brew-thread are all warm — rejected rating-word captions (would undercut the app's "what your mouth already knows" restraint) and a first-rating celebration (gimmicky)
+- [ ] Shipped: the ≤3★ nudge (previously just a "Get dial-in advice" button) now has one calm, encouraging line — "An off cup is the most useful one: it shows exactly what to nudge next." — reframing a disappointing cup as productive, aligned with the app's improvement-loop thesis, without re-judging the user's palate
+- [ ] Muted .field-hint styling, only shown on low ratings; flows into the existing dial-in CTA; no behavior change
+- [ ] npm run check green (2.35.0 synced); verified nudge shows on ≤3★ and hides on 4-5★ via preview
+- [ ] Update toast after deploy (cache v2.35.0)

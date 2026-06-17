@@ -1381,6 +1381,7 @@
           <span class="rating-value" id="ratingValue">—</span>
         </div>
         <div id="ratingNudge" style="display:none;margin-top:10px">
+          <div class="field-hint" style="margin-bottom:7px">An off cup is the most useful one: it shows exactly what to nudge next.</div>
           <button class="btn btn-sm btn-secondary" onclick="openDialinFromNudge()">Not quite right? Get dial-in advice</button>
         </div>
       </div>
@@ -1967,7 +1968,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.34.0';
+const APP_VERSION = '2.35.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null;
 let wakeLock = null;
