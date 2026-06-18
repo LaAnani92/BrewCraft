@@ -529,3 +529,9 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] Visual guide + countdown unchanged for sighted users; first .sr-only utility class added (standard clip pattern)
 - [ ] npm run check green (2.44.0 synced); announce-on-change-only (not per-tick) + completion message verified via preview
 - [ ] Update toast after deploy (cache v2.44.0)
+
+## Sprint 57 (v2.45.0) — make "Read this label" the visual primary in the scanner
+- [ ] Mobile Kitchen audit (lens): the scan flow is solid — big camera drop-zone capture (accept=image/* with no forced capture so library is allowed), 300px contain preview, retake + read, editable read-back fields. The one inconsistency: step 2's main action "Read this label" was btn-secondary (equal-weight with the ghost "Retake"), so nothing drew the eye, unlike step 3 where "Fill bean fields" is btn-primary
+- [ ] Promoted #scanReadBtn to btn-primary so the next action is obvious one-handed; the "… reading" disabled state still works (only disabled+textContent change, no className reset)
+- [ ] npm run check green (2.45.0 synced); button class verified via preview
+- [ ] Update toast after deploy (cache v2.45.0)
