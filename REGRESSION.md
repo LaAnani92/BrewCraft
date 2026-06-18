@@ -581,3 +581,10 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] No SW change needed; graceful onerror fallback unchanged (worst case = today's behavior); QR is still lazy-loaded (one-file model intact)
 - [ ] npm run check green (2.51.0 synced); QR still generates online with crossOrigin set (no CORS regression) verified via preview
 - [ ] Update toast after deploy (cache v2.51.0)
+
+## Sprint 64 (v2.52.0) — method-category subtitles name familiar examples
+- [ ] Beginner audit (lens): the Gravity/Pressure/Immersion accordions already had subtitles, but they described physics ("pour-over, percolation" / "forced through the bed" / "full steep, then separate") — opaque jargon for a newcomer
+- [ ] Reworded to name familiar devices: Gravity · pour-over & drip; Pressure · espresso & moka; Immersion · French press & cold brew. The category NAME still carries the physics term (still teaches it); the subtitle now aids recognition for beginners AND everyone
+- [ ] Copy-only; method grid/cards/quick-recipes unchanged
+- [ ] npm run check green (2.52.0 synced); the three subtitles verified via preview
+- [ ] Update toast after deploy (cache v2.52.0)
