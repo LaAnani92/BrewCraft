@@ -588,3 +588,10 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] Copy-only; method grid/cards/quick-recipes unchanged
 - [ ] npm run check green (2.52.0 synced); the three subtitles verified via preview
 - [ ] Update toast after deploy (cache v2.52.0)
+
+## Sprint 65 (v2.53.0) — header clears the notch in standalone PWA
+- [ ] Mobile Kitchen audit (lens): method cards measure 146x73px with 10px gaps (well above 44px — no mis-tap risk; that concern unfounded). The real gap: viewport-fit=cover + black-translucent status bar + display:standalone, but the sticky header had NO env(safe-area-inset-top) — so on a notched iPhone the installed PWA's header (logo, recipe name, gear) sat under the status bar / Dynamic Island (only the tabbar padded for the bottom inset)
+- [ ] Header top padding now calc(14px + env(safe-area-inset-top)); no-op where there's no notch (env()→0 keeps it exactly 14px — zero regression in browser), adds clearance only on notched standalone
+- [ ] npm run check green (2.53.0 synced); preview confirms padding-top stays 14px when inset is 0 (no regression); notch clearance guaranteed by env() additive semantics
+- [ ] [follow-up] consider left/right safe-area insets for landscape
+- [ ] Update toast after deploy (cache v2.53.0)
