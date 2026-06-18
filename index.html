@@ -1985,7 +1985,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.53.0';
+const APP_VERSION = '2.54.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null;
 let wakeLock = null;
@@ -2272,6 +2272,8 @@ function toggleSection(id) {
   const collapsed = sec.classList.toggle('collapsed');
   const h = sec.querySelector('.section-header');
   if (h) h.setAttribute('aria-expanded', String(!collapsed));
+  const body = sec.querySelector('.section-body');
+  if (body) body.inert = collapsed; /* keep collapsed fields out of the tab order + a11y tree */
 }
 /* Make the collapsible section headers operable by keyboard + screen readers
    (they're <div onclick> in markup; this upgrades them to real buttons once at boot). */
@@ -2280,7 +2282,11 @@ function initSectionA11y() {
     h.setAttribute('role', 'button');
     h.setAttribute('tabindex', '0');
     const sec = h.closest('.section');
-    if (sec) h.setAttribute('aria-expanded', String(!sec.classList.contains('collapsed')));
+    if (sec) {
+      h.setAttribute('aria-expanded', String(!sec.classList.contains('collapsed')));
+      const b = sec.querySelector('.section-body');
+      if (b) b.inert = sec.classList.contains('collapsed');
+    }
     h.addEventListener('keydown', function(e) {
       if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); h.click(); }
     });
@@ -4897,6 +4903,8 @@ function applyInitialDisclosure() {
   bean.classList.toggle('collapsed', collapse);
   const h = bean.querySelector('.section-header');
   if (h) h.setAttribute('aria-expanded', String(!collapse));
+  const b = bean.querySelector('.section-body');
+  if (b) b.inert = collapse;
 }
 function toggleBeanExtra() {
   document.body.classList.toggle('show-bean-extra');

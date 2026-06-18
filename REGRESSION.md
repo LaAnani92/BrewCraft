@@ -595,3 +595,10 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] npm run check green (2.53.0 synced); preview confirms padding-top stays 14px when inset is 0 (no regression); notch clearance guaranteed by env() additive semantics
 - [ ] [follow-up] consider left/right safe-area insets for landscape
 - [ ] Update toast after deploy (cache v2.53.0)
+
+## Sprint 66 (v2.54.0) — collapsed sections leave the focus + screen-reader tree
+- [ ] Accessibility audit (lens): method-cat accordions are solid (aria-expanded toggled, grids display:none → out of focus). The real gap: section accordions collapse via max-height:0/overflow:hidden/opacity:0 (NOT display:none), so collapsed fields stayed in the tab order and the SR tree — keyboard users tabbed into invisible clipped inputs; SR read every collapsed section's fields
+- [ ] Now toggle the `inert` attribute on .section-body when collapsed: wired in toggleSection (runtime), initSectionA11y (markup-collapsed sections at boot: Water, Share & Receive), and applyInitialDisclosure (beginner Bean collapse). Preserves the max-height animation (inert only affects focus + AT)
+- [ ] Progressive enhancement: on browsers without inert (rare, pre-Safari-15.5) the prior behavior remains — no regression. Method-cat grids already display:none, unaffected
+- [ ] npm run check green (2.54.0 synced); verified collapsed-section inputs are non-focusable + expand restores focusability via preview
+- [ ] Update toast after deploy (cache v2.54.0)
