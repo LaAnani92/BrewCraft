@@ -1576,7 +1576,7 @@
     <div class="share-howto">
       <strong>Option 1 — Send the file:</strong> forward this HTML file to friends (WhatsApp, email). They open it in any browser — no account, no install.<br><br>
       <strong>Option 2 — Host it (best):</strong> free static hosting (e.g., GitHub Pages) gives everyone the same link, makes recipe links one-tap, and lets phones "Add to Home Screen" so it behaves like a real app.<br><br>
-      <strong>Backups:</strong> Journal → Export All saves everything to a JSON file you own forever.
+      <strong>Backups:</strong> Journal → Export All saves your recipes, beans &amp; gear to a JSON file you own forever.
     </div>
   </div>
     </div>
@@ -1983,7 +1983,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.45.0';
+const APP_VERSION = '2.46.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null;
 let wakeLock = null;
@@ -4055,9 +4055,11 @@ function closeCompare() {
 
 /* ======= FILE EXPORT / IMPORT ======= */
 function exportAllRecipes() {
-  if (!recipes.length) { showToast('No recipes to export','warning'); return; }
-  downloadJSON(recipes, 'brewcraft_recipes.json');
-  showToast('Exported ' + recipes.length + ' recipe' + (recipes.length !== 1 ? 's' : ''),'success');
+  if (!recipes.length && !beanProfiles.length && !gearProfiles.length) { showToast('Nothing to export yet','warning'); return; }
+  /* Full, restorable backup — recipes + bean profiles + gear setups (everything the user built). */
+  const bundle = { app: 'BrewCraft', type: 'brewcraft-backup', version: 2, exportedAt: new Date().toISOString(), recipes: recipes, beans: beanProfiles, gear: gearProfiles };
+  downloadJSON(bundle, 'brewcraft_backup.json');
+  showToast('Backed up ' + recipes.length + ' recipe' + (recipes.length !== 1 ? 's' : '') + ' + beans & gear','success');
 }
 function downloadJSON(data, filename) {
   const blob = new Blob([JSON.stringify(data, null, 2)], { type:'application/json' });
@@ -4074,17 +4076,36 @@ function importRecipesFile(event) {
   reader.onload = function(e) {
     try {
       const data = JSON.parse(e.target.result);
-      const arr = Array.isArray(data) ? data : [data];
+      /* Accept three shapes: a full backup bundle {recipes,beans,gear}, a bare recipe array, or a single recipe object. */
+      const recipeArr = Array.isArray(data) ? data : (data && Array.isArray(data.recipes) ? data.recipes : [data]);
       let added = 0;
-      arr.forEach(function(raw) {
+      recipeArr.forEach(function(raw) {
         const r = normalizeRecipe(raw);
         if (!r) return;
         if (recipes.find(function(x) { return x.id === r.id; })) return;
         recipes.unshift(r); added++;
       });
+      /* Restore bean & gear profiles from a backup bundle — additive, dedupe by id (never overwrite). */
+      let beansAdded = 0, gearAdded = 0;
+      if (data && Array.isArray(data.beans)) {
+        data.beans.forEach(function(b) {
+          if (!b || !b.id || beanProfiles.find(function(x) { return x.id === b.id; })) return;
+          beanProfiles.push(b); beansAdded++;
+        });
+        if (beansAdded) store.set('brewcraft_beans', JSON.stringify(beanProfiles));
+      }
+      if (data && Array.isArray(data.gear)) {
+        data.gear.forEach(function(g) {
+          if (!g || !g.id || gearProfiles.find(function(x) { return x.id === g.id; })) return;
+          gearProfiles.push(g); gearAdded++;
+        });
+        if (gearAdded) store.set('brewcraft_gear', JSON.stringify(gearProfiles));
+      }
       saveToStorage();
       renderLibrary();
-      showToast('Imported ' + added + ' recipe' + (added !== 1 ? 's' : ''), added ? 'success' : 'warning');
+      if ((beansAdded || gearAdded) && typeof renderProfileSelects === 'function') renderProfileSelects();
+      const extra = (beansAdded || gearAdded) ? ' (+' + beansAdded + ' bean' + (beansAdded !== 1 ? 's' : '') + ', ' + gearAdded + ' setup' + (gearAdded !== 1 ? 's' : '') + ')' : '';
+      showToast('Imported ' + added + ' recipe' + (added !== 1 ? 's' : '') + extra, (added || beansAdded || gearAdded) ? 'success' : 'warning');
     } catch(err) { showToast('Invalid file format','warning'); }
   };
   reader.readAsText(file);

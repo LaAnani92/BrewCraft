@@ -535,3 +535,11 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] Promoted #scanReadBtn to btn-primary so the next action is obvious one-handed; the "… reading" disabled state still works (only disabled+textContent change, no className reset)
 - [ ] npm run check green (2.45.0 synced); button class verified via preview
 - [ ] Update toast after deploy (cache v2.45.0)
+
+## Sprint 58 (v2.46.0) — Export All is now a complete, restorable backup
+- [ ] Product Strategist / data-ownership: "Export All" exported ONLY recipes, despite the label + About copy ("saves everything") — a user restoring on a new device silently lost their bean profiles and gear setups
+- [ ] exportAllRecipes now writes a bundle { app, type:'brewcraft-backup', version:2, exportedAt, recipes, beans, gear } to brewcraft_backup.json; importRecipesFile restores all three (additive, dedupe by id — never overwrites), refreshes the profile selects, and reports "(+N beans, M setups)"
+- [ ] Backward compatible: a bare recipe array or single recipe object still imports as recipes-only; About copy updated to "recipes, beans & gear"
+- [ ] Consent-safe (no overwrite of existing items by id); localStorage keys (brewcraft_beans/gear/recipes) unchanged
+- [ ] npm run check green (2.46.0 synced); export-bundle shape + round-trip restore (recipes+beans+gear) + legacy-array import verified via preview
+- [ ] Update toast after deploy (cache v2.46.0)
