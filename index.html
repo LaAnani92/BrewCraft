@@ -1378,12 +1378,12 @@
       <div class="taste-prompt">First, just taste it. Sweet or sharp, bright or heavy — what jumps out? Then let the scores below back up what your mouth already knows.</div>
       <div style="margin-bottom:20px">
         <span class="eval-label">Overall Rating</span>
-        <div class="rating-container">
-          <span class="rating-star" data-v="1" role="button" tabindex="0" aria-label="Rate 1 of 5" onclick="setRating(1)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();setRating(1);}">★</span>
-          <span class="rating-star" data-v="2" role="button" tabindex="0" aria-label="Rate 2 of 5" onclick="setRating(2)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();setRating(2);}">★</span>
-          <span class="rating-star" data-v="3" role="button" tabindex="0" aria-label="Rate 3 of 5" onclick="setRating(3)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();setRating(3);}">★</span>
-          <span class="rating-star" data-v="4" role="button" tabindex="0" aria-label="Rate 4 of 5" onclick="setRating(4)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();setRating(4);}">★</span>
-          <span class="rating-star" data-v="5" role="button" tabindex="0" aria-label="Rate 5 of 5" onclick="setRating(5)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();setRating(5);}">★</span>
+        <div class="rating-container" role="group" aria-label="Rate this cup, 1 to 5 stars">
+          <span class="rating-star" data-v="1" role="button" tabindex="0" aria-pressed="false" aria-label="Rate 1 of 5" onclick="setRating(1)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();setRating(1);}">★</span>
+          <span class="rating-star" data-v="2" role="button" tabindex="0" aria-pressed="false" aria-label="Rate 2 of 5" onclick="setRating(2)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();setRating(2);}">★</span>
+          <span class="rating-star" data-v="3" role="button" tabindex="0" aria-pressed="false" aria-label="Rate 3 of 5" onclick="setRating(3)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();setRating(3);}">★</span>
+          <span class="rating-star" data-v="4" role="button" tabindex="0" aria-pressed="false" aria-label="Rate 4 of 5" onclick="setRating(4)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();setRating(4);}">★</span>
+          <span class="rating-star" data-v="5" role="button" tabindex="0" aria-pressed="false" aria-label="Rate 5 of 5" onclick="setRating(5)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();setRating(5);}">★</span>
           <span class="rating-value" id="ratingValue">—</span>
         </div>
         <div id="ratingNudge" style="display:none;margin-top:10px">
@@ -1983,7 +1983,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.47.0';
+const APP_VERSION = '2.48.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null;
 let wakeLock = null;
@@ -3051,7 +3051,7 @@ function ancestorBestRating() {
 }
 function setRating(v, silent) {
   currentRating = v;
-  document.querySelectorAll('.rating-star').forEach(function(st) { st.classList.toggle('active', parseInt(st.dataset.v,10) <= v); });
+  document.querySelectorAll('.rating-star').forEach(function(st) { const on = parseInt(st.dataset.v,10) <= v; st.classList.toggle('active', on); st.setAttribute('aria-pressed', String(on)); });
   document.getElementById('ratingValue').textContent = v + '/5';
   document.getElementById('ratingNudge').style.display = (v > 0 && v <= 3) ? 'block' : 'none';
   if (silent) { _bestFired = false; } // loading a recipe arms the moment again
@@ -3076,7 +3076,7 @@ function setRating(v, silent) {
 function clearRating() {
   currentRating = 0;
   _bestFired = false;
-  document.querySelectorAll('.rating-star').forEach(function(st) { st.classList.remove('active'); });
+  document.querySelectorAll('.rating-star').forEach(function(st) { st.classList.remove('active'); st.setAttribute('aria-pressed', 'false'); });
   document.getElementById('ratingValue').textContent = '\u2014';
   document.getElementById('ratingNudge').style.display = 'none';
 }

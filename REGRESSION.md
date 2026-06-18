@@ -550,3 +550,11 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] In-context (only seen when the Bean section is open), no popup/nag; helpful for all tiers; no behavior change
 - [ ] npm run check green (2.47.0 synced); hint text under #roastDate verified via preview
 - [ ] Update toast after deploy (cache v2.47.0)
+
+## Sprint 60 (v2.48.0) — convey rating state to screen readers
+- [ ] Accessibility audit (lens): the rating stars were keyboard/SR-operable (role=button, tabindex, aria-label, Enter/Space) but conveyed NO current value — an SR user could set a rating yet re-navigating just heard "Rate 1 of 5… Rate 2 of 5…" with no indication which was selected
+- [ ] Added role=group + aria-label="Rate this cup, 1 to 5 stars" on the container, and aria-pressed on each star; setRating sets aria-pressed = (star <= value), clearRating resets to false — so SR now conveys the fill (e.g. stars 1-4 "pressed", 5 "not pressed" = 4/5)
+- [ ] Kept the working Tab + Enter/Space model (no radiogroup arrow-key change); visual unchanged
+- [ ] Fixed a self-inflicted typo from the batch edit (aria-label had lost its space: "Rate1 of 5" → "Rate 1 of 5")
+- [ ] npm run check green (2.48.0 synced); aria-pressed reflects rating + labels correct via preview
+- [ ] Update toast after deploy (cache v2.48.0)
