@@ -1983,7 +1983,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.48.0';
+const APP_VERSION = '2.49.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null;
 let wakeLock = null;
@@ -3085,6 +3085,13 @@ function addCustomTag() {
   const input = document.getElementById('customTagInput');
   const val = input.value.trim();
   if (!val) return;
+  /* No duplicate chips: if this descriptor already exists (preset or prior custom), just activate it. */
+  const dup = Array.from(document.querySelectorAll('#flavorTags .tag')).find(function(t) { return t.textContent.toLowerCase() === val.toLowerCase(); });
+  if (dup) {
+    if (!dup.classList.contains('active')) toggleTag(dup);
+    input.value = '';
+    return;
+  }
   const tag = document.createElement('span');
   tag.className = 'tag active';
   tag.textContent = val;
@@ -3092,6 +3099,12 @@ function addCustomTag() {
   tag.onclick = function() { toggleTag(tag); };
   document.getElementById('flavorTags').appendChild(tag);
   input.value = '';
+  /* Remember it as part of the user's personal flavor vocabulary (reusable on future cups). */
+  if (!customTags.some(function(t) { return String(t).toLowerCase() === val.toLowerCase(); })) {
+    customTags.push(val);
+    try { store.set('brewcraft_tags', JSON.stringify(customTags)); } catch(e) {}
+  }
+  if (typeof refreshTagsA11y === 'function') refreshTagsA11y();
   markDirty();
 }
 function getActiveTags() {
@@ -3111,6 +3124,23 @@ function setActiveTags(tags) {
     }
   });
   refreshTagsA11y();
+}
+/* The user's personal flavor vocabulary — custom descriptors persist as reusable chips across cups & sessions. */
+function renderCustomTags() {
+  const cloud = document.getElementById('flavorTags');
+  if (!cloud) return;
+  const existing = Array.from(cloud.querySelectorAll('.tag')).map(function(t) { return t.textContent.toLowerCase(); });
+  customTags.forEach(function(tag) {
+    if (existing.includes(String(tag).toLowerCase())) return;
+    const el = document.createElement('span');
+    el.className = 'tag';
+    el.textContent = tag;
+    el.setAttribute('role', 'button'); el.setAttribute('tabindex', '0'); el.setAttribute('aria-pressed', 'false');
+    el.onclick = function() { toggleTag(el); };
+    cloud.appendChild(el);
+    existing.push(String(tag).toLowerCase());
+  });
+  if (typeof refreshTagsA11y === 'function') refreshTagsA11y();
 }
 
 /* ======= CUPPING ======= */
@@ -4607,11 +4637,13 @@ function updateFreshness() {
 }
 
 /* ======= v5: BEAN & GEAR PROFILES ======= */
-let beanProfiles = [], gearProfiles = [];
+let beanProfiles = [], gearProfiles = [], customTags = [];
 function loadProfiles() {
   try { beanProfiles = JSON.parse(store.get('brewcraft_beans') || '[]') || []; } catch(e) { beanProfiles = []; }
   try { gearProfiles = JSON.parse(store.get('brewcraft_gear') || '[]') || []; } catch(e) { gearProfiles = []; }
+  try { customTags = JSON.parse(store.get('brewcraft_tags') || '[]') || []; } catch(e) { customTags = []; }
   renderProfileSelects();
+  renderCustomTags();
 }
 function renderProfileSelects() {
   const bs = document.getElementById('beanProfileSelect');

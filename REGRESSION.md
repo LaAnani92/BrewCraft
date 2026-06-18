@@ -558,3 +558,12 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] Fixed a self-inflicted typo from the batch edit (aria-label had lost its space: "Rate1 of 5" → "Rate 1 of 5")
 - [ ] npm run check green (2.48.0 synced); aria-pressed reflects rating + labels correct via preview
 - [ ] Update toast after deploy (cache v2.48.0)
+
+## Sprint 61 (v2.49.0) — custom flavor tags become a reusable vocabulary
+- [ ] Advanced Coffee audit (lens): custom descriptors saved to the recipe's flavorTags but did NOT persist as reusable chips — they only reappeared when that specific recipe was loaded, so on a fresh session/new cup the cloud was just presets and the taster re-typed "jasmine" every time
+- [ ] Added a personal vocabulary in brewcraft_tags (new key, additive): addCustomTag persists each new descriptor; renderCustomTags() (called from loadProfiles at init) re-injects them as reusable inactive chips; setActiveTags still marks the loaded recipe's tags active
+- [ ] Fixed latent dup-chip bug: typing an existing descriptor (preset or custom) now activates that chip instead of appending a duplicate (case-insensitive)
+- [ ] Consent-based recipe saving unchanged (tags still via getActiveTags); existing keys untouched; new chips carry role/aria-pressed (a11y consistent with v2.48)
+- [ ] FLAGGED follow-up: add customTags to the v2.46 export bundle so the vocabulary travels with a backup (currently it's embedded per-recipe but not as a standalone list)
+- [ ] npm run check green (2.49.0 synced); persist + re-render + dedupe verified via preview
+- [ ] Update toast after deploy (cache v2.49.0)
