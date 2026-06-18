@@ -543,3 +543,10 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] Consent-safe (no overwrite of existing items by id); localStorage keys (brewcraft_beans/gear/recipes) unchanged
 - [ ] npm run check green (2.46.0 synced); export-bundle shape + round-trip restore (recipes+beans+gear) + legacy-array import verified via preview
 - [ ] Update toast after deploy (cache v2.46.0)
+
+## Sprint 59 (v2.47.0) — explain what the roast date unlocks
+- [ ] Beginner audit (lens): the roast-date field was bare (label + date input + badge, no hint), yet it's the single input that unlocks the freshness badge, the warm hero freshnessGuidance, and the AI freshness context — a beginner had no reason to fill it
+- [ ] Added a calm field-hint: "Add it to unlock the freshness badge and brewing tips. Coffee usually peaks ~7-21 days after roast." — explains the payoff + a concrete anchor (peak window)
+- [ ] In-context (only seen when the Bean section is open), no popup/nag; helpful for all tiers; no behavior change
+- [ ] npm run check green (2.47.0 synced); hint text under #roastDate verified via preview
+- [ ] Update toast after deploy (cache v2.47.0)

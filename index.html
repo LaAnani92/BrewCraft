@@ -1036,7 +1036,7 @@
             <input type="text" placeholder="Enter varietal name…" oninput="markDirty()">
           </div>
         </div>
-        <div class="field"><label>Roast Date</label><input type="date" id="roastDate" oninput="markDirty(); updateFreshness()"><span class="fresh-badge" id="freshBadge" style="display:none"></span></div>
+        <div class="field"><label>Roast Date</label><input type="date" id="roastDate" oninput="markDirty(); updateFreshness()"><span class="fresh-badge" id="freshBadge" style="display:none"></span><div class="field-hint">Add it to unlock the freshness badge and brewing tips. Coffee usually peaks ~7-21 days after roast.</div></div>
         <div class="field">
           <label>Roast Level</label>
           <select id="roastLevel" onchange="markDirty()">
@@ -1983,7 +1983,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.46.0';
+const APP_VERSION = '2.47.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null;
 let wakeLock = null;
