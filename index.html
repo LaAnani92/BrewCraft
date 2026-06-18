@@ -271,6 +271,8 @@
   .rating-value { font-family:'JetBrains Mono',monospace; font-size:14px; color:var(--text-muted); margin-left:8px; }
   .tag-container { display:flex; flex-wrap:wrap; gap:8px; }
   .tag { font-size:12px; padding:6px 13px; border-radius:20px; border:1px solid var(--border); background:var(--bg-input); color:var(--text-secondary); cursor:pointer; transition:all var(--transition); user-select:none; font-weight:500; }
+  /* Cap the flavor cloud so a large custom vocabulary scrolls instead of burying the notes (presets fit under the cap, so normal use is unchanged). */
+  #flavorTags { max-height:300px; overflow-y:auto; -webkit-overflow-scrolling:touch; }
   .tag:hover { border-color:var(--border-light); color:var(--text-primary); }
   .tag.active { border-color:var(--accent); background:var(--accent-glow); color:var(--accent-bright); }
   .tag.issue.active { border-color:var(--danger); background:rgba(196,107,94,0.12); color:#e09a8e; }
@@ -1983,7 +1985,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.49.0';
+const APP_VERSION = '2.50.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null;
 let wakeLock = null;

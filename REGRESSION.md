@@ -567,3 +567,10 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] FLAGGED follow-up: add customTags to the v2.46 export bundle so the vocabulary travels with a backup (currently it's embedded per-recipe but not as a standalone list)
 - [ ] npm run check green (2.49.0 synced); persist + re-render + dedupe verified via preview
 - [ ] Update toast after deploy (cache v2.49.0)
+
+## Sprint 62 (v2.50.0) — cap the flavor cloud so a big vocabulary stays tidy
+- [ ] Mobile Kitchen audit (lens, follow-on to v2.49): measured at 375px the 24-preset cloud is ~280px, but a heavy vocabulary (49 tags) ballooned to ~610px — burying the notes/dial-in/extraction
+- [ ] Scoped #flavorTags to max-height:300px + overflow-y:auto (just above the preset height, so normal users see all presets with NO scroll — zero regression — while a large custom vocabulary scrolls within a bounded region). The "+ Add" input is outside the cloud, so it stays reachable
+- [ ] Did NOT cap below preset height (would force everyone to scroll to find a preset); dialin chips (also .tag-container) unaffected — scoped to #flavorTags only
+- [ ] npm run check green (2.50.0 synced); presets fit (no scroll) + 49-tag cloud capped at 300 & scrollable verified via preview
+- [ ] Update toast after deploy (cache v2.50.0)
