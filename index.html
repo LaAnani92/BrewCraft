@@ -1985,7 +1985,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.50.0';
+const APP_VERSION = '2.51.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null;
 let wakeLock = null;
@@ -4225,6 +4225,7 @@ function renderQRNow() {
   }
   if (window.QRCode) { draw(); return; }
   const s = document.createElement('script');
+  s.crossOrigin = 'anonymous'; /* CORS load so the service worker can cache it (cors type) — QR then works offline after one online load */
   s.src = 'https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js';
   s.onload = draw;
   s.onerror = function() {

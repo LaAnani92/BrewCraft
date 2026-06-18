@@ -574,3 +574,10 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] Did NOT cap below preset height (would force everyone to scroll to find a preset); dialin chips (also .tag-container) unaffected — scoped to #flavorTags only
 - [ ] npm run check green (2.50.0 synced); presets fit (no scroll) + 49-tag cloud capped at 300 & scrollable verified via preview
 - [ ] Update toast after deploy (cache v2.50.0)
+
+## Sprint 63 (v2.51.0) — let the service worker cache the QR lib for offline
+- [ ] Offline-robustness audit (lens): the QR path already degrades gracefully (oversize guard, try/catch, onerror "needs internet once — use Copy Code"; the share code/link works fully offline). The gap: the lazy CDN script loaded WITHOUT crossOrigin, so its response is opaque and the SW (caches only basic/cors) never cached it — QR failed on every fresh offline session even after many online loads
+- [ ] Added s.crossOrigin='anonymous' (cdnjs is CORS-enabled) so the response is cors → the existing SW fetch handler caches it → QR works offline after one online load
+- [ ] No SW change needed; graceful onerror fallback unchanged (worst case = today's behavior); QR is still lazy-loaded (one-file model intact)
+- [ ] npm run check green (2.51.0 synced); QR still generates online with crossOrigin set (no CORS regression) verified via preview
+- [ ] Update toast after deploy (cache v2.51.0)
