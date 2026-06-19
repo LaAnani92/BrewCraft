@@ -1511,9 +1511,9 @@
     <button class="btn btn-secondary" onclick="document.getElementById('importFile').click()">↑ Import File</button>
     <input type="file" id="importFile" accept=".json" style="display:none" onchange="importRecipesFile(event)">
   </div>
-  <div class="chip-row" style="margin-bottom:12px">
-    <button class="preset-chip active-view" id="viewListBtn" onclick="setLibraryView('list')">List</button>
-    <button class="preset-chip" id="viewJournalBtn" onclick="setLibraryView('journal')">Timeline</button>
+  <div class="chip-row" style="margin-bottom:12px" role="group" aria-label="Journal view">
+    <button class="preset-chip active-view" id="viewListBtn" aria-pressed="true" onclick="setLibraryView('list')">List</button>
+    <button class="preset-chip" id="viewJournalBtn" aria-pressed="false" onclick="setLibraryView('journal')">Timeline</button>
   </div>
   <div class="library-filters">
     <input type="text" id="librarySearch" aria-label="Search recipes" placeholder="Search name, origin, roaster…" oninput="renderLibrary()">
@@ -1987,7 +1987,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.60.0';
+const APP_VERSION = '2.61.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null;
 let wakeLock = null;
@@ -5223,6 +5223,8 @@ function setLibraryView(v) {
   libraryView = v;
   document.getElementById('viewListBtn').classList.toggle('active-view', v === 'list');
   document.getElementById('viewJournalBtn').classList.toggle('active-view', v === 'journal');
+  document.getElementById('viewListBtn').setAttribute('aria-pressed', String(v === 'list'));
+  document.getElementById('viewJournalBtn').setAttribute('aria-pressed', String(v === 'journal'));
   /* Timeline is always newest-first, so the sort control doesn't apply there — disable it rather than leave it silently inert. */
   const sortSel = document.getElementById('librarySort');
   if (sortSel) {

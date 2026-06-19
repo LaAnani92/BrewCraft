@@ -644,3 +644,9 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] Added .library-filters select:disabled { opacity .5; not-allowed } for a clear disabled appearance
 - [ ] npm run check green (2.60.0 synced); verified sort disabled in Timeline / enabled in List, value preserved, search+method still active via preview
 - [ ] Update toast after deploy (cache v2.60.0)
+
+## Sprint 73 (v2.61.0) — expose the active Journal view to screen readers
+- [ ] Accessibility lens: the List/Timeline toggle buttons are real buttons (keyboard-OK) but the active view was conveyed only by the visual active-view class — no aria-pressed, so SR users couldn't tell which view is selected (same gap class as the v2.48 rating stars)
+- [ ] Added role=group + aria-label="Journal view" on the chip-row, aria-pressed on both buttons, synced in setLibraryView (List pressed when list, Timeline pressed when journal); visual unchanged
+- [ ] npm run check green (2.61.0 synced); verified aria-pressed tracks the active view via preview
+- [ ] Update toast after deploy (cache v2.61.0)
