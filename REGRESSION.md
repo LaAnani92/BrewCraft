@@ -761,3 +761,9 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] ruleDialIn (filter only; espresso path untouched): now leads with an objective verdict when EY is out of the 18–22% band ("Measured extraction 16.5% is below the target — objectively under-extracted; reconcile with the taste read"), and the in-band case became informative ("on point — chase balance via ratio/water, not grind"). getDialinAdvice now computes EY, adds a MEASURED EXTRACTION line to the prompt, and a sys clause: treat measured EY as ground truth, anchor direction, reconcile with taste
 - [ ] npm run check green (2.79.0 synced); verified via preview: ruleDialIn output leads with the under/over verdict for EY 16/24 and the on-point line for EY 20; the AI userMsg includes the MEASURED EXTRACTION line when TDS logged (prompt-construction inspection, no live call)
 - [ ] Update toast after deploy (cache v2.79.0)
+
+## Sprint 92 (v2.80.0) — Journal Timeline leads with your best cup (peak-end warmth)
+- [ ] Emotional Design lens: the Timeline is a competent log (warm dates, labeled stars, EY/version, notes) but your single best cup looks like every other entry — no peak, nothing inviting you to revisit/re-brew it. Today's "best with this bean" is bean-scoped; Insights' "best origin" is an average; neither names your proudest cup
+- [ ] Added a .journal-best highlight at the top of renderJournal (Timeline only, unfiltered, recipes>=3 + >=1 rated): "Your best so far · <name> · ★★★★★", role=button + aria-label + Enter/Space, tap → loadRecipe + Recipe tab. Highest rating wins, ties broken by most-recent. Stars aria-hidden (label covers it). No new storage
+- [ ] npm run check green (2.80.0 synced); verified via preview: highlight names the top-rated cup, opens it on click, hidden under 3 recipes / when searching/filtering / when nothing rated
+- [ ] Update toast after deploy (cache v2.80.0)

@@ -589,6 +589,11 @@
   .bag-status { font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--text-secondary); margin:-4px 0 16px; padding:9px 12px; background:var(--bg-input); border:1px solid var(--border); border-radius:var(--radius-xs); display:none; line-height:1.5; }
   .bag-status.show { display:block; }
   .bag-status.low { color:var(--warning); border-color:rgba(212,160,74,0.45); }
+  /* A warm peak-end highlight atop the Timeline: your best cup so far, one tap to revisit. */
+  .journal-best { display:flex; align-items:center; gap:8px; flex-wrap:wrap; font-size:13px; color:var(--text-secondary); background:linear-gradient(135deg, var(--accent-glow), transparent), var(--bg-input); border:1px solid var(--border); border-radius:var(--radius-sm); padding:10px 13px; margin-bottom:14px; cursor:pointer; transition:border-color 0.15s; }
+  .journal-best:hover, .journal-best:focus-visible { border-color:var(--accent); }
+  .journal-best strong { color:var(--accent-bright); }
+  .journal-best .jb-stars { color:var(--warning); margin-left:auto; letter-spacing:1px; }
   .journal-date { font-family:'Playfair Display',serif; font-size:14px; color:var(--accent-warm); margin:18px 0 8px; border-bottom:1px solid var(--border); padding-bottom:6px; letter-spacing:0.4px; }
   .journal-entry { padding:10px 14px; border-left:2px solid var(--border); margin:0 0 8px 4px; cursor:pointer; transition:all 0.15s; border-radius:0 var(--radius-sm) var(--radius-sm) 0; background:var(--bg-card); }
   .journal-entry:hover { border-left-color:var(--accent); background:var(--bg-card-hover); }
@@ -2006,7 +2011,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.79.0';
+const APP_VERSION = '2.80.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
@@ -5403,6 +5408,29 @@ function renderJournal() {
   if (q) list = list.filter(function(r) { return ((r.name||'') + ' ' + (r.beanOrigin||'') + ' ' + (r.roaster||'')).toLowerCase().includes(q); });
   if (method) list = list.filter(function(r) { return r.method === method; });
   list.sort(function(a,b) { return (b.createdAt||'').localeCompare(a.createdAt||''); });
+  // Peak-end: when there's a real journey here (unfiltered, >=3 brews, something rated), lead with your best cup.
+  if (!q && !method && recipes.length >= 3) {
+    const ratedAll = recipes.filter(function(r) { return (r.rating || 0) > 0; })
+      .sort(function(a,b) { return (b.rating - a.rating) || (b.createdAt||'').localeCompare(a.createdAt||''); });
+    if (ratedAll.length) {
+      const best = ratedAll[0];
+      const hl = document.createElement('div');
+      hl.className = 'journal-best';
+      hl.setAttribute('role', 'button');
+      hl.setAttribute('tabindex', '0');
+      hl.setAttribute('aria-label', 'Your best cup so far: ' + (best.name || 'Untitled') + ', ' + best.rating + ' of 5 stars. Open it.');
+      const lbl = document.createElement('span');
+      lbl.innerHTML = 'Your best so far · <strong>' + escapeHtml(best.name || 'Untitled') + '</strong>';
+      const stars = document.createElement('span');
+      stars.className = 'jb-stars'; stars.setAttribute('aria-hidden', 'true');
+      stars.textContent = '★'.repeat(best.rating);
+      hl.appendChild(lbl); hl.appendChild(stars);
+      const openBest = function() { loadRecipe(best.id); switchTab('recipe'); };
+      hl.onclick = openBest;
+      hl.onkeydown = function(ev) { if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); openBest(); } };
+      listEl.appendChild(hl);
+    }
+  }
   let lastDay = '';
   list.forEach(function(r) {
     const day = (r.createdAt || '').slice(0,10);
