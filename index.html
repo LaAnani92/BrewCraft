@@ -422,8 +422,8 @@
 
   .ba-overlay {
     position:fixed; inset:0; background:var(--bg-deep); z-index:800;
-    display:none; flex-direction:column; align-items:center; justify-content:center;
-    padding:24px; text-align:center;
+    display:none; flex-direction:column; align-items:center; justify-content:safe center;
+    padding:24px; text-align:center; overflow-y:auto; overscroll-behavior:contain;
   }
   .ba-overlay.show { display:flex; }
   .ba-step { font-size:13px; color:var(--text-muted); text-transform:uppercase; letter-spacing:2px; font-weight:600; margin-bottom:8px; }
@@ -1995,7 +1995,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.69.0';
+const APP_VERSION = '2.70.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null;
 let wakeLock = null;

@@ -699,3 +699,9 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] Added role=dialog + aria-modal=true + aria-label + tabindex=-1 to .ob-card; showOnboarding focuses the card and attaches an Escape→obSkip handler; obFinish detaches it. Full Tab focus-trap deferred (matches the v2.33 precedent)
 - [ ] npm run check green (2.69.0 synced); verified dialog attributes present, Escape handler wired (keydown→obSkip closes + marks onboarded), and handler detached on finish via preview
 - [ ] Update toast after deploy (cache v2.69.0)
+
+## Sprint 82 (v2.70.0) — Brew-Along overlay scrolls instead of clipping on short screens
+- [ ] Mobile Kitchen UX lens: the .ba-overlay used justify-content:center with no scroll. Measured: at 390x844 it fits and Start sits in the thumb zone (good); at 390x667 it fills exactly; but in LANDSCAPE (740x390 — a phone propped on the counter while brewing hands-free) content overflowed (411>390) with overflow:visible, so the Start button was clipped below the screen (unreachable) and the step label clipped above
+- [ ] Changed .ba-overlay to justify-content:safe center + overflow-y:auto + overscroll-behavior:contain. safe center start-aligns when overflowing so the top stays reachable; overflow-y:auto adds scroll only when needed. Portrait unchanged (no overflow → no scroll, still perfectly centered, gapTop==gapBottom); landscape now scrolls with both Start (bottom) and step label (top) reachable
+- [ ] npm run check green (2.70.0 synced); verified via preview at 390x844 (centered, no scroll), 390x667 (fits), 740x390 (scrolls, Start + step both reachable)
+- [ ] Update toast after deploy (cache v2.70.0)
