@@ -779,3 +779,9 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] Added a shared sr-only #aiStatusSr live region + announceAI(): "Working on it…" set at the start of each async AI call, cleared on completion (so the panel's result mutation still reads). Wired in aiComplete (covers explainDiff/suggest/patterns) + getDialinAdvice (direct fetch). Scan left alone (its status mutates while already visible → already announces). Visual unchanged
 - [ ] npm run check green (2.82.0 synced); verified via preview by stubbing fetch: aiStatusSr held "Working on it…" at fetch time and was cleared ('') after both success and error, for aiComplete and getDialinAdvice
 - [ ] Update toast after deploy (cache v2.82.0)
+
+## Sprint 95 (v2.83.0) — share-link import shows a recipe preview (growth loop)
+- [ ] Product Strategist lens: the share growth loop works (link → app loads → import modal → recipient is now using BrewCraft), but the import modal showed only the recipe NAME — a recipient (often a first-time visitor) decided blind on an auto-name like "V60 · Jun 19", and the gift didn't feel tangible
+- [ ] Added sharedRecipeSummary(r) + an #importModalSummary line in the hash-import modal: "V60 · 15g · 1:16 · Ethiopia Yirgacheffe · 5★" (method/dose/ratio/bean/rating from the decoded payload; hidden if empty). Informed import = higher conversion + the received recipe reads as a real gift. Paste-code path left as direct import (deliberate action). bean + rating already travel via stripForShare
+- [ ] npm run check green (2.83.0 synced); verified via preview: a decoded recipe renders the summary line in the modal; an empty/minimal payload hides it
+- [ ] Update toast after deploy (cache v2.83.0)

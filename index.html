@@ -1892,6 +1892,7 @@
   <div class="modal">
     <h3>Recipe received</h3>
     <p>A friend shared <strong id="importModalName"></strong> with you. Add it to your library?</p>
+    <div id="importModalSummary" style="font-size:13px;color:var(--accent-bright);font-family:'JetBrains Mono',monospace;margin:-8px 0 18px"></div>
     <div class="modal-actions">
       <button class="btn btn-secondary" onclick="declineHashImport()">Not now</button>
       <button class="btn btn-primary" onclick="acceptHashImport()">↓ Import</button>
@@ -2012,7 +2013,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.82.0';
+const APP_VERSION = '2.83.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
@@ -4448,12 +4449,28 @@ function addImportedRecipe(raw) {
   showToast((r.name || 'Recipe') + ' is yours, ready to brew', 'success');
 }
 
+/* A recipe-at-a-glance line so a recipient (often a first-time visitor via a share link) sees the
+   gift before importing, instead of deciding on a bare name. */
+function sharedRecipeSummary(r) {
+  if (!r || typeof r !== 'object') return '';
+  const bits = [];
+  if (r.method) bits.push(r.method);
+  if (r.coffeeDose) bits.push(r.coffeeDose + 'g');
+  if (r.brewRatio) bits.push('1:' + r.brewRatio);
+  const bean = r.beanOrigin || r.roaster;
+  if (bean) bits.push(bean);
+  if (r.rating) bits.push(r.rating + '★');
+  return bits.join('  ·  ');
+}
 function checkHashImport() {
   if (!location.hash || location.hash.indexOf('#r=') !== 0) return;
   try {
     const code = decodeURIComponent(location.hash.slice(3));
     pendingImport = decodeRecipe(code);
     document.getElementById('importModalName').textContent = pendingImport.name || 'an untitled recipe';
+    const sum = sharedRecipeSummary(pendingImport);
+    const sumEl = document.getElementById('importModalSummary');
+    sumEl.textContent = sum; sumEl.style.display = sum ? 'block' : 'none';
     document.getElementById('importModal').classList.add('show');
   } catch(e) {
     pendingImport = null;
