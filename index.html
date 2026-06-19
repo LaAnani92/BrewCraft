@@ -2017,7 +2017,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.88.0';
+const APP_VERSION = '2.89.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
@@ -4265,8 +4265,11 @@ function openCompare(idA, idB) {
   body.innerHTML = '';
   function addRow(label, va, vb) {
     const tr = document.createElement('tr');
-    if (String(va) !== String(vb)) tr.className = 'diff';
+    const isDiff = String(va) !== String(vb);
+    if (isDiff) tr.className = 'diff';
     const td0 = document.createElement('td'); td0.textContent = label;
+    // The diff is shown visually with colour+weight; give screen readers the same signal.
+    if (isDiff) { const s = document.createElement('span'); s.className = 'sr-only'; s.textContent = ' — differs'; td0.appendChild(s); }
     const td1 = document.createElement('td'); td1.textContent = va;
     const td2 = document.createElement('td'); td2.textContent = vb;
     tr.appendChild(td0); tr.appendChild(td1); tr.appendChild(td2);
@@ -4281,9 +4284,11 @@ function openCompare(idA, idB) {
     const th = document.createElement('th');
     th.textContent = t;
     if (rA && rB && rA !== rB && ((i === 1 && rA > rB) || (i === 2 && rB > rA))) {
-      th.textContent = t + ' ✓';
       th.classList.add('cmp-win');
       th.title = 'Rated higher (' + Math.max(rA, rB) + '★ vs ' + Math.min(rA, rB) + '★)';
+      const mark = document.createElement('span'); mark.setAttribute('aria-hidden', 'true'); mark.textContent = ' ✓';
+      const sr = document.createElement('span'); sr.className = 'sr-only'; sr.textContent = ' (rated higher)';
+      th.appendChild(mark); th.appendChild(sr);
     }
     htr.appendChild(th);
   });

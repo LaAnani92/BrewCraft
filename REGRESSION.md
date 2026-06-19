@@ -815,3 +815,9 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] openCompare now marks the higher-rated recipe's column header with a ✓ + success colour (new .compare-table th.cmp-win) and a title "Rated higher (5★ vs 3★)". Only when both are rated and differ; no mark on equal/unrated. Rating uses the user's own verdict (rejected an EY "winner" as ambiguous re: target midpoint)
 - [ ] npm run check green (2.88.0 synced); verified via preview: A>B marks column A, B>A marks column B, equal/unrated marks neither
 - [ ] Update toast after deploy (cache v2.88.0)
+
+## Sprint 101 (v2.89.0) — Compare table conveys diff + winner to screen readers
+- [ ] Accessibility lens: the Compare modal already gets dialog/focus/Escape via initModalA11y (.modal-overlay). But the comparison's signals were visual-only: .diff rows used colour+bold (no SR marker — WCAG 1.4.1), and the v2.88 winner ✓ read to SR as a cryptic "check mark". An SR user got "Dose, 15, 18" with no sense of what differs or who won
+- [ ] addRow appends an sr-only " — differs" to changed rows' label cell (SR hears "Dose — differs, 15, 18"). The winner ✓ is now aria-hidden with an sr-only " (rated higher)" beside it (SR hears "Cup B, rated higher"). Both sr-only — zero visual change
+- [ ] npm run check green (2.89.0 synced); verified via preview: a diff row's label cell contains an sr-only "— differs"; the winning th has aria-hidden ✓ + sr-only "(rated higher)"; non-diff rows + loser column have neither
+- [ ] Update toast after deploy (cache v2.89.0)
