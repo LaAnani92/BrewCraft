@@ -1995,7 +1995,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.66.0';
+const APP_VERSION = '2.67.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null;
 let wakeLock = null;
@@ -4060,6 +4060,8 @@ function renderLibrary() {
       const stars = document.createElement('span');
       stars.className = 'recipe-card-stars';
       stars.textContent = '\u2605'.repeat(r.rating);
+      stars.setAttribute('role', 'img');
+      stars.setAttribute('aria-label', r.rating + ' of 5 stars');
       meta.appendChild(stars);
     }
     main.appendChild(nameEl);
@@ -5040,6 +5042,8 @@ function renderToday() {
     const st = document.createElement('span');
     st.className = 'recipe-card-stars';
     st.textContent = '\u2605'.repeat(bb.rating);
+    st.setAttribute('role', 'img');
+    st.setAttribute('aria-label', bb.rating + ' of 5 stars');
     const btn = document.createElement('button');
     btn.className = 'btn btn-sm btn-secondary';
     btn.textContent = 'Load it';
@@ -5316,6 +5320,8 @@ function renderJournal() {
       const st = document.createElement('span');
       st.className = 'recipe-card-stars';
       st.textContent = '\u2605'.repeat(r.rating);
+      st.setAttribute('role', 'img');
+      st.setAttribute('aria-label', r.rating + ' of 5 stars');
       top.appendChild(st);
     }
     e.appendChild(top);

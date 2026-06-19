@@ -680,3 +680,9 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] Carried bean context in _lastDiff (beanOrigin/beanVarietal/beanProcess/roastLevel/roastDate) and fed BEAN + FRESHNESS (via freshnessInfo) lines into the explainDiff prompt + told the system prompt to make the read specific to that coffee. Added an ESPRESSO guard line (espresso terms only, no pour-over language) to honor espresso-stays-espresso
 - [ ] npm run check green (2.66.0 synced); verified userMsg includes BEAN + FRESHNESS for a bean recipe and the ESPRESSO note for espresso, via preview (prompt-construction inspection; no live API call)
 - [ ] Update toast after deploy (cache v2.66.0)
+
+## Sprint 79 (v2.67.0) — accessible labels on read-only rating-star displays
+- [ ] Accessibility lens: the read-only `.recipe-card-stars` displays render as '★'.repeat(rating) with no label, so a screen reader announces "black star black star black star" instead of the rating. Three spots: library recipe card (~4062), Today best-brew card (~5042), journal entry (~5318). The interactive rater already had labels (v2.48); these passive displays were missed
+- [ ] Added role="img" + aria-label="N of 5 stars" to all three star spans (SR now reads the rating, ignores the glyph repetition). Visual unchanged; the ★ escapes preserved (only added attribute lines)
+- [ ] npm run check green (2.67.0 synced); verified the three star spans expose role=img + "N of 5 stars" via preview
+- [ ] Update toast after deploy (cache v2.67.0)
