@@ -809,3 +809,9 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] Reworded the button to "Start the next version to try this" — honest about what it does (creates v(N+1) for you to apply the change), consistent with the existing toast. Rejected auto-applying parsed advice (fragile free-text parsing) and a structured-JSON-delta + Apply button (a real fork, not loop-sized — flagged)
 - [ ] npm run check green (2.87.0 synced); verified via preview the button renders the new label
 - [ ] Update toast after deploy (cache v2.87.0)
+
+## Sprint 100 (v2.88.0) — Compare declares which cup won
+- [ ] Advanced Coffee User lens: the side-by-side Compare table highlights differing rows (.diff) but is purely descriptive — it shows "Rating 3/5 vs 5/5" without declaring a winner. The comparison's whole point is "which was better?", and the user had to find the rating row and judge mentally
+- [ ] openCompare now marks the higher-rated recipe's column header with a ✓ + success colour (new .compare-table th.cmp-win) and a title "Rated higher (5★ vs 3★)". Only when both are rated and differ; no mark on equal/unrated. Rating uses the user's own verdict (rejected an EY "winner" as ambiguous re: target midpoint)
+- [ ] npm run check green (2.88.0 synced); verified via preview: A>B marks column A, B>A marks column B, equal/unrated marks neither
+- [ ] Update toast after deploy (cache v2.88.0)

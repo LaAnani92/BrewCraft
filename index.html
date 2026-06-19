@@ -424,6 +424,7 @@
   .compare-table td { padding:7px 10px; border-bottom:1px solid var(--border); vertical-align:top; }
   .compare-table td:first-child { color:var(--text-muted); font-size:12px; white-space:nowrap; }
   .compare-table tr.diff td:not(:first-child) { color:var(--accent-bright); font-weight:600; }
+  .compare-table th.cmp-win { color:var(--success); }
 
   .ba-overlay {
     position:fixed; inset:0; background:var(--bg-deep); z-index:800;
@@ -2016,7 +2017,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.87.0';
+const APP_VERSION = '2.88.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
@@ -4274,7 +4275,18 @@ function openCompare(idA, idB) {
   const head = document.getElementById('compareHead');
   head.innerHTML = '';
   const htr = document.createElement('tr');
-  ['', a.name || 'Untitled', b.name || 'Untitled'].forEach(function(t) { const th = document.createElement('th'); th.textContent = t; htr.appendChild(th); });
+  // The comparison's whole point is "which was better" — mark the higher-rated cup's column.
+  const rA = a.rating || 0, rB = b.rating || 0;
+  ['', a.name || 'Untitled', b.name || 'Untitled'].forEach(function(t, i) {
+    const th = document.createElement('th');
+    th.textContent = t;
+    if (rA && rB && rA !== rB && ((i === 1 && rA > rB) || (i === 2 && rB > rA))) {
+      th.textContent = t + ' ✓';
+      th.classList.add('cmp-win');
+      th.title = 'Rated higher (' + Math.max(rA, rB) + '★ vs ' + Math.min(rA, rB) + '★)';
+    }
+    htr.appendChild(th);
+  });
   head.appendChild(htr);
   DIFF_FIELDS.forEach(function(f) {
     addRow(f[1], fmtDiffVal(f[0], a[f[0]]), fmtDiffVal(f[0], b[f[0]]));
