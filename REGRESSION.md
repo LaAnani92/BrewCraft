@@ -637,3 +637,10 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] Consistency: compares iso to today's/yesterday's UTC date slice (same basis as createdAt + the journal grouping) — no timezone drift vs the grouping
 - [ ] npm run check green (2.59.0 synced); verified Today/Yesterday/old-date mapping + a today brew groups under "Today" via preview
 - [ ] Update toast after deploy (cache v2.59.0)
+
+## Sprint 72 (v2.60.0) — disable the inert sort control in Timeline view
+- [ ] Advanced Coffee lens: retrieval is well-covered in List view (getFilteredRecipes: search name/origin/roaster + method filter + sort incl "Highest rated" — so "5★ Ethiopia" = search + sort). Gap: the Timeline view ignores the sort (always newest-first), so the sort dropdown silently did nothing there — a UX smell
+- [ ] setLibraryView now disables #librarySort in Timeline (with a title "Timeline is always newest-first — switch to List to sort") and re-enables it in List; the select value is preserved across the switch. Search + method filters still work in both views
+- [ ] Added .library-filters select:disabled { opacity .5; not-allowed } for a clear disabled appearance
+- [ ] npm run check green (2.60.0 synced); verified sort disabled in Timeline / enabled in List, value preserved, search+method still active via preview
+- [ ] Update toast after deploy (cache v2.60.0)

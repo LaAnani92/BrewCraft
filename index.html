@@ -328,6 +328,7 @@
 
   .library-toolbar { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:14px; }
   .library-filters { display:grid; grid-template-columns:1fr auto auto; gap:8px; margin-bottom:16px; }
+  .library-filters select:disabled { opacity:0.5; cursor:not-allowed; }
   .library-filters input, .library-filters select {
     font-family:'DM Sans',sans-serif; font-size:13px; padding:9px 12px;
     background:var(--bg-input); border:1px solid var(--border); border-radius:var(--radius-xs);
@@ -1986,7 +1987,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.59.0';
+const APP_VERSION = '2.60.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null;
 let wakeLock = null;
@@ -5222,6 +5223,12 @@ function setLibraryView(v) {
   libraryView = v;
   document.getElementById('viewListBtn').classList.toggle('active-view', v === 'list');
   document.getElementById('viewJournalBtn').classList.toggle('active-view', v === 'journal');
+  /* Timeline is always newest-first, so the sort control doesn't apply there — disable it rather than leave it silently inert. */
+  const sortSel = document.getElementById('librarySort');
+  if (sortSel) {
+    sortSel.disabled = (v === 'journal');
+    sortSel.title = (v === 'journal') ? 'Timeline is always newest-first — switch to List to sort' : '';
+  }
   renderLibrary();
 }
 function fmtDay(iso) {
