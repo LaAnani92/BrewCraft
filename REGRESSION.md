@@ -656,3 +656,9 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] Added min-height:44px to `.field input, .field select` and `.library-filters input, .library-filters select` — textareas left alone (taller by design; avoids specificity collision with .notes-box/.dialin-textarea)
 - [ ] npm run check green (2.62.0 synced); verified all settings + filter controls now >=44px via preview at 390px
 - [ ] Update toast after deploy (cache v2.62.0)
+
+## Sprint 75 (v2.63.0) — beginner orienting line above the dial-in chips
+- [ ] Beginner User lens: the Dial-In Assistant shows 10 defect-vocabulary chips (Sour/Bitter/Astringent/Hollow/Muted/Harsh…) with no orientation — a beginner can't tell which word matches their cup, and the core sour=under / bitter=over mental model was only revealed AFTER they picked a chip (in ruleDialIn output)
+- [ ] Added a beginner-only `.dialin-coach-hint` line above the chips ("Sour & sharp → grind finer; Bitter & harsh → grind coarser; tap whatever's closest, no wrong answer"); display:none by default, display:block under body.skill-beginner (mirrors the .grind-readout pattern) — enthusiasts/experts see nothing; additive, no JS
+- [ ] npm run check green (2.63.0 synced); verified hint visible for beginner skill + hidden for enthusiast/expert via preview
+- [ ] Update toast after deploy (cache v2.63.0)
