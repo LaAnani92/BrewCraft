@@ -1362,8 +1362,8 @@
     <div class="sr-only" id="brewGuideSr" role="status" aria-live="polite"></div>
     <div class="timer-buttons">
       <button class="btn btn-primary" id="timerStartBtn" onclick="toggleTimer()"><svg class="ico"><use href="#i-play"/></svg> Start</button>
-      <button class="btn btn-secondary" onclick="resetTimer()"><svg class="ico"><use href="#i-reset"/></svg> Reset</button>
       <button class="btn btn-secondary" onclick="lapTimer()" title="Lap — stamp the current time onto the next pour as you brew" aria-label="Lap — record the current time onto the next pour"><svg class="ico"><use href="#i-lap"/></svg> Lap</button>
+      <button class="btn btn-secondary" onclick="confirmResetTimer()"><svg class="ico"><use href="#i-reset"/></svg> Reset</button>
     </div>
     <div class="timer-current-pour" id="timerPourInfo"></div>
   </div>
@@ -2011,7 +2011,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.80.0';
+const APP_VERSION = '2.81.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
@@ -2969,6 +2969,14 @@ const ICON_PAUSE = '<svg class="ico"><use href="#i-pause"/></svg>';
 function setTimerBtns(label) {
   document.getElementById('timerStartBtn').innerHTML = label;
   document.getElementById('baTimerBtn').innerHTML = label;
+}
+function confirmResetTimer() {
+  // Reset wipes the running timer and any lap-stamped pour times — guard it mid-brew, but don't nag a fresh 00:00.
+  if (timerRunning || currentElapsedMs() > 2000) {
+    showActionToast('Reset the timer? Elapsed time and laps will clear.', 'Reset', resetTimer, 'warning', 6000);
+  } else {
+    resetTimer();
+  }
 }
 function resetTimer() {
   clearInterval(timerInterval);

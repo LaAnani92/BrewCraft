@@ -767,3 +767,9 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] Added a .journal-best highlight at the top of renderJournal (Timeline only, unfiltered, recipes>=3 + >=1 rated): "Your best so far · <name> · ★★★★★", role=button + aria-label + Enter/Space, tap → loadRecipe + Recipe tab. Highest rating wins, ties broken by most-recent. Stars aria-hidden (label covers it). No new storage
 - [ ] npm run check green (2.80.0 synced); verified via preview: highlight names the top-rated cup, opens it on click, hidden under 3 recipes / when searching/filtering / when nothing rated
 - [ ] Update toast after deploy (cache v2.80.0)
+
+## Sprint 93 (v2.81.0) — protect the running brew timer from an accidental Reset
+- [ ] Mobile Kitchen UX lens: the Brew-tab timer buttons were Start · Reset · Lap — the destructive Reset sat between the two most-tapped during-brew actions (Start/Pause + Lap), so a wet-thumb mis-tap mid-pour wiped the running timer + lap-stamped pour times with no confirmation
+- [ ] Reordered to Start · Lap · Reset (Reset leaves the hot path) AND guarded it: the Reset button now calls confirmResetTimer() → if timer running OR elapsed > 2s, a one-tap action toast ("Reset the timer? … [Reset]", non-blocking, auto-dismiss 6s); otherwise resets immediately (no nag on a fresh 00:00). resetTimer() itself unchanged, so programmatic callers (brewAgain/newRecipe) are unaffected. No confirm()/prompt()
+- [ ] npm run check green (2.81.0 synced); verified via preview: running/elapsed Reset shows the confirm toast and only resets on its tap; a fresh 00:00 resets immediately; button order is Start/Lap/Reset
+- [ ] Update toast after deploy (cache v2.81.0)
