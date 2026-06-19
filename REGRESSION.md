@@ -803,3 +803,9 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] Added scrollDialinIntoView() (scrollIntoView block:'nearest', smooth) called when the result shows: keyless branch (instant result) and AI branch (loading state, so the result stays in view as it fills in). block:'nearest' only moves if needed
 - [ ] npm run check green (2.86.0 synced); verified via preview by stubbing scrollIntoView: invoked once on the keyless path and once on the AI path (at loading)
 - [ ] Update toast after deploy (cache v2.86.0)
+
+## Sprint 99 (v2.87.0) — honest label on the post-dial-in CTA
+- [ ] AI Product lens: the dial-in CTA read "Brew Again with this plan", implying the AI's advice (e.g. "grind 2 clicks finer") was operationalized — but brewAgain() just clones the recipe into a fresh version and tells you to "change ONE variable" yourself. The plan is NOT auto-applied; the label over-claimed (the "AI feels bolted on" tell)
+- [ ] Reworded the button to "Start the next version to try this" — honest about what it does (creates v(N+1) for you to apply the change), consistent with the existing toast. Rejected auto-applying parsed advice (fragile free-text parsing) and a structured-JSON-delta + Apply button (a real fork, not loop-sized — flagged)
+- [ ] npm run check green (2.87.0 synced); verified via preview the button renders the new label
+- [ ] Update toast after deploy (cache v2.87.0)
