@@ -1985,7 +1985,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.56.0';
+const APP_VERSION = '2.57.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null;
 let wakeLock = null;
@@ -3868,6 +3868,12 @@ function saveRecipe(mode) {
     recipes[idx] = data;
   } else {
     data.id = generateId();
+    if (!data.name) {
+      /* Forgiving, identifiable default so unnamed saves aren't a pile of "Untitled" — populated visibly so the user can refine it. */
+      data.name = (getSelectedMethod() || 'New') + ' · ' + new Date().toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+      const nameEl = document.getElementById('recipeName');
+      if (nameEl) { nameEl.value = data.name; syncHeaderName(); }
+    }
     data.createdAt = new Date().toISOString();
     currentRecipeId = data.id;
     recipes.unshift(data);

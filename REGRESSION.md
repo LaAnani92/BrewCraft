@@ -616,3 +616,10 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] Precedence: markup default → applyInitialDisclosure (beginner Bean) → user's explicit toggles win; sections never toggled keep their default
 - [ ] npm run check green (2.56.0 synced); verified collapse persists + a user-expanded default-collapsed section is remembered via preview
 - [ ] Update toast after deploy (cache v2.56.0)
+
+## Sprint 69 (v2.57.0) — identifiable default name for unnamed first saves
+- [ ] Beginner audit (lens): the save flow is well-built (always-visible Save button, clear consent-choice copy). Gap: saving a NEW recipe with an empty name produced "Untitled Recipe"; skip naming twice → multiple indistinguishable "Untitled" entries
+- [ ] On first save of a new recipe with no name, default to "<method> · <Mon D>" (e.g., "V60 · Jun 19") and populate the name field visibly so the user can refine it. Forgiving, identifiable, transparent
+- [ ] Only the new-recipe path with an empty name (named saves + the version path unchanged); consent flow untouched
+- [ ] npm run check green (2.57.0 synced); verified unnamed new save gets a method+date name (and a named save is untouched) via preview
+- [ ] Update toast after deploy (cache v2.57.0)
