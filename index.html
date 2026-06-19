@@ -1995,7 +1995,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.65.0';
+const APP_VERSION = '2.66.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null;
 let wakeLock = null;
@@ -3599,7 +3599,8 @@ function syncDiffExplain(r, parent) {
     const b = fmtDiffVal(f[0], r[f[0]]);
     if (a !== b) changes.push({ label: f[1], key: f[0], from: a, to: b });
   });
-  _lastDiff = { changes: changes, ratingFrom: parent.rating || 0, ratingTo: r.rating || 0, method: r.method, fromVer: (parent.version || 1), toVer: (r.version || 2) };
+  _lastDiff = { changes: changes, ratingFrom: parent.rating || 0, ratingTo: r.rating || 0, method: r.method, fromVer: (parent.version || 1), toVer: (r.version || 2),
+    beanOrigin: r.beanOrigin || '', beanVarietal: r.beanVarietal || '', beanProcess: r.beanProcess || '', roastLevel: r.roastLevel || '', roastDate: r.roastDate || '' };
   if (row) row.style.display = changes.length ? 'flex' : 'none';
 }
 function diffEffect(key, fromStr, toStr) {
@@ -3647,8 +3648,13 @@ async function explainDiff() {
   }
   panel.innerHTML = aiThinking('What changed in the cup', 'Thinking');
   try {
-    const sys = 'You are a specialty coffee expert. The user turned one brewing recipe into a new version. Given the parameter changes (from \u2192 to) and any rating change, explain in plain, friendly language what each change likely did to the cup (flavour, body, acidity, sweetness, extraction). Be concrete and brief. 2-4 short bullets starting with the bullet character, under 120 words, no markdown.';
-    const userMsg = 'METHOD: ' + (diff.method || '') + '\nCHANGES: ' + diff.changes.map(function(c) { return c.label + ': ' + c.from + ' -> ' + c.to; }).join('; ') + ((diff.ratingFrom && diff.ratingTo) ? '\nRATING: ' + diff.ratingFrom + ' -> ' + diff.ratingTo : '');
+    const sys = 'You are a specialty coffee expert. The user turned one brewing recipe into a new version. Given the parameter changes (from \u2192 to) and any rating change, explain in plain, friendly language what each change likely did to the cup (flavour, body, acidity, sweetness, extraction). When bean details are provided (origin, varietal, process, roast level, freshness), make the explanation specific to THAT coffee \u2014 e.g. how the change interacts with a washed vs natural process, a light vs dark roast, or coffee that is still degassing vs past its peak \u2014 not generic. Be concrete and brief. 2-4 short bullets starting with the bullet character, under 120 words, no markdown.';
+    const beanBits = [diff.beanOrigin, diff.beanVarietal, diff.beanProcess, diff.roastLevel ? diff.roastLevel + ' roast' : ''].filter(Boolean);
+    const beanLine = beanBits.length ? '\nBEAN: ' + beanBits.join(', ') : '';
+    const fresh = freshnessInfo(diff.roastDate);
+    const freshLine = fresh ? '\nFRESHNESS: ' + fresh.label : '';
+    const espLine = (diff.method === 'Espresso') ? '\nNOTE: This is ESPRESSO \u2014 explain in espresso terms (dose, yield, shot time, pressure, temperature). No pour-over language (no pours, swirls, blooms).' : '';
+    const userMsg = 'METHOD: ' + (diff.method || '') + beanLine + freshLine + '\nCHANGES: ' + diff.changes.map(function(c) { return c.label + ': ' + c.from + ' -> ' + c.to; }).join('; ') + ((diff.ratingFrom && diff.ratingTo) ? '\nRATING: ' + diff.ratingFrom + ' -> ' + diff.ratingTo : '') + espLine;
     const text = await aiComplete(sys, userMsg, 350);
     panel.innerHTML = '<h4>What changed in the cup</h4>' + escapeHtml(text).replace(/\n/g, '<br>') + '<span class="src">AI \u00b7 ' + escapeHtml(settings.model || 'claude-sonnet-4-6') + '</span>';
   } catch(e) {

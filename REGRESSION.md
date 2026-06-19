@@ -674,3 +674,9 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] Reworded the journey <details> summary to walk the full parentId chain (uncapped) and show "Your dial-in journey · N brews · firstRated★ → currentRated★" (arc shown only when the current cup is rated strictly better than the first rated cup in the lineage; honest — no false progress). Same element, no new UI; body steps unchanged
 - [ ] npm run check green (2.65.0 synced); verified summary shows brew count + rating arc on an improving lineage, count-only when flat/declining via preview
 - [ ] Update toast after deploy (cache v2.65.0)
+
+## Sprint 78 (v2.66.0) — make the "Explain this change" AI actually bean-aware
+- [ ] AI Product lens: the version-diff "Explain this change" AI (explainDiff) sent only METHOD + CHANGES + RATING — no bean data — so it could only produce the same generic read as the keyless ruleExplainDiff, just slower. Yet the keyless CTA promises "Add an API key for a bean-aware explanation" — an unkept promise; the AI felt bolted on
+- [ ] Carried bean context in _lastDiff (beanOrigin/beanVarietal/beanProcess/roastLevel/roastDate) and fed BEAN + FRESHNESS (via freshnessInfo) lines into the explainDiff prompt + told the system prompt to make the read specific to that coffee. Added an ESPRESSO guard line (espresso terms only, no pour-over language) to honor espresso-stays-espresso
+- [ ] npm run check green (2.66.0 synced); verified userMsg includes BEAN + FRESHNESS for a bean recipe and the ESPRESSO note for espresso, via preview (prompt-construction inspection; no live API call)
+- [ ] Update toast after deploy (cache v2.66.0)
