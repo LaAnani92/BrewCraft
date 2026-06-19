@@ -668,3 +668,9 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] Added a "Go back to vN (your better cup)" button in the version-diff card, shown ONLY when the current version is rated strictly worse than its parent (rA && rB && rB<rA); calls new loadParentVersion() → loadRecipe(parent.id) + switchTab('recipe') + toast. Non-destructive (worse version stays saved); matches the existing loadRecipe dirty/autosave behavior
 - [ ] npm run check green (2.64.0 synced); verified button appears only when child rated worse than parent, loads the parent, and is absent when improved/unchanged via preview
 - [ ] Update toast after deploy (cache v2.64.0)
+
+## Sprint 77 (v2.65.0) — the dial-in journey tells the arc, not a step count
+- [ ] Emotional Design lens: the multi-brew arc surfaced only as a collapsed "Dial-in journey · N steps" — N capped at 3 (iterationHistory's AI-token cap), framed as a debug log. A user who took a bean 2★→5★ over 6 brews saw "3 steps", not their story
+- [ ] Reworded the journey <details> summary to walk the full parentId chain (uncapped) and show "Your dial-in journey · N brews · firstRated★ → currentRated★" (arc shown only when the current cup is rated strictly better than the first rated cup in the lineage; honest — no false progress). Same element, no new UI; body steps unchanged
+- [ ] npm run check green (2.65.0 synced); verified summary shows brew count + rating arc on an improving lineage, count-only when flat/declining via preview
+- [ ] Update toast after deploy (cache v2.65.0)

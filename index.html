@@ -1995,7 +1995,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.64.0';
+const APP_VERSION = '2.65.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null;
 let wakeLock = null;
@@ -3823,7 +3823,17 @@ function renderVersionDiff(r) {
   const hist = iterationHistory(r);
   if (hist.length >= 2) {
     const steps = hist.map(function(l) { return '<div class="diff-line">' + escapeHtml(l) + '</div>'; }).join('');
-    document.getElementById('versionDiffBody').insertAdjacentHTML('beforeend', '<details class="diff-journey"><summary>Dial-in journey &middot; ' + hist.length + ' steps</summary>' + steps + '</details>');
+    // Tell the arc, not just a step count: how many brews this lineage took, and the rating progress
+    // from the first cup you rated to this one. Turns a debug log into a small record of earned progress.
+    let chain = [], node = r, guard = 0;
+    while (node && guard < 60) { chain.push(node); node = node.parentId ? recipes.find(function(x) { return x.id === node.parentId; }) : null; guard++; }
+    const brews = chain.length;
+    const rated = chain.filter(function(x) { return x.rating; });
+    const firstRated = rated.length ? rated[rated.length - 1].rating : 0;
+    const curRated = r.rating || 0;
+    let summary = 'Your dial-in journey &middot; ' + brews + ' brew' + (brews === 1 ? '' : 's');
+    if (firstRated && curRated && curRated > firstRated) summary += ' &middot; ' + firstRated + '★ → ' + curRated + '★';
+    document.getElementById('versionDiffBody').insertAdjacentHTML('beforeend', '<details class="diff-journey"><summary>' + summary + '</summary>' + steps + '</details>');
   }
   card.style.display = 'block';
   syncDiffExplain(r, parent);
