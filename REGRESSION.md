@@ -630,3 +630,10 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] Calm muted field-hint, text-only (no pushy CTA / no "come back" hook); setRating shows it for v>=4, clearRating hides it
 - [ ] npm run check green (2.58.0 synced); verified praise shows at 4-5, low-nudge at <=3, neither at 0 via preview
 - [ ] Update toast after deploy (cache v2.58.0)
+
+## Sprint 71 (v2.59.0) — warm relative day labels in the Journal
+- [ ] Emotional Design lens: the Journal already tells a chronological story (date-grouped entries + ratings/notes/version), but recent groups used clinical full dates ("Thu, Jun 19, 2026"). A count/"since" header was rejected — counting is ambiguous (seeded samples vs real brews, rated vs not)
+- [ ] fmtDay now returns "Today" / "Yesterday" for the two most recent days, else the full date — makes recent brews feel immediate/personal. Unambiguous, journal-scoped
+- [ ] Consistency: compares iso to today's/yesterday's UTC date slice (same basis as createdAt + the journal grouping) — no timezone drift vs the grouping
+- [ ] npm run check green (2.59.0 synced); verified Today/Yesterday/old-date mapping + a today brew groups under "Today" via preview
+- [ ] Update toast after deploy (cache v2.59.0)

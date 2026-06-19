@@ -1986,7 +1986,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.58.0';
+const APP_VERSION = '2.59.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null;
 let wakeLock = null;
@@ -5228,6 +5228,11 @@ function fmtDay(iso) {
   if (!iso) return 'Undated';
   const dt = new Date(iso + 'T00:00:00');
   if (isNaN(dt.getTime())) return iso;
+  /* Warm, immediate labels for recent brews (iso + the journal grouping are both UTC date slices, so this stays consistent). */
+  const nowIso = new Date().toISOString().slice(0, 10);
+  const yIso = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
+  if (iso === nowIso) return 'Today';
+  if (iso === yIso) return 'Yesterday';
   return dt.toLocaleDateString(undefined, { weekday:'short', year:'numeric', month:'short', day:'numeric' });
 }
 function renderJournal() {
