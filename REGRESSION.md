@@ -856,3 +856,9 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] Added an espresso branch atop updateBrewGuide: at/after brewTargetSec it fires the same one-time beep/haptic, shows "✓ At target shot time — Cut it now, or pull longer…" + a "Rate this shot →" link, and announces "At your target shot time." to SR; before target it stays hidden. Espresso-specific copy (cut the shot, not pour-over "brew complete"). Reuses brewCompleteFired (reset in computeBrewTarget/resetTimer). Returns before the pour-over path
 - [ ] npm run check green (2.95.0 synced); verified via preview: espresso past target shows the shot-done message + sets brewCompleteFired once; before target hidden; pour-over unchanged
 - [ ] Update toast after deploy (cache v2.95.0)
+
+## Sprint 108 (v2.96.0) — completion SR announce points to the rate hand-off
+- [ ] Accessibility lens: the brewGuideSr live region is sound (always-present role=status, set once via brewCompleteFired, no per-tick spam; #brewGuide itself isn't a live region; separate from aiStatusSr). But at completion the VISIBLE guide shows a "Rate this cup/shot →" button while the SR announce ("That's brewed. Let it settle." / "At your target shot time.") never mentioned rating — so an SR user heard the alert but wasn't told the next step exists (the button isn't in a live region, so its appearance isn't announced)
+- [ ] Enriched both completion announces: pour-over → "That's brewed. Let it settle, then rate the cup below."; espresso → "At your target shot time. Cut it, then rate the shot below." Visible message + cue unchanged; info-parity for SR only
+- [ ] npm run check green (2.96.0 synced); verified via preview: brewGuideSr carries the rate hand-off for both pour-over and espresso completion
+- [ ] Update toast after deploy (cache v2.96.0)

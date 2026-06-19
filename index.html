@@ -1962,7 +1962,7 @@ function updateBrewGuide(sec) {
         brewCompleteFired = true;
         beep(660, 0.18); setTimeout(function() { beep(880, 0.2); }, 200); vibrate(140);
         const srShot = document.getElementById('brewGuideSr');
-        if (srShot) srShot.textContent = 'At your target shot time.';
+        if (srShot) srShot.textContent = 'At your target shot time. Cut it, then rate the shot below.';
       }
       el.innerHTML = '<strong class="bg-done">✓ At target shot time</strong>' +
         '<span class="bg-next">Cut it now, or pull longer and note what changes.</span>' +
@@ -1978,7 +1978,7 @@ function updateBrewGuide(sec) {
       brewCompleteFired = true;
       beep(660, 0.18); setTimeout(function() { beep(880, 0.2); }, 200); vibrate(140);
       const srDone = document.getElementById('brewGuideSr');
-      if (srDone) srDone.textContent = "That's brewed. Let it settle.";
+      if (srDone) srDone.textContent = "That's brewed. Let it settle, then rate the cup below.";
     }
     el.innerHTML = '<strong class="bg-done">✓ That’s brewed</strong>' +
       '<span class="bg-next">Let it settle. Take the first sip before you judge it.</span>' +
@@ -2046,7 +2046,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.95.0';
+const APP_VERSION = '2.96.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
