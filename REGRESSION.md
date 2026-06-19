@@ -797,3 +797,9 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] updatePourTotals now appends a status: "on target" (green, |Σ−water|≤2g) or "+Ng over" / "Ng short" (amber). autoDistributePours makes the LAST plain pour absorb the rounding remainder so the schedule sums EXACTLY to total water (bloom = max(dose×2, 10%) unchanged)
 - [ ] npm run check green (2.85.0 synced); verified via preview: autoDistribute sums exactly to water (shows "on target"); a manual over/under shows the +over/short amber delta; tolerance ±2g
 - [ ] Update toast after deploy (cache v2.85.0)
+
+## Sprint 98 (v2.86.0) — dial-in result scrolls into view (one-handed)
+- [ ] Mobile Kitchen UX lens: "Get Dial-In Advice" sits at the bottom of a tall section (chips + textarea + button), so the result (#dialinOut) and the "Brew Again" CTA render below the fold — the user taps, the button reads "… thinking", but the answer lands off-screen with nothing scrolling to it. Result reads fine (14px/1.75/pre-wrap); the gap is visibility
+- [ ] Added scrollDialinIntoView() (scrollIntoView block:'nearest', smooth) called when the result shows: keyless branch (instant result) and AI branch (loading state, so the result stays in view as it fills in). block:'nearest' only moves if needed
+- [ ] npm run check green (2.86.0 synced); verified via preview by stubbing scrollIntoView: invoked once on the keyless path and once on the AI path (at loading)
+- [ ] Update toast after deploy (cache v2.86.0)

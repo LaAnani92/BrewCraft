@@ -2016,7 +2016,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.85.0';
+const APP_VERSION = '2.86.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
@@ -3353,6 +3353,12 @@ function ruleDialIn(issues) {
   }
   return out.join('\n\n');
 }
+/* "Get Dial-In Advice" sits at the bottom of a tall section — bring the result into view so a
+   one-handed user sees the answer (and the Brew Again CTA) instead of it landing below the fold. */
+function scrollDialinIntoView() {
+  const el = document.getElementById('dialinOut');
+  if (el && typeof el.scrollIntoView === 'function') { try { el.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); } catch(e) { el.scrollIntoView(); } }
+}
 async function getDialinAdvice() {
   const issues = getSelectedIssues();
   const notes = document.getElementById('dialinNotes').value.trim();
@@ -3371,12 +3377,14 @@ async function getDialinAdvice() {
     outEl.innerHTML += '<span class="src">Built-in expert rules (extraction compass). <button type="button" class="link-btn" onclick="openSettingsToKey()">Add an API key</button> (gear icon, top right) for AI analysis of your exact recipe.</span>';
     outEl.classList.add('show');
     document.getElementById('dialinNext').style.display = 'block';
+    scrollDialinIntoView();
     return;
   }
   btn.disabled = true; btn.textContent = '\u2026 thinking';
   outEl.innerHTML = 'Analyzing your recipe <span class="ai-dots" aria-hidden="true"><span></span><span></span><span></span></span>';
   outEl.classList.add('show');
   announceAI('Working on it…');
+  scrollDialinIntoView();
   try {
     const r = stripForShare(data);
     const fresh = freshnessInfo(data.roastDate);
