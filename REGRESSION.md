@@ -730,3 +730,10 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] npm run check green (2.74.0 synced); verified via preview: <5 recipes hidden; >=5 + never-exported shows; after exportAllRecipes brewcraft_exported set + nudge hides; simulated >30-day-old export re-shows with the "over a month" copy
 - [ ] Update toast after deploy (cache v2.74.0)
 - [ ] NOTE: storage keys now also include brewcraft_exported (v2.74) — additive, no migration
+
+## Sprint 87 (v2.75.0) — mark the first rated cup (first-run delight)
+- [ ] Emotional Design lens: setRating handled praise/nudge, 5★ celebrate, and new-best-for-lineage, but the very first cup a user ever rates — the moment the brew journal becomes real — was treated identically to the 50th. Flat inaugural moment
+- [ ] Added a one-time warm toast in setRating (non-silent, v>0): "That's your first rated cup — your brew journal starts here." Guarded by new persistent flag brewcraft_firstrated AND a check that no recipe is already rated, so it never false-fires for returning users (their next rating just sets the flag silently). New-best can't fire on a first rating (no ancestor), so no toast collision
+- [ ] npm run check green (2.75.0 synced); verified via preview: first-ever rating fires the toast + sets flag; a second rating does NOT re-fire; a library with pre-existing rated recipes sets the flag WITHOUT the toast
+- [ ] Update toast after deploy (cache v2.75.0)
+- [ ] NOTE: storage keys now also include brewcraft_firstrated (v2.75) — additive, no migration

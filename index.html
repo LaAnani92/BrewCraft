@@ -2000,7 +2000,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.74.0';
+const APP_VERSION = '2.75.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
@@ -3113,6 +3113,14 @@ function setRating(v, silent) {
         showToast('New best for this recipe — ' + v + '★ beats your ' + prevBest + '★', 'success');
         if (v < 5) { vibrate(45); celebrate(); }
       }
+    }
+    // The first cup they ever rate is the start of their brew journal — mark it once, warmly.
+    // Guarded so it never false-fires for returning users who already have rated brews.
+    if (v > 0 && store.ok && !store.get('brewcraft_firstrated')) {
+      if (!recipes.some(function(r) { return (r.rating || 0) > 0; })) {
+        showToast('That’s your first rated cup — your brew journal starts here.', 'success');
+      }
+      try { store.set('brewcraft_firstrated', '1'); } catch(e) {}
     }
   }
   markDirty();
