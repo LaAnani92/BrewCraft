@@ -650,3 +650,9 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] Added role=group + aria-label="Journal view" on the chip-row, aria-pressed on both buttons, synced in setLibraryView (List pressed when list, Timeline pressed when journal); visual unchanged
 - [ ] npm run check green (2.61.0 synced); verified aria-pressed tracks the active view via preview
 - [ ] Update toast after deploy (cache v2.61.0)
+
+## Sprint 74 (v2.62.0) — single-line form controls meet the 44px tap target
+- [ ] Mobile Kitchen UX lens: measured controls at 390px width — `.field` inputs/selects (Settings, Water chemistry, dial-in text fields) rendered 40px tall and `.library-filters` (Journal search/sort) ~41px, below the 44px target the rest of the app (buttons, steppers, icon-btns) already meets
+- [ ] Added min-height:44px to `.field input, .field select` and `.library-filters input, .library-filters select` — textareas left alone (taller by design; avoids specificity collision with .notes-box/.dialin-textarea)
+- [ ] npm run check green (2.62.0 synced); verified all settings + filter controls now >=44px via preview at 390px
+- [ ] Update toast after deploy (cache v2.62.0)
