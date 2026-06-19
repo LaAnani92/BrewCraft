@@ -833,3 +833,9 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] Added a debounced (200ms) window resize listener that calls drawStats() when tab-lab is active (mirrors the existing theme-change redraw). Rings are SVG (CSS-scaled), so only the stats canvases need re-raster
 - [ ] npm run check green (2.91.0 synced); verified via preview: resizing the viewport while on Lab re-runs drawStats (canvas backing width tracks the new clientWidth); inactive-tab resize does nothing
 - [ ] Update toast after deploy (cache v2.91.0)
+
+## Sprint 104 (v2.92.0) — immersion brews don't say "drawdown"
+- [ ] Beginner User lens: the brew guide + Brew-Along final-step text said "drawing down / drawdown" for every non-espresso method, including immersion (French Press/AeroPress/Clever/Hario Switch) where there's no drawdown — it's steep-then-press/plunge. Pour-over jargon misapplied to a steep confuses a beginner (parallels espresso-stays-espresso)
+- [ ] Added isImmersion(method) helper; updateBrewGuide's final-step line now shows "steeping — done ~Xs" / "steeping — let it finish" for immersion (else the pour-over "drawing down" stays), and baAutoAdvance's last-step shows "Final step — steeping" for immersion. Method-scoped to the 4 steep-then-separate methods; pour-over/espresso unchanged
+- [ ] npm run check green (2.92.0 synced); verified via preview: isImmersion true for FP/AeroPress/Clever/Switch + false for V60/Espresso; updateBrewGuide last-step renders "steeping" for an immersion method and "drawing down" for V60
+- [ ] Update toast after deploy (cache v2.92.0)

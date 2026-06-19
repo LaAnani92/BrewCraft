@@ -1947,6 +1947,10 @@ let guideSteps = [];     // cached pour steps for live guidance under the timer
 let brewCompleteFired = false; // one-time "brew complete" cue guard
 let lastGuideAnnounce = ''; // last guide text spoken to screen readers (announce on change only, not every tick)
 const BREW_RING_C = 628.319; // circumference of the r=100 ring
+/* Steep-then-press methods (no pour-over drawdown) — keeps the brew guidance honest per method. */
+function isImmersion(method) {
+  return method === 'French Press' || method === 'AeroPress' || method === 'Clever' || method === 'Hario Switch';
+}
 function updateBrewGuide(sec) {
   const el = document.getElementById('brewGuide');
   if (!el) return;
@@ -1979,9 +1983,11 @@ function updateBrewGuide(sec) {
     if (remain > 0) html += '<span class="bg-next">next: ' + escapeHtml(next.label) + ' in ' + secToStr(remain) + '</span>';
     else html += '<span class="bg-next">tap Lap or wait — ' + escapeHtml(next.label) + ' now</span>';
   } else if (!next) {
+    // Immersion (steep-then-press) doesn't "draw down" like pour-over — don't tell a beginner it does.
+    const imm = isImmersion(getSelectedMethod());
     html += brewTargetSec > 0
-      ? '<span class="bg-next">drawing down — done ~' + secToStr(brewTargetSec) + '</span>'
-      : '<span class="bg-next">last pour — let it draw down</span>';
+      ? '<span class="bg-next">' + (imm ? 'steeping — done ~' : 'drawing down — done ~') + secToStr(brewTargetSec) + '</span>'
+      : '<span class="bg-next">' + (imm ? 'steeping — let it finish' : 'last pour — let it draw down') + '</span>';
   }
   const announce = st.label + ', pour to ' + st.targetCum + ' g';
   if (announce !== lastGuideAnnounce) {
@@ -2017,7 +2023,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.91.0';
+const APP_VERSION = '2.92.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
@@ -3139,7 +3145,7 @@ function baAutoAdvance(elapsedSec) {
     if (remain <= 0) { baIdx++; renderBAStep(); vibrate(80); info.textContent = ''; return; }
     info.textContent = 'Next: ' + next.label + ' in ' + secToStr(Math.ceil(remain));
   } else {
-    info.textContent = next ? 'Tap right side of screen for next step' : 'Final step \u2014 drawdown';
+    info.textContent = next ? 'Tap right side of screen for next step' : ('Final step \u2014 ' + (isImmersion(getSelectedMethod()) ? 'steeping' : 'drawdown'));
   }
 }
 document.addEventListener('visibilitychange', function() {
