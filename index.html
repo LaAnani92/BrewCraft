@@ -471,7 +471,8 @@
   .preset-chip:active, .preset-chip:hover { border-color:var(--accent); color:var(--accent-bright); background:var(--accent-glow); }
   /* precision dial */
   .dial-head { display:flex; align-items:center; gap:6px; margin-bottom:6px; }
-  .dial-reset { margin-left:auto; width:30px; height:30px; display:inline-flex; align-items:center; justify-content:center; background:transparent; border:1px solid var(--border); border-radius:var(--radius-xs); color:var(--text-muted); cursor:pointer; transition:all 0.15s; flex-shrink:0; }
+  /* 44px tap target (one-handed at the grinder), matching .icon-btn; icon stays 15px */
+  .dial-reset { margin-left:auto; width:44px; height:44px; display:inline-flex; align-items:center; justify-content:center; background:transparent; border:1px solid var(--border); border-radius:var(--radius-xs); color:var(--text-muted); cursor:pointer; transition:all 0.15s; flex-shrink:0; }
   .dial-reset:active, .dial-reset:hover { color:var(--accent-bright); border-color:var(--accent); background:var(--accent-glow); }
   .dial-reset .ico { width:15px; height:15px; }
   /* per-method quick recipes rail (qrec- prefix avoids the QR-code .qr-* widget) */
@@ -2000,7 +2001,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.75.0';
+const APP_VERSION = '2.76.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;

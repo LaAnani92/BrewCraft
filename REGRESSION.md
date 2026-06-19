@@ -737,3 +737,10 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] npm run check green (2.75.0 synced); verified via preview: first-ever rating fires the toast + sets flag; a second rating does NOT re-fire; a library with pre-existing rated recipes sets the flag WITHOUT the toast
 - [ ] Update toast after deploy (cache v2.75.0)
 - [ ] NOTE: storage keys now also include brewcraft_firstrated (v2.75) — additive, no migration
+
+## Sprint 88 (v2.76.0) — dial reset buttons meet the 44px tap target
+- [ ] Mobile Kitchen UX lens: inspected the precision dials — value sits above the drag strip (no thumb occlusion), reset on all 4 dials, presets on ratio/temp converting correctly with °C/°F (refreshTempUI), drag-snap + type + keyboard. All solid. The one miss: .dial-reset buttons rendered 30×30px, below the app's 44px standard — tapped one-handed at the grinder
+- [ ] Bumped .dial-reset to 44×44 (matches .icon-btn; icon stays 15px). First tried a zero-visual-change ::after hit-area overlay but elementFromPoint verification showed it did NOT reliably enlarge the target in this engine, so switched to a genuine, verifiable 44px box
+- [ ] REJECTED (again) the ruler touch-action:none→pan-y scroll-trap fix: pan-y risks a slightly-diagonal drag getting stolen by page scroll mid-adjustment (degrades the dial's PRIMARY interaction), unverifiable in headless — needs real-device feel-testing
+- [ ] npm run check green (2.76.0 synced); verified via preview: all 4 dial-reset now 44x44, reset still restores the default
+- [ ] Update toast after deploy (cache v2.76.0)
