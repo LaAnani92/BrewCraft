@@ -749,4 +749,9 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] AI Product lens: the OCR scan flow is seamless WITH a key (photo → read → consent review of sc* fields → applyScan maps fields, expands bean section, toast; no auto-save). But a keyless user hit a wall — "add an API key" with no way forward. OCR can't have a rule fallback, but the graceful degradation is a redirect to manual entry (bean fields are behind the modal, not obvious)
 - [ ] Rewrote the keyless scanKeyHint into two one-tap paths: "Add a key" (closeScan + openSettingsToKey, matches the v2.9 pattern) and "enter the bean details by hand" → new scanManualEntry() (closeScan, switchTab recipe, expand sec-bean via toggleSection if collapsed, scrollIntoView, focus beanOrigin). Only shown keyless
 - [ ] npm run check green (2.77.0 synced); verified via preview: keyhint shows both link-btns; scanManualEntry closes the scan modal, expands the bean section, and focuses the origin field
-- [ ] Update toast after deploy (cache v2.77.0)
+
+## Sprint 90 (v2.78.0) — beginner method picker: one-line character note
+- [ ] Beginner User lens: category headers orient (Gravity · pour-over & drip) but the ~20 method cards are bare icon+name (V60, Origami, Phin, Cafelat Robot…). A newcomer can't tell what cup each makes
+- [ ] Added METHOD_BLURB map + updateMethodBlurb(): a beginner-only one-line character note under the picker that updates on select ("V60 — clean and bright, the pour-over standard"). display:none default, block under body.skill-beginner .method-blurb.show (mirrors v2.63 dial-in coach); experts/enthusiasts see nothing. Called in selectMethod + setMethod. No new storage, additive
+- [ ] npm run check green (2.78.0 synced); verified via preview: beginner skill shows the blurb + it changes on method select (V60→Espresso→AeroPress); enthusiast/expert hide it; a method with no blurb removes .show
+- [ ] Update toast after deploy (cache v2.78.0)

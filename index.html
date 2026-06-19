@@ -543,6 +543,10 @@
   .dialin-coach-hint { display:none; font-size:12px; color:var(--text-secondary); line-height:1.6; margin:2px 0 12px; }
   body.skill-beginner .dialin-coach-hint { display:block; }
   .dialin-coach-hint strong { color:var(--accent-bright); font-weight:600; }
+  /* Beginner-only one-line character note for the selected brew method — orients a newcomer who
+     doesn't yet know V60 from Origami. Experts/enthusiasts see nothing. */
+  .method-blurb { display:none; font-size:12px; line-height:1.5; color:var(--text-secondary); margin:8px 2px 2px; }
+  body.skill-beginner .method-blurb.show { display:block; }
   /* Brew timer progress ring — fills toward the brew's expected finish. */
   .timer-ring-wrap { position:relative; width:230px; height:230px; margin:6px auto 18px; }
   .timer-ring { width:100%; height:100%; transform:rotate(-90deg); display:block; }
@@ -970,6 +974,7 @@
           </div>
         </div>
       </div>
+      <div class="method-blurb" id="methodBlurb"></div>
     </div>
   </div>
 
@@ -2001,7 +2006,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.77.0';
+const APP_VERSION = '2.78.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
@@ -2522,6 +2527,36 @@ function expandActiveMethodCat() {
     if (h) h.setAttribute('aria-expanded', String(on));
   });
 }
+/* Beginner-only character notes — shown under the picker so a newcomer knows what a method tastes like. */
+const METHOD_BLURB = {
+  'V60': 'Clean and bright — the pour-over standard. A great first method.',
+  'Chemex': 'Thick filter, very clean and clear. Forgiving for bigger batches.',
+  'Kalita Wave': 'Flat bed, even and repeatable — a touch more forgiving than V60.',
+  'Origami': 'Flexible cone — bright like a V60, swap filters to taste.',
+  'Melitta': 'Classic wedge dripper — easy, sweet, everyday cup.',
+  'Phin': 'Vietnamese drip — slow, strong, syrupy. Lovely with condensed milk.',
+  'Cold Drip': 'Cold water drop by drop — smooth and low-acid, takes hours.',
+  'Espresso': 'Pressure shot — small, intense, syrupy. The base for milk drinks.',
+  'Moka Pot': 'Stovetop — bold and strong, espresso-ish without a machine.',
+  'Flair': 'Manual lever espresso — real pressure, no electricity.',
+  'Cafelat Robot': 'Manual lever espresso — real pressure, no electricity.',
+  'Nanopresso': 'Hand-pump espresso — tiny, portable, surprisingly punchy.',
+  'French Press': 'Full immersion — heavy body and rich. Very forgiving.',
+  'AeroPress': 'Quick immersion plus a light press — versatile and travel-friendly.',
+  'Clever': 'Steep, then drain — French-press body with a clean cup.',
+  'Hario Switch': 'Immersion and drip in one — steep, then release.',
+  'Siphon': 'Vacuum brewer — theatrical, clean, aromatic.',
+  'Cold Brew': 'Long cold steep — smooth, sweet, very low-acid.',
+  'Turkish': 'Ultra-fine and unfiltered, simmered — intense and traditional.',
+  'Cupping': 'Tasting protocol — steep and slurp to score a coffee.'
+};
+function updateMethodBlurb() {
+  const el = document.getElementById('methodBlurb');
+  if (!el) return;
+  const b = METHOD_BLURB[getSelectedMethod()] || '';
+  el.textContent = b;
+  el.classList.toggle('show', !!b);
+}
 function selectMethod(el) {
   document.querySelectorAll('.method-card').forEach(function(c) { c.classList.remove('active'); c.setAttribute('aria-pressed', 'false'); });
   el.classList.add('active');
@@ -2529,6 +2564,7 @@ function selectMethod(el) {
   toggleEspressoFields();
   renderQuickRecipes();
   updateGrindVisual();
+  updateMethodBlurb();
   markDirty();
 }
 function renderQuickRecipes() {
@@ -2576,6 +2612,7 @@ function setMethod(method) {
   toggleEspressoFields();
   renderQuickRecipes();
   updateGrindVisual();
+  updateMethodBlurb();
 }
 function toggleEspressoFields() {
   const isEsp = getSelectedMethod() === 'Espresso';
