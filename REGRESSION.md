@@ -791,3 +791,9 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] Added one calm orientation line at the top of the Water section body: "Water shapes the cup: GH (minerals) pulls flavour out; KH (buffer) tames acidity — too much flattens it. Aim for the ranges below, or just log your bottled water — all optional." Complements the per-field ideal ranges. Static markup, no JS/storage; section is collapsed-by-default so it's opt-in
 - [ ] npm run check green (2.84.0 synced); verified via preview the line renders above the water fields
 - [ ] Update toast after deploy (cache v2.84.0)
+
+## Sprint 97 (v2.85.0) — pour schedule reconciles to total water, visibly + exactly
+- [ ] Advanced Coffee User lens: the pour editor showed "Total: Xg / Yg" but gave no at-a-glance signal when the schedule was OFF target (a 30g over/under schedule is a real error), and autoDistribute rounded each pour independently so it could drift 1–2g from the target
+- [ ] updatePourTotals now appends a status: "on target" (green, |Σ−water|≤2g) or "+Ng over" / "Ng short" (amber). autoDistributePours makes the LAST plain pour absorb the rounding remainder so the schedule sums EXACTLY to total water (bloom = max(dose×2, 10%) unchanged)
+- [ ] npm run check green (2.85.0 synced); verified via preview: autoDistribute sums exactly to water (shows "on target"); a manual over/under shows the +over/short amber delta; tolerance ±2g
+- [ ] Update toast after deploy (cache v2.85.0)

@@ -266,6 +266,8 @@
   .pour-controls .btn { min-height:44px; }
   .pour-total { font-family:'JetBrains Mono',monospace; font-size:13px; color:var(--text-secondary); }
   .pour-total strong { color:var(--accent-bright); }
+  .pour-total .pour-match { color:var(--success); font-weight:600; }
+  .pour-total .pour-off { color:var(--warning); font-weight:600; }
 
   .rating-container { display:flex; align-items:center; gap:4px; }
   .rating-star { font-size:26px; cursor:pointer; transition:all 0.15s; color:var(--border); user-select:none; }
@@ -2014,7 +2016,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.84.0';
+const APP_VERSION = '2.85.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
@@ -2830,8 +2832,13 @@ function updatePourTotals() {
     card.querySelector('.pour-card-cum').textContent = v > 0 ? '\u2192 ' + cum + 'g total' : '\u2014';
   });
   const water = parseFloat(document.getElementById('totalWater').value) || 0;
-  document.getElementById('pourTotal').innerHTML =
-    'Total: <strong>' + cum + 'g</strong> / ' + (water>0 ? water.toFixed(0)+'g' : '0g');
+  let html = 'Total: <strong>' + cum + 'g</strong> / ' + (water>0 ? water.toFixed(0)+'g' : '0g');
+  if (water > 0 && cum > 0) {
+    const diff = Math.round(cum - water);
+    if (Math.abs(diff) <= 2) html += ' <span class="pour-match">on target</span>';
+    else html += ' <span class="pour-off">' + (diff > 0 ? '+' + diff + 'g over' : Math.abs(diff) + 'g short') + '</span>';
+  }
+  document.getElementById('pourTotal').innerHTML = html;
 }
 function autoDistributePours() {
   const dose = parseFloat(document.getElementById('coffeeDose').value) || 0;
@@ -2843,9 +2850,14 @@ function autoDistributePours() {
   const plain = cards.filter(function(c) { return c.dataset.isBloom !== 'true'; });
   const hasBloom = plain.length !== cards.length;
   const remaining = totalWater - (hasBloom ? bloomWeight : 0);
-  const perPour = plain.length ? Math.round(remaining/plain.length) : 0;
+  const n = plain.length;
+  const perPour = n ? Math.round(remaining/n) : 0;
+  let plainIdx = 0;
   cards.forEach(function(card) {
-    card.querySelector('.pour-weight').value = card.dataset.isBloom === 'true' ? bloomWeight : perPour;
+    if (card.dataset.isBloom === 'true') { card.querySelector('.pour-weight').value = bloomWeight; return; }
+    // last plain pour absorbs the rounding remainder so the schedule sums EXACTLY to total water
+    card.querySelector('.pour-weight').value = (plainIdx === n - 1) ? (remaining - perPour * (n - 1)) : perPour;
+    plainIdx++;
   });
   updatePourTotals(); markDirty();
   showToast('Pours auto-distributed','success');
