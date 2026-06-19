@@ -1676,6 +1676,7 @@
   </div>
   <div class="ba-next" id="baNextInfo"></div>
   <div class="ba-technique" id="baTechnique"></div>
+  <button class="btn btn-primary" id="baRateBtn" hidden style="margin-bottom:16px" onclick="rateFromBrewAlong()">Rate this cup &rarr;</button>
   <div class="ba-progress" id="baProgress"></div>
   <div class="ba-buttons">
     <button class="btn btn-primary" id="baTimerBtn" onclick="toggleTimer()"><svg class="ico"><use href="#i-play"/></svg> Start</button>
@@ -1995,9 +1996,9 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.70.0';
+const APP_VERSION = '2.71.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
-let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null;
+let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
 let audioCtx = null;
 let cueTimes = [], cueFired = [];
@@ -2933,6 +2934,8 @@ function resetTimer() {
   if (guideEl) { guideEl.classList.remove('show'); guideEl.innerHTML = ''; }
   guideSteps = [];
   brewCompleteFired = false;
+  baDoneFired = false;
+  var _baRate = document.getElementById('baRateBtn'); if (_baRate) _baRate.hidden = true;
   document.getElementById('timerDisplay').classList.remove('running');
   document.getElementById('baTimer').classList.remove('running');
   setTimerBtns(ICON_PLAY + ' Start');
@@ -3000,6 +3003,8 @@ async function enterBrewAlong() {
   baSteps = buildBASteps();
   if (!baSteps.length) { showToast('Add pour weights first (try Auto-Distribute)','warning'); return; }
   baIdx = 0; baActive = true;
+  baDoneFired = false;
+  const _rb = document.getElementById('baRateBtn'); if (_rb) _rb.hidden = true;
   baOpener = document.activeElement;
   baTotalSec = 0;
   baSteps.forEach(function(st) {
@@ -3021,6 +3026,7 @@ async function enterBrewAlong() {
   syncWakeLock();
 }
 
+function rateFromBrewAlong() { exitBrewAlong(); switchTab('evaluate'); }
 function exitBrewAlong() {
   baActive = false;
   document.getElementById('baOverlay').classList.remove('show');
@@ -3054,6 +3060,7 @@ function secToStr(sec) {
 function baNext() { dismissBAHint(true); if (baIdx < baSteps.length-1) { baIdx++; renderBAStep(); beep(660,0.15); vibrate(40); } }
 function baPrev() { dismissBAHint(true); if (baIdx > 0) { baIdx--; renderBAStep(); vibrate(20); } }
 function baAutoAdvance(elapsedSec) {
+  if (baDoneFired) return;
   const next = baSteps[baIdx+1];
   const info = document.getElementById('baNextInfo');
   if (next && next.start !== null) {
@@ -5487,6 +5494,22 @@ function updateBATheater(sec) {
     const p = Math.min(1, sec / baTotalSec);
     fg.style.strokeDashoffset = C * (1 - p);
     fg.style.stroke = p >= 0.99 ? 'var(--success)' : 'var(--accent)';
+  }
+  // The immersive mode deserves the same closing moment as the Brew tab: a calm "that's brewed"
+  // and a clear hand-off to rating, instead of the timer silently counting on past the last pour.
+  if (baTotalSec > 0 && sec >= baTotalSec) {
+    if (!baDoneFired) {
+      baDoneFired = true;
+      document.getElementById('baStepLabel').textContent = 'Brew complete';
+      document.getElementById('baTarget').textContent = 'That’s brewed';
+      document.getElementById('baWindow').textContent = '';
+      document.getElementById('baTechnique').textContent = 'Let it settle. Take the first sip before you judge it.';
+      document.getElementById('baNextInfo').textContent = '';
+      document.getElementById('baFill').style.width = '100%';
+      document.getElementById('baFillNow').textContent = '';
+      const rb = document.getElementById('baRateBtn'); if (rb) rb.hidden = false;
+    }
+    return;
   }
   const st = baSteps[baIdx];
   const fill = document.getElementById('baFill');
