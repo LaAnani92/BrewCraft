@@ -785,3 +785,9 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] Added sharedRecipeSummary(r) + an #importModalSummary line in the hash-import modal: "V60 · 15g · 1:16 · Ethiopia Yirgacheffe · 5★" (method/dose/ratio/bean/rating from the decoded payload; hidden if empty). Informed import = higher conversion + the received recipe reads as a real gift. Paste-code path left as direct import (deliberate action). bean + rating already travel via stripForShare
 - [ ] npm run check green (2.83.0 synced); verified via preview: a decoded recipe renders the summary line in the modal; an empty/minimal payload hides it
 - [ ] Update toast after deploy (cache v2.83.0)
+
+## Sprint 96 (v2.84.0) — plain-language orientation atop the Water section
+- [ ] Beginner User lens: water tools are correctly hidden from beginners (Expert-only — good progressive disclosure, no beginner-facing gap). But "Expert" is self-selected curiosity, not water-chemistry literacy, and the Water section is the densest jargon (GH/KH/TDS with ideal ranges but no what/why). A user who opens it knows the target, not the meaning
+- [ ] Added one calm orientation line at the top of the Water section body: "Water shapes the cup: GH (minerals) pulls flavour out; KH (buffer) tames acidity — too much flattens it. Aim for the ranges below, or just log your bottled water — all optional." Complements the per-field ideal ranges. Static markup, no JS/storage; section is collapsed-by-default so it's opt-in
+- [ ] npm run check green (2.84.0 synced); verified via preview the line renders above the water fields
+- [ ] Update toast after deploy (cache v2.84.0)
