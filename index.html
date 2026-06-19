@@ -2017,7 +2017,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.90.0';
+const APP_VERSION = '2.91.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
@@ -6038,6 +6038,16 @@ document.addEventListener('keydown', function(e) {
 });
 window.addEventListener('beforeunload', function(e) {
   if (isDirty) { e.preventDefault(); e.returnValue = ''; }
+});
+/* Canvas charts are rasterized at a fixed backing size; on rotate/resize the Lab tab's charts would
+   stretch blurry until you left and returned. Redraw them (debounced) when the viewport changes. */
+let _statsResizeTimer;
+window.addEventListener('resize', function() {
+  clearTimeout(_statsResizeTimer);
+  _statsResizeTimer = setTimeout(function() {
+    const lab = document.getElementById('tab-lab');
+    if (lab && lab.classList.contains('active')) drawStats();
+  }, 200);
 });
 
 /* ======= INIT ======= */

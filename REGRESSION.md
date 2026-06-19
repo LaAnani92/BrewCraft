@@ -827,3 +827,9 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] Added a "Bean" section to the print (Process/Varietal/Roast date/Roast level/Elevation, rendered only when present). Water temp now uses displayTemp(r.waterTemp) + the user's unit (°F/°C). Pure print-output change; no data/save impact
 - [ ] npm run check green (2.90.0 synced); verified via preview: Bean section renders with the bean fields; temp shows the user's unit; both omit cleanly when empty/unset
 - [ ] Update toast after deploy (cache v2.90.0)
+
+## Sprint 103 (v2.91.0) — Insights charts redraw on rotate/resize
+- [ ] Mobile Kitchen UX lens: chartBase is sound (uses clientWidth + DPR, so charts are crisp at 390px, and switchTab redraws on entering Lab). But there was NO resize/orientationchange handler — rotating the phone (or resizing) while on Insights left the canvas backing store at the old width, CSS-stretched blurry, until you left the tab and returned
+- [ ] Added a debounced (200ms) window resize listener that calls drawStats() when tab-lab is active (mirrors the existing theme-change redraw). Rings are SVG (CSS-scaled), so only the stats canvases need re-raster
+- [ ] npm run check green (2.91.0 synced); verified via preview: resizing the viewport while on Lab re-runs drawStats (canvas backing width tracks the new clientWidth); inactive-tab resize does nothing
+- [ ] Update toast after deploy (cache v2.91.0)
