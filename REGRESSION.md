@@ -686,3 +686,10 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] Added role="img" + aria-label="N of 5 stars" to all three star spans (SR now reads the rating, ignores the glyph repetition). Visual unchanged; the ★ escapes preserved (only added attribute lines)
 - [ ] npm run check green (2.67.0 synced); verified the three star spans expose role=img + "N of 5 stars" via preview
 - [ ] Update toast after deploy (cache v2.67.0)
+
+## Sprint 80 (v2.68.0) — resume the last-open recipe across sessions
+- [ ] Product Strategist lens: on reopen, init always did loadRecipe(recipes[0].id) — the newest recipe by array position — with no memory of what you last had open. A user dialing in an older recipe yesterday, who has a newer one at index 0, reopened onto the wrong recipe; the renderThread continuity broke across sessions (cold-start feel)
+- [ ] New additive key brewcraft_last: written in loadRecipe (on open) and saveToStorage (on any save, when currentRecipeId truthy). init now reads it and prefers that recipe if it still exists, else falls back to recipes[0]. Draft restore still takes precedence; deleted/missing id falls back gracefully
+- [ ] npm run check green (2.68.0 synced); verified brewcraft_last is written on load + persists, and init resumes that recipe (not recipes[0]) via preview; missing-id falls back
+- [ ] Update toast after deploy (cache v2.68.0)
+- [ ] NOTE: storage keys now also include brewcraft_last (v2.68) — additive, no migration

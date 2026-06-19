@@ -1995,7 +1995,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.67.0';
+const APP_VERSION = '2.68.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null;
 let wakeLock = null;
@@ -3680,6 +3680,7 @@ function saveToStorage() {
     const prev = store.get('brewcraft_recipes');
     if (prev) store.set('brewcraft_recipes_bak', prev);
     store.set('brewcraft_recipes', JSON.stringify(recipes));
+    if (currentRecipeId) store.set('brewcraft_last', currentRecipeId);
   } catch(e) {}
 }
 
@@ -3925,6 +3926,7 @@ function loadRecipe(id) {
   const r = recipes.find(function(x) { return x.id === id; });
   if (!r) return;
   currentRecipeId = id;
+  try { store.set('brewcraft_last', id); } catch(e) {}
   loadRecipeData(r);
   renderLibrary();
   clearDirty();
@@ -5844,7 +5846,11 @@ function init() {
     loadRecipeData(draft);
     setAutosaveStatus('Draft restored', true);
   } else if (recipes.length) {
-    loadRecipe(recipes[0].id);
+    // Resume where you left off: reopen the recipe you last had open, not just the newest one.
+    let lastId = '';
+    try { lastId = store.get('brewcraft_last') || ''; } catch(e) {}
+    const last = lastId ? recipes.find(function(x) { return x.id === lastId; }) : null;
+    loadRecipe(last ? last.id : recipes[0].id);
   } else {
     loadRecipeData({});
   }
