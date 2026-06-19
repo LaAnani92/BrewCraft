@@ -2006,7 +2006,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.78.0';
+const APP_VERSION = '2.79.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
@@ -3283,6 +3283,10 @@ function ruleDialIn(issues) {
   const under = has('sour') || has('salty');
   const over = has('bitter') || has('astringent') || has('harsh');
   const ey = computeEY(r);
+  // A measured extraction yield is the one objective signal — lead with it, let the taste chips give the action.
+  if (ey !== null && (ey < 18 || ey > 22)) {
+    out.push('Measured extraction ' + ey.toFixed(1) + '% is ' + (ey < 18 ? 'below' : 'above') + ' the 18–22% target — objectively ' + (ey < 18 ? 'under' : 'over') + '-extracted. That is your hard signal; reconcile it with the taste read below.');
+  }
   if (under && !over) {
     out.push('PRIMARY \u2192 Push extraction UP. Grind finer' + grinderHint('finer') + '. One variable at a time.');
     const temp = parseFloat(r.waterTemp);
@@ -3316,7 +3320,7 @@ function ruleDialIn(issues) {
   if (!out.length) {
     out.push('Select at least one issue chip, or describe the cup \u2014 then I can point at the right variable.');
   } else {
-    if (ey !== null) out.push('Reference: measured extraction is ' + ey.toFixed(1) + '% (target 18\u201322%).');
+    if (ey !== null && ey >= 18 && ey <= 22) out.push('Measured extraction ' + ey.toFixed(1) + '% sits in the 18\u201322% target \u2014 extraction is on point, so chase balance with ratio or water, not grind.');
     out.push('Golden rule: change ONE variable per brew, then hit "Brew Again" to log the iteration.');
   }
   return out.join('\n\n');
@@ -3348,8 +3352,10 @@ async function getDialinAdvice() {
     const r = stripForShare(data);
     const fresh = freshnessInfo(data.roastDate);
     const freshLine = fresh ? '\nFRESHNESS: ' + fresh.label : '\nFRESHNESS: roast date not logged';
-    const sys = 'You are a world-class specialty coffee dial-in expert combining the extraction science of Scott Rao and Jonathan Gagne with the practical approach of James Hoffmann and Tetsu Kasuya. The user gives their recipe as JSON, taste feedback, bean freshness, and an iteration history of past changes with rating outcomes. Use the history: do not repeat changes that made things worse, and build on changes that helped. Factor in freshness: very fresh coffee that is still degassing can read sour, gassy or uneven; coffee past about five weeks off roast reads flat or hollow and will not be fixed by grind alone. Reply with: (1) THE single most impactful change, with direction and concrete magnitude (clicks, degrees C, grams, seconds), (2) one or two secondary options, (3) one thing to watch during the next brew. Under 180 words, plain text, no markdown. Respect one-variable-at-a-time.';
-    const userMsg = 'RECIPE JSON:\n' + JSON.stringify(r) + freshLine + '\n\nTASTE ISSUES: ' + (issues.join(', ') || 'none selected') + '\nUSER DESCRIPTION: ' + (notes || 'none') + '\nITERATION HISTORY (most recent first): ' + (hist.length ? hist.join(' | ') : 'none') + (r.method === 'Espresso' ? '\nNOTE: This is ESPRESSO. Advise on dose, yield (g out), shot time, temperature and grind ONLY. No pour-over advice (no pours, swirls, blooms, drawdown).' : '');
+    const ey = computeEY(data);
+    const eyLine = ey !== null ? '\nMEASURED EXTRACTION: ' + ey.toFixed(1) + '% (filter target 18–22%; below = under-extracted, above = over-extracted)' : '';
+    const sys = 'You are a world-class specialty coffee dial-in expert combining the extraction science of Scott Rao and Jonathan Gagne with the practical approach of James Hoffmann and Tetsu Kasuya. The user gives their recipe as JSON, taste feedback, bean freshness, and an iteration history of past changes with rating outcomes. Use the history: do not repeat changes that made things worse, and build on changes that helped. Factor in freshness: very fresh coffee that is still degassing can read sour, gassy or uneven; coffee past about five weeks off roast reads flat or hollow and will not be fixed by grind alone. If a measured extraction yield is provided, treat it as objective ground truth: let it anchor the direction (below ~18% means push extraction up, above ~22% means pull it down) and reconcile it with the taste feedback. Reply with: (1) THE single most impactful change, with direction and concrete magnitude (clicks, degrees C, grams, seconds), (2) one or two secondary options, (3) one thing to watch during the next brew. Under 180 words, plain text, no markdown. Respect one-variable-at-a-time.';
+    const userMsg = 'RECIPE JSON:\n' + JSON.stringify(r) + freshLine + eyLine + '\n\nTASTE ISSUES: ' + (issues.join(', ') || 'none selected') + '\nUSER DESCRIPTION: ' + (notes || 'none') + '\nITERATION HISTORY (most recent first): ' + (hist.length ? hist.join(' | ') : 'none') + (r.method === 'Espresso' ? '\nNOTE: This is ESPRESSO. Advise on dose, yield (g out), shot time, temperature and grind ONLY. No pour-over advice (no pours, swirls, blooms, drawdown).' : '');
     const resp = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: {

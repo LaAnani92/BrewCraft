@@ -755,3 +755,9 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] Added METHOD_BLURB map + updateMethodBlurb(): a beginner-only one-line character note under the picker that updates on select ("V60 — clean and bright, the pour-over standard"). display:none default, block under body.skill-beginner .method-blurb.show (mirrors v2.63 dial-in coach); experts/enthusiasts see nothing. Called in selectMethod + setMethod. No new storage, additive
 - [ ] npm run check green (2.78.0 synced); verified via preview: beginner skill shows the blurb + it changes on method select (V60→Espresso→AeroPress); enthusiast/expert hide it; a method with no blurb removes .show
 - [ ] Update toast after deploy (cache v2.78.0)
+
+## Sprint 91 (v2.79.0) — measured extraction yield drives the dial-in
+- [ ] Advanced Coffee User lens: a refractometer owner logs beverage weight + TDS → computeEY gives a measured EY, but it was only a trailing "Reference: …%" footnote in ruleDialIn, and the AI dial-in sent raw TDS in the JSON without computing/flagging EY or being told to use it. The most objective signal was on the table
+- [ ] ruleDialIn (filter only; espresso path untouched): now leads with an objective verdict when EY is out of the 18–22% band ("Measured extraction 16.5% is below the target — objectively under-extracted; reconcile with the taste read"), and the in-band case became informative ("on point — chase balance via ratio/water, not grind"). getDialinAdvice now computes EY, adds a MEASURED EXTRACTION line to the prompt, and a sys clause: treat measured EY as ground truth, anchor direction, reconcile with taste
+- [ ] npm run check green (2.79.0 synced); verified via preview: ruleDialIn output leads with the under/over verdict for EY 16/24 and the on-point line for EY 20; the AI userMsg includes the MEASURED EXTRACTION line when TDS logged (prompt-construction inspection, no live call)
+- [ ] Update toast after deploy (cache v2.79.0)
