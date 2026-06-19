@@ -839,3 +839,9 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] Added isImmersion(method) helper; updateBrewGuide's final-step line now shows "steeping — done ~Xs" / "steeping — let it finish" for immersion (else the pour-over "drawing down" stays), and baAutoAdvance's last-step shows "Final step — steeping" for immersion. Method-scoped to the 4 steep-then-separate methods; pour-over/espresso unchanged
 - [ ] npm run check green (2.92.0 synced); verified via preview: isImmersion true for FP/AeroPress/Clever/Switch + false for V60/Espresso; updateBrewGuide last-step renders "steeping" for an immersion method and "drawing down" for V60
 - [ ] Update toast after deploy (cache v2.92.0)
+
+## Sprint 105 (v2.93.0) — dial-in gives immersion-correct advice (not pour-over technique)
+- [ ] AI Product lens: ruleDialIn branched espresso→espressoDialIn but routed immersion (FP/AeroPress/Clever/Switch) through the pour-over path — "slower later pours", "gentle circles / one swirl after bloom", "pour lower… filter clogging at drawdown", "level the bed". None apply to a steep. The AI dial-in guarded espresso but not immersion
+- [ ] Added immersionDialIn(issues, r) (mirrors espressoDialIn): steep time / gentle stir / press language, keeps grind+temp+ratio+EY logic, no pours/swirls/bed/drawdown. ruleDialIn now routes isImmersion(r.method) to it. getDialinAdvice userMsg adds an IMMERSION NOTE (grind/temp/steep/ratio/stir only; no pour-over technique) parallel to the espresso NOTE
+- [ ] npm run check green (2.93.0 synced); verified via preview: ruleDialIn for French Press returns steep/press language with no "pours/swirls/drawdown/bed"; V60 still returns pour-over advice; AI userMsg carries the IMMERSION NOTE for FP and the ESPRESSO NOTE for espresso
+- [ ] Update toast after deploy (cache v2.93.0)

@@ -2023,7 +2023,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.92.0';
+const APP_VERSION = '2.93.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
@@ -3310,9 +3310,59 @@ function grinderHint(direction) {
   if (d) return ' (one small step ' + direction + ' on the ' + grinder + ')';
   return '';
 }
+/* Immersion (French Press / AeroPress / Clever / Switch) is steep-then-press — no pours, swirls,
+   bed-levelling or drawdown. Its levers are grind, water temp, steep time, ratio and (gentle) stirring. */
+function immersionDialIn(issues, r) {
+  const out = [];
+  function has(x) { return issues.includes(x); }
+  const under = has('sour') || has('salty');
+  const over = has('bitter') || has('astringent') || has('harsh');
+  const ey = computeEY(r);
+  if (ey !== null && (ey < 18 || ey > 22)) {
+    out.push('Measured extraction ' + ey.toFixed(1) + '% is ' + (ey < 18 ? 'below' : 'above') + ' the 18–22% target — objectively ' + (ey < 18 ? 'under' : 'over') + '-extracted. Reconcile it with the taste read below.');
+  }
+  if (under && !over) {
+    out.push('PRIMARY → Push extraction UP. Grind finer' + grinderHint('finer') + ', and/or extend the steep by 30–60 s before you press.');
+    const temp = parseFloat(r.waterTemp);
+    if (!temp || temp < 95) out.push('Secondary → Raise water temperature by ' + fmtTempAdvice(2, temp) + ', or give one gentle stir at the start so every ground is wetted.');
+    if (has('salty')) out.push('Salty is a strong under-extraction signal — go bigger: a few clicks finer plus a longer steep.');
+  } else if (over && !under) {
+    out.push('PRIMARY → Pull extraction DOWN. Grind coarser' + grinderHint('coarser') + ', or shorten the steep before pressing.');
+    out.push('Secondary → Drop water temperature ' + fmtTempAdvice(2, 0) + ', and stir less — over-agitation pushes bitterness in immersion.');
+    if (has('astringent')) out.push('Astringency in immersion usually means too many fines: grind coarser, skip aggressive stirring, and press gently — stop before the muddy dregs.');
+  } else if (under && over) {
+    out.push('PRIMARY → Sour AND bitter together = uneven extraction. In immersion that is grind consistency: a more even (or slightly coarser) grind, one gentle stir to wet everything, then leave it alone.');
+    out.push('Secondary → With light roasts, slightly hotter water and a slightly longer steep often even things out.');
+  }
+  if (has('weak') && !has('sour')) {
+    const ratio = parseFloat(r.brewRatio);
+    out.push('Weak but balanced = strength, not extraction. Tighten the ratio' + (ratio ? ' from 1:' + ratio + ' to about 1:' + Math.max(10,(ratio-1)).toFixed(0) : ' (e.g., 1:16 → 1:15)') + ' — more coffee, same water.');
+  }
+  if (has('weak') && has('sour')) {
+    out.push('Weak + sour together: extraction is the real problem — grind finer, hotter water and a longer steep first; the strength follows.');
+  }
+  if (has('strong')) {
+    const ratio = parseFloat(r.brewRatio);
+    out.push('Too intense = dilution. Loosen the ratio' + (ratio ? ' from 1:' + ratio + ' to about 1:' + (ratio+1).toFixed(0) : ' (e.g., 1:15 → 1:16)') + ', or add a splash of hot water to the cup.');
+  }
+  if (has('hollow') || has('muted')) {
+    out.push('Hollow/muted often traces to freshness or water. Check days off roast (sweet spot ≈ 7–21 for filter)' + (r.roastDate ? ' — your roast date is logged' : '') + '. High KH (>60ppm) buffers acidity flat — try lower-KH water.');
+  }
+  if (has('unbalanced') && !out.length) {
+    out.push('Start with the biggest lever: move grind 2 steps the way the cup suggests (sour → finer, bitter → coarser), then tune steep time — everything else fixed.');
+  }
+  if (!out.length) {
+    out.push('Select at least one issue chip, or describe the cup — then I can point at the right variable.');
+  } else {
+    if (ey !== null && ey >= 18 && ey <= 22) out.push('Measured extraction ' + ey.toFixed(1) + '% sits in the 18–22% target — extraction is on point, so chase balance with ratio or steep time, not grind.');
+    out.push('Golden rule: change ONE variable per brew, then hit "Brew Again" to log the iteration.');
+  }
+  return out.join('\n\n');
+}
 function ruleDialIn(issues) {
   const r = gatherRecipeData();
   if ((r.method || '') === 'Espresso') return espressoDialIn(issues, r);
+  if (isImmersion(r.method)) return immersionDialIn(issues, r);
   const out = [];
   function has(x) { return issues.includes(x); }
   const under = has('sour') || has('salty');
@@ -3399,7 +3449,7 @@ async function getDialinAdvice() {
     const ey = computeEY(data);
     const eyLine = ey !== null ? '\nMEASURED EXTRACTION: ' + ey.toFixed(1) + '% (filter target 18–22%; below = under-extracted, above = over-extracted)' : '';
     const sys = 'You are a world-class specialty coffee dial-in expert combining the extraction science of Scott Rao and Jonathan Gagne with the practical approach of James Hoffmann and Tetsu Kasuya. The user gives their recipe as JSON, taste feedback, bean freshness, and an iteration history of past changes with rating outcomes. Use the history: do not repeat changes that made things worse, and build on changes that helped. Factor in freshness: very fresh coffee that is still degassing can read sour, gassy or uneven; coffee past about five weeks off roast reads flat or hollow and will not be fixed by grind alone. If a measured extraction yield is provided, treat it as objective ground truth: let it anchor the direction (below ~18% means push extraction up, above ~22% means pull it down) and reconcile it with the taste feedback. Reply with: (1) THE single most impactful change, with direction and concrete magnitude (clicks, degrees C, grams, seconds), (2) one or two secondary options, (3) one thing to watch during the next brew. Under 180 words, plain text, no markdown. Respect one-variable-at-a-time.';
-    const userMsg = 'RECIPE JSON:\n' + JSON.stringify(r) + freshLine + eyLine + '\n\nTASTE ISSUES: ' + (issues.join(', ') || 'none selected') + '\nUSER DESCRIPTION: ' + (notes || 'none') + '\nITERATION HISTORY (most recent first): ' + (hist.length ? hist.join(' | ') : 'none') + (r.method === 'Espresso' ? '\nNOTE: This is ESPRESSO. Advise on dose, yield (g out), shot time, temperature and grind ONLY. No pour-over advice (no pours, swirls, blooms, drawdown).' : '');
+    const userMsg = 'RECIPE JSON:\n' + JSON.stringify(r) + freshLine + eyLine + '\n\nTASTE ISSUES: ' + (issues.join(', ') || 'none selected') + '\nUSER DESCRIPTION: ' + (notes || 'none') + '\nITERATION HISTORY (most recent first): ' + (hist.length ? hist.join(' | ') : 'none') + (r.method === 'Espresso' ? '\nNOTE: This is ESPRESSO. Advise on dose, yield (g out), shot time, temperature and grind ONLY. No pour-over advice (no pours, swirls, blooms, drawdown).' : isImmersion(r.method) ? '\nNOTE: This is an IMMERSION brew (full steep, then press/plunge/drain). Advise on grind, water temperature, steep time, dose/ratio and gentle stirring ONLY. No pour-over technique (no multiple or pulse pours, swirls, blooms, or drawdown).' : '');
     const resp = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: {
