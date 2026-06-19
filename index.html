@@ -1043,7 +1043,7 @@
             <option value="__other__">Other (type below)</option>
           </select>
           <div class="custom-input-wrapper" id="beanVarietalCustom">
-            <input type="text" placeholder="Enter varietal name…" oninput="markDirty()">
+            <input type="text" placeholder="Enter varietal name…" aria-label="Custom varietal name" oninput="markDirty()">
           </div>
         </div>
         <div class="field"><label>Roast Date</label><input type="date" id="roastDate" oninput="markDirty(); updateFreshness()"><span class="fresh-badge" id="freshBadge" style="display:none"></span><div class="field-hint">Add it to unlock the freshness badge and brewing tips. Coffee usually peaks ~7-21 days after roast.</div></div>
@@ -1141,14 +1141,14 @@
       </div>
 
       <div class="profile-row beginner-hide">
-        <select id="gearProfileSelect" onchange="applyGearProfile()">
+        <select id="gearProfileSelect" aria-label="Load a saved gear setup" onchange="applyGearProfile()">
           <option value="">Saved setups…</option>
         </select>
         <button class="btn btn-sm btn-secondary" onclick="saveGearProfile()"><svg class="ico"><use href="#i-plus"/></svg> Save setup</button>
         <button class="btn btn-sm btn-ghost" onclick="deleteGearProfile()" title="Delete selected setup" aria-label="Delete selected setup">Del</button>
       </div>
       <div class="profile-row beginner-hide" id="gearNameRow" style="display:none">
-        <input type="text" id="gearNameInput" placeholder="Name this setup (e.g., V60 daily driver)" onkeydown="if(event.key==='Enter')confirmSaveGear()">
+        <input type="text" id="gearNameInput" placeholder="Name this setup (e.g., V60 daily driver)" aria-label="Name this gear setup" onkeydown="if(event.key==='Enter')confirmSaveGear()">
         <button class="btn btn-sm btn-primary" onclick="confirmSaveGear()">Save</button>
         <button class="btn btn-sm btn-ghost" onclick="cancelSaveGear()">Cancel</button>
       </div>
@@ -1203,7 +1203,7 @@
             <option value="__other__">Other (type below)</option>
           </select>
           <div class="custom-input-wrapper" id="grinderCustom">
-            <input type="text" placeholder="Enter grinder name…" oninput="markDirty()">
+            <input type="text" placeholder="Enter grinder name…" aria-label="Custom grinder name" oninput="markDirty()">
           </div>
         </div>
         <div class="field">
@@ -1517,7 +1517,7 @@
     <button class="btn btn-secondary" onclick="quickBrew()"><svg class="ico"><use href="#i-bolt"/></svg> Brew last again</button>
     <button class="btn btn-secondary" onclick="exportAllRecipes()">↓ Export All</button>
     <button class="btn btn-secondary" onclick="document.getElementById('importFile').click()">↑ Import File</button>
-    <input type="file" id="importFile" accept=".json" style="display:none" onchange="importRecipesFile(event)">
+    <input type="file" id="importFile" accept=".json" style="display:none" aria-label="Choose a backup file to import" onchange="importRecipesFile(event)">
   </div>
   <div class="chip-row" style="margin-bottom:12px" role="group" aria-label="Journal view">
     <button class="preset-chip active-view" id="viewListBtn" aria-pressed="true" onclick="setLibraryView('list')">List</button>
@@ -1996,7 +1996,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.72.0';
+const APP_VERSION = '2.73.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;

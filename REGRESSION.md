@@ -717,3 +717,9 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] Added bestRatioCluster(): method-segmented (espresso ~1:2 never mixes with pour-over ~1:15), needs >=3 same-method 4★+ cups with ratio spread <=3 to count as a real cluster, returns median ratio. renderInsights pushes a chip ("Your best V60 cups cluster around 1:15.5 — a tested ratio to start a new bag") right after the EY chip, before the softer trend/origin chips (still capped at 3)
 - [ ] npm run check green (2.72.0 synced); verified via preview: clustered 4★+ cups produce the chip with correct median + method; <3 cups or wide spread returns null (no chip); espresso and pour-over don't cross-contaminate
 - [ ] Update toast after deploy (cache v2.72.0)
+
+## Sprint 85 (v2.73.0) — aria-labels on 5 remaining unlabeled form controls
+- [ ] Accessibility lens: ran an app-wide audit — 194 interactive elements (only 2 unnamed, and those are the intentionally aria-hidden .ba-tap zones with labeled Prev/Next equivalents) + 92 form controls. Found 5 controls with no accessible name (placeholder is NOT a reliable SR name): custom varietal input, custom grinder input, gearProfileSelect, gearNameInput, importFile. Motion (2 universal prefers-reduced-motion blocks + JS guard), focus rings, modals/dialogs, star displays all already solid
+- [ ] Added aria-label to all 5: "Custom varietal name", "Custom grinder name", "Load a saved gear setup", "Name this gear setup", "Choose a backup file to import". Additive, matches the v2.23 labeling pass
+- [ ] npm run check green (2.73.0 synced); re-ran the audit via preview — unlabeled form-control count now 0
+- [ ] Update toast after deploy (cache v2.73.0)
