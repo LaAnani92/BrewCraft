@@ -1717,7 +1717,7 @@
         <span>Take photo or choose image</span>
       </label>
       <input type="file" id="scanFile" accept="image/*" style="display:none" onchange="scanFilePicked(event)">
-      <div class="scan-keyhint" id="scanKeyHint" style="display:none">No API key set — add one in Settings (gear icon) to enable scanning.</div>
+      <div class="scan-keyhint" id="scanKeyHint" style="display:none">No API key set. <button type="button" class="link-btn" onclick="closeScan(); openSettingsToKey()">Add a key</button> to read labels automatically, or <button type="button" class="link-btn" onclick="scanManualEntry()">enter the bean details by hand</button>.</div>
     </div>
 
     <div id="scanStep2" class="scan-step" style="display:none">
@@ -2001,7 +2001,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.76.0';
+const APP_VERSION = '2.77.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
@@ -5722,6 +5722,17 @@ function openScan() {
   document.getElementById('scanModal').classList.add('show');
 }
 function closeScan() { document.getElementById('scanModal').classList.remove('show'); }
+/* Keyless OCR can't read a label, but it shouldn't dead-end: send the user straight to the bean
+   fields (the manual path) instead of just telling them to add a key. */
+function scanManualEntry() {
+  closeScan();
+  if (typeof switchTab === 'function') switchTab('recipe');
+  const bean = document.getElementById('sec-bean');
+  if (bean && bean.classList.contains('collapsed') && typeof toggleSection === 'function') toggleSection('sec-bean');
+  if (bean && typeof bean.scrollIntoView === 'function') bean.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  const f = document.getElementById('beanOrigin');
+  if (f) { try { f.focus({ preventScroll: true }); } catch(e) {} }
+}
 function scanReset() {
   scanImageData = null;
   document.getElementById('scanStep1').style.display = 'block';

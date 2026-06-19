@@ -744,3 +744,9 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] REJECTED (again) the ruler touch-action:none→pan-y scroll-trap fix: pan-y risks a slightly-diagonal drag getting stolen by page scroll mid-adjustment (degrades the dial's PRIMARY interaction), unverifiable in headless — needs real-device feel-testing
 - [ ] npm run check green (2.76.0 synced); verified via preview: all 4 dial-reset now 44x44, reset still restores the default
 - [ ] Update toast after deploy (cache v2.76.0)
+
+## Sprint 89 (v2.77.0) — keyless camera-OCR no longer dead-ends
+- [ ] AI Product lens: the OCR scan flow is seamless WITH a key (photo → read → consent review of sc* fields → applyScan maps fields, expands bean section, toast; no auto-save). But a keyless user hit a wall — "add an API key" with no way forward. OCR can't have a rule fallback, but the graceful degradation is a redirect to manual entry (bean fields are behind the modal, not obvious)
+- [ ] Rewrote the keyless scanKeyHint into two one-tap paths: "Add a key" (closeScan + openSettingsToKey, matches the v2.9 pattern) and "enter the bean details by hand" → new scanManualEntry() (closeScan, switchTab recipe, expand sec-bean via toggleSection if collapsed, scrollIntoView, focus beanOrigin). Only shown keyless
+- [ ] npm run check green (2.77.0 synced); verified via preview: keyhint shows both link-btns; scanManualEntry closes the scan modal, expands the bean section, and focuses the origin field
+- [ ] Update toast after deploy (cache v2.77.0)
