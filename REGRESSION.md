@@ -773,3 +773,9 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] Reordered to Start · Lap · Reset (Reset leaves the hot path) AND guarded it: the Reset button now calls confirmResetTimer() → if timer running OR elapsed > 2s, a one-tap action toast ("Reset the timer? … [Reset]", non-blocking, auto-dismiss 6s); otherwise resets immediately (no nag on a fresh 00:00). resetTimer() itself unchanged, so programmatic callers (brewAgain/newRecipe) are unaffected. No confirm()/prompt()
 - [ ] npm run check green (2.81.0 synced); verified via preview: running/elapsed Reset shows the confirm toast and only resets on its tap; a fresh 00:00 resets immediately; button order is Start/Lap/Reset
 - [ ] Update toast after deploy (cache v2.81.0)
+
+## Sprint 94 (v2.82.0) — screen-reader "working" cue for async AI calls
+- [ ] Accessibility lens: all 6 AI panels + toast + brew guide already have live regions, and the RESULT announces (mutation while visible). But the LOADING state didn't: a reveal-then-fill panel (hidden→visible with "Thinking…" in the same tick) doesn't announce on VoiceOver/Safari, so a blind user firing dial-in/explain/suggest/patterns heard nothing for 3–5s and might re-tap, unsure it registered
+- [ ] Added a shared sr-only #aiStatusSr live region + announceAI(): "Working on it…" set at the start of each async AI call, cleared on completion (so the panel's result mutation still reads). Wired in aiComplete (covers explainDiff/suggest/patterns) + getDialinAdvice (direct fetch). Scan left alone (its status mutates while already visible → already announces). Visual unchanged
+- [ ] npm run check green (2.82.0 synced); verified via preview by stubbing fetch: aiStatusSr held "Working on it…" at fetch time and was cleared ('') after both success and error, for aiComplete and getDialinAdvice
+- [ ] Update toast after deploy (cache v2.82.0)

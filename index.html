@@ -1886,6 +1886,7 @@
 </div>
 
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
+<div class="sr-only" id="aiStatusSr" role="status" aria-live="polite"></div>
 
 <div class="modal-overlay" id="importModal">
   <div class="modal">
@@ -2011,7 +2012,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.81.0';
+const APP_VERSION = '2.82.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
@@ -3361,6 +3362,7 @@ async function getDialinAdvice() {
   btn.disabled = true; btn.textContent = '\u2026 thinking';
   outEl.innerHTML = 'Analyzing your recipe <span class="ai-dots" aria-hidden="true"><span></span><span></span><span></span></span>';
   outEl.classList.add('show');
+  announceAI('Working on it…');
   try {
     const r = stripForShare(data);
     const fresh = freshnessInfo(data.roastDate);
@@ -3397,6 +3399,7 @@ async function getDialinAdvice() {
     outEl.innerHTML += '<span class="src">AI call failed (' + escapeHtml(aiErrorHint(e)) + ') \u2014 showing built-in expert rules instead. Check your key, model name, and internet connection.</span>';
   }
   outEl.classList.add('show');
+  announceAI('');
   document.getElementById('dialinNext').style.display = 'block';
   btn.disabled = false; btn.innerHTML = '<svg class="ico"><use href="#i-bolt"/></svg> Get Dial-In Advice';
 }
@@ -3407,27 +3410,39 @@ function aiHasKey() { return !!(settings.apiKey && settings.apiKey.trim()); }
 function aiThinking(heading, label) {
   return '<h4>' + heading + '</h4>' + label + ' <span class="ai-dots" aria-hidden="true"><span></span><span></span><span></span></span>';
 }
+/* A reveal-then-fill AI panel often won't announce its "thinking" state to a screen reader (the
+   content is present when the region appears, not a later mutation). Announce it via a always-present
+   sr-only live region so a blind user knows the request is working; clear it so the result still reads. */
+function announceAI(msg) {
+  const el = document.getElementById('aiStatusSr');
+  if (el) el.textContent = msg;
+}
 async function aiComplete(system, userMsg, maxTokens) {
-  const resp = await fetch('https://api.anthropic.com/v1/messages', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-api-key': settings.apiKey,
-      'anthropic-version': '2023-06-01',
-      'anthropic-dangerous-direct-browser-access': 'true'
-    },
-    body: JSON.stringify({
-      model: settings.model || 'claude-sonnet-4-6',
-      max_tokens: maxTokens || 400,
-      system: system,
-      messages: [{ role:'user', content: userMsg }]
-    })
-  });
-  if (!resp.ok) throw new Error('API ' + resp.status);
-  const data = await resp.json();
-  const text = (data.content || []).filter(function(b){ return b.type === 'text'; }).map(function(b){ return b.text; }).join('\n').trim();
-  if (!text) throw new Error('empty response');
-  return text;
+  announceAI('Working on it…');
+  try {
+    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': settings.apiKey,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
+      body: JSON.stringify({
+        model: settings.model || 'claude-sonnet-4-6',
+        max_tokens: maxTokens || 400,
+        system: system,
+        messages: [{ role:'user', content: userMsg }]
+      })
+    });
+    if (!resp.ok) throw new Error('API ' + resp.status);
+    const data = await resp.json();
+    const text = (data.content || []).filter(function(b){ return b.type === 'text'; }).map(function(b){ return b.text; }).join('\n').trim();
+    if (!text) throw new Error('empty response');
+    return text;
+  } finally {
+    announceAI('');
+  }
 }
 /* Turn an API/network error into a plain, actionable hint instead of a raw status code. */
 function aiErrorHint(e) {
