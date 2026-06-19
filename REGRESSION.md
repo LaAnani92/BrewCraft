@@ -862,3 +862,9 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] Enriched both completion announces: pour-over → "That's brewed. Let it settle, then rate the cup below."; espresso → "At your target shot time. Cut it, then rate the shot below." Visible message + cue unchanged; info-parity for SR only
 - [ ] npm run check green (2.96.0 synced); verified via preview: brewGuideSr carries the rate hand-off for both pour-over and espresso completion
 - [ ] Update toast after deploy (cache v2.96.0)
+
+## Sprint 109 (v2.97.0) — grind bar names the target when off-band
+- [ ] Advanced Coffee User lens: the grind UI is otherwise advanced-grade (grindInfo spec, caret + method-target band + in/off flag). But when the caret was outside the band, posLabel said only "off target" — flagging the miss without naming where to go. The exact target (clicks/turns) was only in the all-ranges reference text
+- [ ] Changed the off-band posLabel from "off target" to "aim <range>" (data[grindBandKey(method)], e.g. "aim 20-30" / "aim 2.5-3.5 turns"); the caret's 'out' style still shows you're off, so the label is free to state the target. Same/shorter length, no crowding; in-range/approx/custom-grinder cases unchanged
+- [ ] npm run check green (2.97.0 synced); verified via preview: Comandante + V60 (band 20-30) with grind 15 shows "aim 20-30"; grind 24 shows "in range"; custom grinder (no band) shows blank
+- [ ] Update toast after deploy (cache v2.97.0)

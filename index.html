@@ -2046,7 +2046,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.96.0';
+const APP_VERSION = '2.97.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
@@ -2806,7 +2806,8 @@ function updateGrindVisual() {
     band.style.display = 'none';
   }
   caret.classList.toggle('out', haveSetting && !inBand);
-  posLabel.textContent = haveSetting ? (bandRange ? (inBand ? 'in range' : 'off target') : '') : 'approx';
+  // When off the method band, name the target (clicks/turns) — the caret's 'out' style already shows you're off.
+  posLabel.textContent = haveSetting ? (bandRange ? (inBand ? 'in range' : 'aim ' + data[grindBandKey(getSelectedMethod())]) : '') : 'approx';
 }
 
 /* ======= POURS (card UI) ======= */
