@@ -821,3 +821,9 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] addRow appends an sr-only " — differs" to changed rows' label cell (SR hears "Dose — differs, 15, 18"). The winner ✓ is now aria-hidden with an sr-only " (rated higher)" beside it (SR hears "Cup B, rated higher"). Both sr-only — zero visual change
 - [ ] npm run check green (2.89.0 synced); verified via preview: a diff row's label cell contains an sr-only "— differs"; the winning th has aria-hidden ✓ + sr-only "(rated higher)"; non-diff rows + loser column have neither
 - [ ] Update toast after deploy (cache v2.89.0)
+
+## Sprint 102 (v2.90.0) — printed recipe card: complete bean context + unit-correct temp
+- [ ] Advanced Coffee User lens: printRecipe was thorough on the brew (params, pour schedule, espresso, water, results, notes) but dropped the bean beyond "method · origin · roaster" in the sub-line — process, varietal, roast date, roast level, elevation were all absent (roast date/process are essential context for a reproducible specialty recipe). Also water temp was hardcoded "°C", ignoring a °F user's preference
+- [ ] Added a "Bean" section to the print (Process/Varietal/Roast date/Roast level/Elevation, rendered only when present). Water temp now uses displayTemp(r.waterTemp) + the user's unit (°F/°C). Pure print-output change; no data/save impact
+- [ ] npm run check green (2.90.0 synced); verified via preview: Bean section renders with the bean fields; temp shows the user's unit; both omit cleanly when empty/unset
+- [ ] Update toast after deploy (cache v2.90.0)

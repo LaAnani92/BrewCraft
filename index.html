@@ -2017,7 +2017,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.89.0';
+const APP_VERSION = '2.90.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
@@ -4749,14 +4749,22 @@ function printRecipe() {
     pours += '<tr><td>' + (p.isBloom ? 'Bloom' : 'Pour ' + (++_pn)) + '</td><td>' + p.weight + ' g</td><td>' +
       escapeHtml(p.start || '\u2014') + '</td><td>' + escapeHtml(p.end || '\u2014') + '</td><td>' + escapeHtml(p.technique || '') + '</td></tr>';
   });
+  // Bean context (process, varietal, roast date, roast level, elevation) is part of a reproducible
+  // specialty recipe — origin/roaster alone in the sub-line dropped the rest. Add a Bean section.
+  let beanSection = '';
+  const _beanRows = row('Process', r.beanProcess) + row('Varietal', r.beanVarietal) +
+    row('Roast date', r.roastDate) + row('Roast level', r.roastLevel) +
+    row('Elevation', r.beanElevation ? r.beanElevation + ' masl' : '');
+  if (_beanRows) beanSection = '<h2>Bean</h2><table>' + _beanRows + '</table>';
   const html =
     '<h1>' + escapeHtml(r.name || 'Untitled Recipe') + '</h1>' +
     '<div class="pc-sub">' + escapeHtml([r.method, r.beanOrigin, r.roaster].filter(Boolean).join(' \u00b7 ')) + '</div>' +
+    beanSection +
     '<h2>Parameters</h2><table>' +
     row('Dose', r.coffeeDose ? r.coffeeDose + ' g' : '') +
     row('Ratio', r.brewRatio ? '1:' + r.brewRatio : '') +
     row('Total water', r.totalWater ? r.totalWater + ' g' : '') +
-    row('Water temp', r.waterTemp ? r.waterTemp + ' \u00b0C' : '') +
+    row('Water temp', r.waterTemp ? displayTemp(r.waterTemp) + (settings.tempUnit === 'F' ? ' \u00b0F' : ' \u00b0C') : '') +
     row('Grinder', r.grinderName) +
     row('Grind setting', r.grindSize) +
     row('Coarseness', fmtDiffVal('grindCoarseness', r.grindCoarseness) !== '\u2014' ? fmtDiffVal('grindCoarseness', r.grindCoarseness) : '') +
