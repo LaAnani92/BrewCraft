@@ -1392,6 +1392,7 @@
           <div class="field-hint" style="margin-bottom:7px">An off cup is the most useful one: it shows exactly what to nudge next.</div>
           <button class="btn btn-sm btn-secondary" onclick="openDialinFromNudge()">Not quite right? Get dial-in advice</button>
         </div>
+        <div id="ratingPraise" class="field-hint" style="display:none;margin-top:10px">A keeper: it's saved, and ready to brew again whenever.</div>
       </div>
       <div style="margin-bottom:20px">
         <span class="eval-label">Flavor Descriptors <span style="font-weight:400;color:var(--text-muted);text-transform:none;letter-spacing:0">(tap to toggle)</span></span>
@@ -1985,7 +1986,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.57.0';
+const APP_VERSION = '2.58.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null;
 let wakeLock = null;
@@ -3077,6 +3078,7 @@ function setRating(v, silent) {
   document.querySelectorAll('.rating-star').forEach(function(st) { const on = parseInt(st.dataset.v,10) <= v; st.classList.toggle('active', on); st.setAttribute('aria-pressed', String(on)); });
   document.getElementById('ratingValue').textContent = v + '/5';
   document.getElementById('ratingNudge').style.display = (v > 0 && v <= 3) ? 'block' : 'none';
+  document.getElementById('ratingPraise').style.display = (v >= 4) ? 'block' : 'none';
   if (silent) { _bestFired = false; } // loading a recipe arms the moment again
   if (!silent) {
     const tgt = document.querySelector('.rating-star[data-v="' + v + '"]');
@@ -3102,6 +3104,7 @@ function clearRating() {
   document.querySelectorAll('.rating-star').forEach(function(st) { st.classList.remove('active'); st.setAttribute('aria-pressed', 'false'); });
   document.getElementById('ratingValue').textContent = '\u2014';
   document.getElementById('ratingNudge').style.display = 'none';
+  document.getElementById('ratingPraise').style.display = 'none';
 }
 function toggleTag(el) { const on = el.classList.toggle('active'); el.setAttribute('aria-pressed', String(on)); if (!el.classList.contains('issue')) markDirty(); }
 function addCustomTag() {

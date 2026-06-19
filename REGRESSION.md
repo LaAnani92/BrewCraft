@@ -623,3 +623,10 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] Only the new-recipe path with an empty name (named saves + the version path unchanged); consent flow untouched
 - [ ] npm run check green (2.57.0 synced); verified unnamed new save gets a method+date name (and a named save is untouched) via preview
 - [ ] Update toast after deploy (cache v2.57.0)
+
+## Sprint 70 (v2.58.0) — symmetric praise nudge for a good cup
+- [ ] Product Strategist lens: retention is intentionally intrinsic (no notifications/streaks). The real asymmetry: a low rating (<=3) gets a constructive dial-in nudge (v2.35), but a high rating (4-5) dead-ends after the confetti — no calm "what next"
+- [ ] Added #ratingPraise (4-5 stars): "A keeper: it's saved, and ready to brew again whenever." — completes the rating feedback (low → fix via dial-in; high → it's captured & repeatable, the app's core value) without gamifying. Mutually exclusive with the low-rating nudge; both hidden at 0
+- [ ] Calm muted field-hint, text-only (no pushy CTA / no "come back" hook); setRating shows it for v>=4, clearRating hides it
+- [ ] npm run check green (2.58.0 synced); verified praise shows at 4-5, low-nudge at <=3, neither at 0 via preview
+- [ ] Update toast after deploy (cache v2.58.0)
