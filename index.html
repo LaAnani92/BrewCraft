@@ -1985,7 +1985,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.55.0';
+const APP_VERSION = '2.56.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null;
 let wakeLock = null;
@@ -2274,6 +2274,21 @@ function toggleSection(id) {
   if (h) h.setAttribute('aria-expanded', String(!collapsed));
   const body = sec.querySelector('.section-body');
   if (body) body.inert = collapsed; /* keep collapsed fields out of the tab order + a11y tree */
+  sectionState[id] = collapsed; /* remember the user's collapse choice across sessions */
+  try { store.set('brewcraft_collapsed', JSON.stringify(sectionState)); } catch(e) {}
+}
+/* Restore the user's remembered section collapse choices (overrides markup + beginner-disclosure defaults). */
+function restoreSectionState() {
+  Object.keys(sectionState).forEach(function(id) {
+    const sec = document.getElementById(id);
+    if (!sec || !sec.classList.contains('section')) return;
+    const collapsed = !!sectionState[id];
+    sec.classList.toggle('collapsed', collapsed);
+    const h = sec.querySelector('.section-header');
+    if (h) h.setAttribute('aria-expanded', String(!collapsed));
+    const b = sec.querySelector('.section-body');
+    if (b) b.inert = collapsed;
+  });
 }
 /* Make the collapsible section headers operable by keyboard + screen readers
    (they're <div onclick> in markup; this upgrades them to real buttons once at boot). */
@@ -4646,11 +4661,12 @@ function updateFreshness() {
 }
 
 /* ======= v5: BEAN & GEAR PROFILES ======= */
-let beanProfiles = [], gearProfiles = [], customTags = [];
+let beanProfiles = [], gearProfiles = [], customTags = [], sectionState = {};
 function loadProfiles() {
   try { beanProfiles = JSON.parse(store.get('brewcraft_beans') || '[]') || []; } catch(e) { beanProfiles = []; }
   try { gearProfiles = JSON.parse(store.get('brewcraft_gear') || '[]') || []; } catch(e) { gearProfiles = []; }
   try { customTags = JSON.parse(store.get('brewcraft_tags') || '[]') || []; } catch(e) { customTags = []; }
+  try { sectionState = JSON.parse(store.get('brewcraft_collapsed') || '{}') || {}; } catch(e) { sectionState = {}; }
   renderProfileSelects();
   renderCustomTags();
 }
@@ -5735,6 +5751,7 @@ function init() {
   initFieldLabels();
   initModalA11y();
   applyInitialDisclosure();
+  restoreSectionState();
   loadHintState();
   bumpHintsSeen();
   showDialHint();

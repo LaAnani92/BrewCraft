@@ -609,3 +609,10 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] WCAG 1.1.1 satisfied via the in-context text alternative (captions + insight chips + statsMsg)
 - [ ] npm run check green (2.55.0 synced); canvases aria-hidden + captions/insight text present verified via preview
 - [ ] Update toast after deploy (cache v2.55.0)
+
+## Sprint 68 (v2.56.0) — remember section collapse preferences across sessions
+- [ ] Mobile Kitchen / Advanced audit (lens): the expert Taste tab is ~2294px (2.8 screenfuls); sections are collapsible but toggleSection didn't PERSIST the collapse state, so an expert who collapses dial-in/extraction to tighten the tab had to re-collapse every session
+- [ ] toggleSection now writes sectionState{id:collapsed} to brewcraft_collapsed (new additive key); restoreSectionState() (called in init after applyInitialDisclosure) reapplies the user's explicit choices over the markup + beginner-disclosure defaults, syncing class + aria-expanded + inert (consistent with v2.54)
+- [ ] Precedence: markup default → applyInitialDisclosure (beginner Bean) → user's explicit toggles win; sections never toggled keep their default
+- [ ] npm run check green (2.56.0 synced); verified collapse persists + a user-expanded default-collapsed section is remembered via preview
+- [ ] Update toast after deploy (cache v2.56.0)
