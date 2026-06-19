@@ -662,3 +662,9 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] Added a beginner-only `.dialin-coach-hint` line above the chips ("Sour & sharp → grind finer; Bitter & harsh → grind coarser; tap whatever's closest, no wrong answer"); display:none by default, display:block under body.skill-beginner (mirrors the .grind-readout pattern) — enthusiasts/experts see nothing; additive, no JS
 - [ ] npm run check green (2.63.0 synced); verified hint visible for beginner skill + hidden for enthusiast/expert via preview
 - [ ] Update toast after deploy (cache v2.63.0)
+
+## Sprint 76 (v2.64.0) — one-tap revert when a dial-in made the cup worse
+- [ ] Advanced Coffee User lens: the app advises "consider reverting" in two places (dial-in output + the version-diff "worse, consider reverting" verdict) but offered no way to do it — a power user who made the cup worse had to hunt the parent version in the Journal by hand
+- [ ] Added a "Go back to vN (your better cup)" button in the version-diff card, shown ONLY when the current version is rated strictly worse than its parent (rA && rB && rB<rA); calls new loadParentVersion() → loadRecipe(parent.id) + switchTab('recipe') + toast. Non-destructive (worse version stays saved); matches the existing loadRecipe dirty/autosave behavior
+- [ ] npm run check green (2.64.0 synced); verified button appears only when child rated worse than parent, loads the parent, and is absent when improved/unchanged via preview
+- [ ] Update toast after deploy (cache v2.64.0)

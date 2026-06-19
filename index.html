@@ -1995,7 +1995,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.63.0';
+const APP_VERSION = '2.64.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null;
 let wakeLock = null;
@@ -3811,6 +3811,10 @@ function renderVersionDiff(r) {
   if (rA && rB) {
     const verdict = rB > rA ? '\u2014 improved \u2713' : rB < rA ? '\u2014 worse, consider reverting' : '\u2014 unchanged';
     lines.push('<div class="diff-line" style="margin-top:8px">Outcome: ' + rA + '\u2605 \u2192 <strong>' + rB + '\u2605</strong> ' + verdict + '</div>');
+    // The app advises reverting when a change made the cup worse \u2014 give it a one-tap path back to the better version.
+    if (rB < rA) {
+      lines.push('<div class="diff-line" style="margin-top:8px"><button class="btn btn-sm btn-secondary" onclick="loadParentVersion()"><svg class="ico"><use href="#i-reset"/></svg> Go back to v' + (parent.version || 1) + ' (your better cup)</button></div>');
+    }
   }
   document.getElementById('versionDiffTitle').textContent =
     'v' + (r.version || 2) + ' \u2014 changes from v' + (parent.version || 1);
@@ -3909,6 +3913,16 @@ function loadRecipe(id) {
   renderLibrary();
   clearDirty();
   resetTimer();
+}
+/* Revert path: when a dialed-in version rated worse than its parent, load the better parent so the
+   user can re-brew it or branch a fresh try. Non-destructive — the worse version stays saved. */
+function loadParentVersion() {
+  const cur = recipes.find(function(x) { return x.id === currentRecipeId; });
+  const parent = cur && cur.parentId ? recipes.find(function(x) { return x.id === cur.parentId; }) : null;
+  if (!parent) { showToast('Previous version not found', 'warning'); return; }
+  loadRecipe(parent.id);
+  switchTab('recipe');
+  showToast('Back on v' + (parent.version || 1) + ' — your better cup. Brew it again from the Brew tab.', 'success');
 }
 function newRecipe() {
   currentRecipeId = null;
