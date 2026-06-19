@@ -723,3 +723,10 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] Added aria-label to all 5: "Custom varietal name", "Custom grinder name", "Load a saved gear setup", "Name this gear setup", "Choose a backup file to import". Additive, matches the v2.23 labeling pass
 - [ ] npm run check green (2.73.0 synced); re-ran the audit via preview — unlabeled form-control count now 0
 - [ ] Update toast after deploy (cache v2.73.0)
+
+## Sprint 86 (v2.74.0) — surface + protect the on-device calibration (backup nudge)
+- [ ] Product Strategist lens: the moat is the accumulated on-device data (recipes, ratings, sweet spots, lineages), but nothing protected it — a user with many brews who never exports loses everything to a Safari storage eviction / phone switch (churn). The data "lives only here" was never made felt or backed up
+- [ ] Added a calm passive #backupNudge line in the Journal (both views, via renderLibrary→renderBackupNudge): shows ONLY when recipes.length>=5 AND (never exported OR last backup >30 days). "N brews of your calibration live only on this device · last backup over a month ago. Tap Export All above to keep a copy you own." New additive key brewcraft_exported (ISO ts) set in exportAllRecipes; nudge self-hides after backup for 30 days. No toast/nag
+- [ ] npm run check green (2.74.0 synced); verified via preview: <5 recipes hidden; >=5 + never-exported shows; after exportAllRecipes brewcraft_exported set + nudge hides; simulated >30-day-old export re-shows with the "over a month" copy
+- [ ] Update toast after deploy (cache v2.74.0)
+- [ ] NOTE: storage keys now also include brewcraft_exported (v2.74) — additive, no migration
