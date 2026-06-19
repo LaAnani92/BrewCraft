@@ -693,3 +693,9 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] npm run check green (2.68.0 synced); verified brewcraft_last is written on load + persists, and init resumes that recipe (not recipes[0]) via preview; missing-id falls back
 - [ ] Update toast after deploy (cache v2.68.0)
 - [ ] NOTE: storage keys now also include brewcraft_last (v2.68) — additive, no migration
+
+## Sprint 81 (v2.69.0) — first-run onboarding overlay is now a real dialog
+- [ ] Beginner User lens: onboarding content/flow is solid (3 clear steps, graceful Skip, skill persisted, starter hint after). But the .ob-overlay — the literal first screen a new user touches — was never a real dialog: no role/aria-modal, focus not moved into it, no Escape. Every .modal-overlay got this in v2.5.0 and the Brew-Along overlay in v2.33; onboarding was left behind. Matters most for a VoiceOver beginner on iPhone (primary platform)
+- [ ] Added role=dialog + aria-modal=true + aria-label + tabindex=-1 to .ob-card; showOnboarding focuses the card and attaches an Escape→obSkip handler; obFinish detaches it. Full Tab focus-trap deferred (matches the v2.33 precedent)
+- [ ] npm run check green (2.69.0 synced); verified dialog attributes present, Escape handler wired (keydown→obSkip closes + marks onboarded), and handler detached on finish via preview
+- [ ] Update toast after deploy (cache v2.69.0)

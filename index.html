@@ -1836,7 +1836,7 @@
 </div>
 
 <div class="ob-overlay" id="obOverlay">
-  <div class="ob-card">
+  <div class="ob-card" id="obCard" role="dialog" aria-modal="true" aria-label="Welcome to BrewCraft" tabindex="-1">
     <div id="obStep1">
       <div class="ob-glyph"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M4 5h16l-6.2 8.2h-3.6L4 5z" fill="#1a1410"/><circle cx="12" cy="16.6" r="1.4" fill="#1a1410"/><rect x="7" y="19.6" width="10" height="2" rx="1" fill="#1a1410"/></svg></div>
       <h2>Welcome to BrewCraft</h2>
@@ -1995,7 +1995,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.68.0';
+const APP_VERSION = '2.69.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null;
 let wakeLock = null;
@@ -5358,7 +5358,11 @@ function showOnboarding() {
   obIdx = 0;
   obShow();
   document.getElementById('obOverlay').classList.add('show');
+  const card = document.getElementById('obCard');
+  if (card) card.focus();
+  document.addEventListener('keydown', obKeydown);
 }
+function obKeydown(e) { if (e.key === 'Escape') { e.preventDefault(); obSkip(); } }
 function obShow() {
   ['obStep1','obStep2','obStep3'].forEach(function(id, i) {
     document.getElementById(id).hidden = (i !== obIdx);
@@ -5386,6 +5390,7 @@ function obSkip() { obFinish(); }
 function obFinish() {
   try { store.set('brewcraft_onboarded','1'); } catch(e) {}
   document.getElementById('obOverlay').classList.remove('show');
+  document.removeEventListener('keydown', obKeydown);
 }
 function sendFeedback() {
   const url = (settings.feedbackUrl || '').trim();
