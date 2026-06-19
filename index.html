@@ -1996,7 +1996,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.71.0';
+const APP_VERSION = '2.72.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
@@ -4422,6 +4422,21 @@ function sweetSpot() {
   if (hi - lo > 6) return null;
   return { lo: lo, hi: hi, n: good.length };
 }
+/* Where the user's best-rated cups cluster on ratio — the EY-sweet-spot idea for the parameter
+   everyone logs (no refractometer needed). Method-segmented so espresso (~1:2) never mixes with
+   pour-over (~1:15); needs >=3 same-method 4-star+ cups with a tight spread to count as a real cluster. */
+function bestRatioCluster() {
+  const good = recipes.filter(function(r) { return (r.rating || 0) >= 4 && parseFloat(r.brewRatio) > 0 && r.method; });
+  if (good.length < 3) return null;
+  const byM = {};
+  good.forEach(function(r) { (byM[r.method] = byM[r.method] || []).push(parseFloat(r.brewRatio)); });
+  let pick = null;
+  Object.keys(byM).forEach(function(m) { if (byM[m].length >= 3 && (!pick || byM[m].length > pick.ratios.length)) pick = { method: m, ratios: byM[m] }; });
+  if (!pick) return null;
+  const sorted = pick.ratios.slice().sort(function(a, b) { return a - b; });
+  if (sorted[sorted.length - 1] - sorted[0] > 3) return null; // too scattered to be a real target
+  return { method: pick.method, median: sorted[Math.floor(sorted.length / 2)], n: sorted.length };
+}
 function drawScatterEY() {
   const b = chartBase('statsCanvas1');
   const pts = recipes.map(function(r) { return { x: computeEY(r), y: r.rating || 0 }; })
@@ -4525,6 +4540,8 @@ function renderInsights() {
   const chips = [];
   const ss = sweetSpot();
   if (ss) chips.push('Your sweet spot: <strong>' + ss.lo.toFixed(1) + '\u2013' + ss.hi.toFixed(1) + '% EY</strong> \u2014 where your ' + ss.n + ' best-rated brews live. The green band on the chart is yours, not a textbook\u2019s.');
+  const rc = bestRatioCluster();
+  if (rc) chips.push('Your best <strong>' + escapeHtml(rc.method) + '</strong> cups cluster around <strong>1:' + rc.median.toFixed(1) + '</strong> \u2014 a tested ratio to start a new bag (' + rc.n + ' brews rated 4\u2605+).');
   const rated = recipes.filter(function(r) { return (r.rating || 0) > 0 && r.createdAt; })
     .sort(function(a, c) { return a.createdAt.localeCompare(c.createdAt); });
   if (rated.length >= 4) {

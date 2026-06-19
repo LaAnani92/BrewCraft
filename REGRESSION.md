@@ -711,3 +711,9 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] Added a baDoneFired-guarded completion block in updateBATheater (sec>=baTotalSec): baStepLabel→"Brew complete", baTarget→"That's brewed", baTechnique→"Let it settle…", fill→100%, reveal a new hidden #baRateBtn (.btn-primary "Rate this cup →" → rateFromBrewAlong = exit + switchTab evaluate). Guarded baAutoAdvance with `if (baDoneFired) return;` so it stops clobbering baNextInfo. Reset in enterBrewAlong + resetTimer. The shared updateBrewGuide still fires the one-time beep/haptic (no double cue)
 - [ ] npm run check green (2.71.0 synced); verified via preview: simulating sec>=baTotalSec shows the done text + reveals the rate button once, baAutoAdvance stops overwriting, rateFromBrewAlong exits BA + opens Taste, and reset re-hides it
 - [ ] Update toast after deploy (cache v2.71.0)
+
+## Sprint 84 (v2.72.0) — Insights: a ratio sweet-spot chip (no refractometer needed)
+- [ ] Advanced Coffee User lens: the EY sweet-spot band is actionable but requires logged TDS, which most advanced users (no refractometer) never have — for them Insights gave only trend + best-origin (soft, not a target). No insight surfaced where their best cups cluster on ratio, the parameter everyone logs
+- [ ] Added bestRatioCluster(): method-segmented (espresso ~1:2 never mixes with pour-over ~1:15), needs >=3 same-method 4★+ cups with ratio spread <=3 to count as a real cluster, returns median ratio. renderInsights pushes a chip ("Your best V60 cups cluster around 1:15.5 — a tested ratio to start a new bag") right after the EY chip, before the softer trend/origin chips (still capped at 3)
+- [ ] npm run check green (2.72.0 synced); verified via preview: clustered 4★+ cups produce the chip with correct median + method; <3 cups or wide spread returns null (no chip); espresso and pour-over don't cross-contaminate
+- [ ] Update toast after deploy (cache v2.72.0)
