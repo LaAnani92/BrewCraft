@@ -602,3 +602,10 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] Progressive enhancement: on browsers without inert (rare, pre-Safari-15.5) the prior behavior remains — no regression. Method-cat grids already display:none, unaffected
 - [ ] npm run check green (2.54.0 synced); verified collapsed-section inputs are non-focusable + expand restores focusability via preview
 - [ ] Update toast after deploy (cache v2.54.0)
+
+## Sprint 67 (v2.55.0) — chart canvases hidden from screen readers (data is in text)
+- [ ] Accessibility audit (lens): the Insights charts are <canvas> with no role/aria-label — opaque to SR. But the equivalent data is already text: statsMsg (counts), renderInsights chips (sweet-spot range, "trending up X vs Y", best origin), and the visible .stats-caption titles
+- [ ] Marked both canvases aria-hidden="true" so SR skips the meaningless pixels and relies on the adjacent text equivalents (cleaner than a redundant role=img). No visual change for sighted users
+- [ ] WCAG 1.1.1 satisfied via the in-context text alternative (captions + insight chips + statsMsg)
+- [ ] npm run check green (2.55.0 synced); canvases aria-hidden + captions/insight text present verified via preview
+- [ ] Update toast after deploy (cache v2.55.0)

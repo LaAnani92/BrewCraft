@@ -1600,9 +1600,9 @@
         <button class="ai-explain-btn" id="patternBtn" onclick="detectPatterns()" aria-expanded="false" aria-controls="patternPanel"><svg class="ico"><use href="#i-spark"/></svg> Find my patterns</button>
       </div>
       <div class="ai-panel" id="patternPanel" role="region" aria-live="polite" hidden></div>
-      <canvas class="stats-canvas" id="statsCanvas1" width="900" height="240"></canvas>
+      <canvas class="stats-canvas" id="statsCanvas1" width="900" height="240" aria-hidden="true"></canvas>
       <div class="stats-caption">Extraction Yield (%) vs Rating — sweet spot hunting</div>
-      <canvas class="stats-canvas" id="statsCanvas2" width="900" height="240"></canvas>
+      <canvas class="stats-canvas" id="statsCanvas2" width="900" height="240" aria-hidden="true"></canvas>
       <div class="stats-caption">Ratings over time — are your brews improving?</div>
     </div>
   </div>
@@ -1985,7 +1985,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.54.0';
+const APP_VERSION = '2.55.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null;
 let wakeLock = null;
