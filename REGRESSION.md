@@ -850,3 +850,9 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] computeBrewTarget now, when method is Espresso, sets brewTargetSec = espShotTime (or 30s if unset). Called at timer-start so it reads the current shot time. Ring fills over the shot and glows 'done' at target; pour-over/immersion targets unchanged
 - [ ] npm run check green (2.94.0 synced); verified via preview: Espresso + espShotTime 28 → brewTargetSec 28 (not 180); unset shot → 30; V60 with no cues still → 180
 - [ ] Update toast after deploy (cache v2.94.0)
+
+## Sprint 107 (v2.95.0) — espresso gets its own shot-target completion moment
+- [ ] Emotional Design lens: pour-over's "That's brewed" cue (beep+haptic+message+rate link) lives in updateBrewGuide, which returns early when guideSteps is empty — espresso has no pour schedule, so the cue NEVER fired. With v2.94 the ring now glows at the shot's target time, but silently; espresso's completion was flat vs pour-over's celebrated finish
+- [ ] Added an espresso branch atop updateBrewGuide: at/after brewTargetSec it fires the same one-time beep/haptic, shows "✓ At target shot time — Cut it now, or pull longer…" + a "Rate this shot →" link, and announces "At your target shot time." to SR; before target it stays hidden. Espresso-specific copy (cut the shot, not pour-over "brew complete"). Reuses brewCompleteFired (reset in computeBrewTarget/resetTimer). Returns before the pour-over path
+- [ ] npm run check green (2.95.0 synced); verified via preview: espresso past target shows the shot-done message + sets brewCompleteFired once; before target hidden; pour-over unchanged
+- [ ] Update toast after deploy (cache v2.95.0)

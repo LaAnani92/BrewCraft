@@ -1954,6 +1954,23 @@ function isImmersion(method) {
 function updateBrewGuide(sec) {
   const el = document.getElementById('brewGuide');
   if (!el) return;
+  // Espresso has no pour schedule, but its shot still has a target time — give it the same one-time
+  // cue + rate hand-off as pour-over, in espresso terms (cut the shot), not a pour-over "brew complete".
+  if (getSelectedMethod() === 'Espresso') {
+    if (brewTargetSec > 0 && sec >= brewTargetSec) {
+      if (!brewCompleteFired) {
+        brewCompleteFired = true;
+        beep(660, 0.18); setTimeout(function() { beep(880, 0.2); }, 200); vibrate(140);
+        const srShot = document.getElementById('brewGuideSr');
+        if (srShot) srShot.textContent = 'At your target shot time.';
+      }
+      el.innerHTML = '<strong class="bg-done">✓ At target shot time</strong>' +
+        '<span class="bg-next">Cut it now, or pull longer and note what changes.</span>' +
+        '<button class="bg-rate-link" onclick="switchTab(\'evaluate\')">Rate this shot &rarr;</button>';
+      el.classList.add('show');
+    } else { el.classList.remove('show'); el.innerHTML = ''; }
+    return;
+  }
   if (!guideSteps.length) { el.classList.remove('show'); el.innerHTML = ''; lastGuideAnnounce = ''; return; }
   // Past the expected finish → a one-time "brew complete" moment, then a calm done state.
   if (brewTargetSec > 0 && sec >= brewTargetSec) {
@@ -2029,7 +2046,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.94.0';
+const APP_VERSION = '2.95.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
