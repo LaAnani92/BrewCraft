@@ -844,4 +844,9 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] AI Product lens: ruleDialIn branched espresso→espressoDialIn but routed immersion (FP/AeroPress/Clever/Switch) through the pour-over path — "slower later pours", "gentle circles / one swirl after bloom", "pour lower… filter clogging at drawdown", "level the bed". None apply to a steep. The AI dial-in guarded espresso but not immersion
 - [ ] Added immersionDialIn(issues, r) (mirrors espressoDialIn): steep time / gentle stir / press language, keeps grind+temp+ratio+EY logic, no pours/swirls/bed/drawdown. ruleDialIn now routes isImmersion(r.method) to it. getDialinAdvice userMsg adds an IMMERSION NOTE (grind/temp/steep/ratio/stir only; no pour-over technique) parallel to the espresso NOTE
 - [ ] npm run check green (2.93.0 synced); verified via preview: ruleDialIn for French Press returns steep/press language with no "pours/swirls/drawdown/bed"; V60 still returns pour-over advice; AI userMsg carries the IMMERSION NOTE for FP and the ESPRESSO NOTE for espresso
-- [ ] Update toast after deploy (cache v2.93.0)
+
+## Sprint 106 (v2.94.0) — espresso timer ring tracks the shot, not 3 minutes
+- [ ] Advanced Coffee User lens: computeBrewTarget had no espresso branch — espresso has no pour cues (target 0) and logs espShotTime not totalBrewTime, so it fell to the 180s pour-over default. The brew-timer ring filled toward 3 min during a ~28s shot: it barely moved and never hit the "done" glow at the shot's target time — useless for the method where shot timing matters most
+- [ ] computeBrewTarget now, when method is Espresso, sets brewTargetSec = espShotTime (or 30s if unset). Called at timer-start so it reads the current shot time. Ring fills over the shot and glows 'done' at target; pour-over/immersion targets unchanged
+- [ ] npm run check green (2.94.0 synced); verified via preview: Espresso + espShotTime 28 → brewTargetSec 28 (not 180); unset shot → 30; V60 with no cues still → 180
+- [ ] Update toast after deploy (cache v2.94.0)
