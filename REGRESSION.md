@@ -1039,3 +1039,9 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] Export bundle now carries tags: customTags (schema version 2→3). importRecipesFile restores data.tags additively, case-insensitive dedupe → brewcraft_tags + renderCustomTags(). Toast rebuilt as a clean extras-join "(+N beans, M setups, K tags)". Old v2 bundles still import (tags absent = no-op)
 - [ ] npm run check green (2.125.0 synced); verified via preview: export bundle includes tags array; importRecipesFile with {tags:[...]} adds new tags (dedupes existing), persists brewcraft_tags, re-renders chips, toast shows tag count
 - [ ] Update toast after deploy (cache v2.125.0)
+
+## Sprint 138 (v2.126.0) — espresso pressure + pre-infusion are tracked in the iteration
+- [ ] Advanced Coffee User lens (espresso round-trip): DIFF_FIELDS tracked espYield + espShotTime but NOT espPressure / espPreinfusion (real, stored, print-shown fields). A serious espresso user (Flair/lever/spec machine) who iterates on pressure or pre-infusion as their one variable got a "no change yet" version thread, a dial-in iterationHistory blind to it, and a Compare/version-diff that didn't surface it
+- [ ] Added ['espPressure','Pressure (bar)'] + ['espPreinfusion','Pre-infusion'] to DIFF_FIELDS → now flow into renderThread, renderVersionDiff, iterationHistory (dial-in), openCompare, and paramsChanged (brewAgain). Consistent with the existing espYield/espShotTime treatment (empty → "—" for non-espresso, same as today)
+- [ ] npm run check green (2.126.0 synced); verified via preview: iterationHistory for parent/child espresso recipes differing only in espPressure now reports "Pressure (bar) 9→6"; espPreinfusion change reported; DIFF_FIELDS length +2
+- [ ] Update toast after deploy (cache v2.126.0)
