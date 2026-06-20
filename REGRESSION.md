@@ -954,3 +954,9 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] Added a right-aligned "Show"/"Hide" link-btn (margin-left:auto in the flex label) → toggleApiKeyVisible() flips input.type password<->text + aria-pressed; default stays masked. Hardened the input: autocomplete/autocapitalize/autocorrect=off + spellcheck=false (so revealed text isn't mangled by the mobile keyboard, and it isn't captured as a login password). Hint now says "tap Show to check it pasted correctly"
 - [ ] npm run check green (2.111.0 synced); verified via preview: toggle flips type to text + label Hide + aria-pressed true, back to password + Show; input carries autocapitalize/autocorrect/spellcheck off
 - [ ] Update toast after deploy (cache v2.111.0)
+
+## Sprint 124 (v2.112.0) — action-toasts pause their dismiss on hover/focus
+- [ ] Accessibility lens: #toast is role=status aria-live=polite, and showActionToast builds an interactive Undo/confirm button inside it that auto-dismissed in 6-7s. WCAG 2.2.1 timing trap — a keyboard/SR user can't reliably reach the button in time, and worse, it could vanish WHILE they're engaging with it. The Undo (a core trust feature: recipe delete) was effectively mouse/touch-only
+- [ ] Added shared armToastTimer() (wired once on #toast): pause (clearTimeout) on pointerenter + focusin, resume (re-arm with t._dur) on pointerleave + focusout. Routed both showToast (2600ms) and showActionToast (duration||6000) through it via t._dur. So focusing the Undo button stops the countdown — unlimited time to act; resumes on blur
+- [ ] npm run check green (2.112.0 synced); verified via preview: showActionToast → t._timer armed; dispatch focusin on #toast → t._timer null (paused) + toast still shown; focusout → re-armed (number); clicking the button still removes show + runs fn (no re-arm)
+- [ ] Update toast after deploy (cache v2.112.0)

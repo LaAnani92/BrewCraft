@@ -2050,7 +2050,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.111.0';
+const APP_VERSION = '2.112.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
@@ -2237,13 +2237,30 @@ function autosaveNow() {
   }
 }
 
+/* A toast that carries an interactive button (Undo / confirm) must not time out while a keyboard or
+   screen-reader user is reaching for it \u2014 pause the dismiss countdown on hover/focus, resume on leave
+   (WCAG 2.2.1). Wired once on #toast; both toast paths arm their dismiss through here. */
+function armToastTimer() {
+  const t = document.getElementById('toast');
+  if (!t._pauseWired) {
+    t._pauseWired = true;
+    const pause = function() { clearTimeout(t._timer); t._timer = null; };
+    const resume = function() { if (t.classList.contains('show')) armToastTimer(); };
+    t.addEventListener('pointerenter', pause);
+    t.addEventListener('pointerleave', resume);
+    t.addEventListener('focusin', pause);
+    t.addEventListener('focusout', resume);
+  }
+  clearTimeout(t._timer);
+  t._timer = setTimeout(function() { t.classList.remove('show'); }, t._dur || 2600);
+}
 function showToast(msg, type) {
   type = type || '';
   const t = document.getElementById('toast');
   t.className = 'toast ' + type + ' show';
   t.textContent = (type==='success'?'\u2713 ':type==='warning'?'\u26a0 ':'\u2139 ') + msg;
-  clearTimeout(t._timer);
-  t._timer = setTimeout(function() { t.classList.remove('show'); }, 2600);
+  t._dur = 2600;
+  armToastTimer();
 }
 function syncHeaderName() {
   const n = document.getElementById('recipeName').value.trim();
@@ -5432,8 +5449,8 @@ function showActionToast(msg, btnLabel, fn, type, duration) {
   b.onclick = function() { t.classList.remove('show'); fn(); };
   t.appendChild(span);
   t.appendChild(b);
-  clearTimeout(t._timer);
-  t._timer = setTimeout(function() { t.classList.remove('show'); }, duration || 6000);
+  t._dur = duration || 6000;
+  armToastTimer();
 }
 function confirmSaveGear() {
   const label = document.getElementById('gearNameInput').value.trim();
