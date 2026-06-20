@@ -1014,3 +1014,9 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] Compute gShown once (d.grindSize and/or COARSE_LABELS[grindCoarseness]) → " (yours: 18 · Medium-Fine)"; append to both the filter + espresso Grind lines. Empty when no grind set. AI path already says "be concrete about their actual numbers". No new storage
 - [ ] npm run check green (2.121.0 synced); verified via preview: grindSize 18 + coarseness 3 → "Grind (yours: 18 · Medium-Fine) —…"; coarseness only → "(yours: Medium-Fine)"; none → plain "Grind —"; espresso branch likewise
 - [ ] Update toast after deploy (cache v2.121.0)
+
+## Sprint 134 (v2.122.0) — rating prompt reframed from grading to reflection
+- [ ] Emotional Design lens: the rating is a rich daily touchpoint (pop+haptic, celebrate@5, reactive meaning via the <=3 nudge / >=4 praise bands, journey) — meaning WITHOUT a forced per-value label (which the lens itself cautions against; per-value words would violate it + duplicate the bands). The one clinical bit was the prompt label "Overall Rating" — product-grading language in an otherwise reflective Taste tab
+- [ ] Reframed the eval-label "Overall Rating" → "How was this cup?" — a reflective question consistent with the existing question-style "What's off about the cup?" label; copy-only, no per-value labels forced
+- [ ] npm run check green (2.122.0 synced); verified via preview the rating label reads "How was this cup?"
+- [ ] Update toast after deploy (cache v2.122.0)

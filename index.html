@@ -1405,7 +1405,7 @@
     <div class="section-body">
       <div class="taste-prompt">First, just taste it. Sweet or sharp, bright or heavy — what jumps out? Then let the scores below back up what your mouth already knows.</div>
       <div style="margin-bottom:20px">
-        <span class="eval-label">Overall Rating</span>
+        <span class="eval-label">How was this cup?</span>
         <div class="rating-container" role="group" aria-label="Rate this cup, 1 to 5 stars">
           <span class="rating-star" data-v="1" role="button" tabindex="0" aria-pressed="false" aria-label="Rate 1 of 5" onclick="setRating(1)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();setRating(1);}">★</span>
           <span class="rating-star" data-v="2" role="button" tabindex="0" aria-pressed="false" aria-label="Rate 2 of 5" onclick="setRating(2)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();setRating(2);}">★</span>
@@ -2051,7 +2051,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.121.0';
+const APP_VERSION = '2.122.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
