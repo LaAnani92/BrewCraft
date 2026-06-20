@@ -1685,6 +1685,7 @@
   <div class="ba-tap right" onclick="baNext()" aria-hidden="true"></div>
   <div class="ba-hint" id="baHint" hidden>‹ tap the screen edges to move between pours ›</div>
   <button class="btn btn-secondary ba-exit" onclick="exitBrewAlong()"><svg class="ico"><use href="#i-close"/></svg> Exit</button>
+  <div class="sr-only" id="baSr" role="status" aria-live="polite"></div>
   <div class="ba-step" id="baStepLabel">Step 1 · Bloom</div>
   <div class="ba-target" id="baTarget">Pour to 45 g</div>
   <div class="ba-window" id="baWindow"></div>
@@ -2049,7 +2050,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.106.0';
+const APP_VERSION = '2.107.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
@@ -3155,6 +3156,10 @@ function renderBAStep() {
     dots += '<div class="ba-dot' + (i < baIdx ? ' done' : i === baIdx ? ' now' : '') + '"></div>';
   }
   document.getElementById('baProgress').innerHTML = dots;
+  // Brew-Along is aria-modal, so the Brew-tab live region can't reach a SR user here. Announce each
+  // step (discrete, not per-tick — no spam) in this overlay's own live region: position + scale target.
+  const baSr = document.getElementById('baSr');
+  if (baSr) baSr.textContent = 'Step ' + (baIdx+1) + ' of ' + baSteps.length + ', ' + st.label + '. Pour to ' + st.targetCum + ' grams.' + (st.technique ? ' ' + st.technique + '.' : '');
   updateBATheater(currentElapsedMs() / 1000);
 }
 
@@ -5825,6 +5830,8 @@ function updateBATheater(sec) {
       document.getElementById('baFill').style.width = '100%';
       document.getElementById('baFillNow').textContent = '';
       const rb = document.getElementById('baRateBtn'); if (rb) rb.hidden = false;
+      const baSr = document.getElementById('baSr');
+      if (baSr) baSr.textContent = 'Brew complete. That’s brewed. Let it settle, then rate the cup below.';
     }
     return;
   }

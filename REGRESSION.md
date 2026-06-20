@@ -924,3 +924,9 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] npm run check green (2.106.0 synced); verified via preview: dirty form + newRecipe() keeps the form + shows the toast; tapping the toast btn wipes; clean form + newRecipe() wipes immediately
 - [ ] Update toast after deploy (cache v2.106.0)
 - [ ] Flagged follow-up: loadRecipe() (switching recipes from the library) also discards unsaved edits silently — bigger UX call (could nag on every switch), left for owner
+
+## Sprint 119 (v2.107.0) — Brew-Along announces steps to screen readers
+- [ ] Accessibility lens (live brew, SR): the Brew tab has #brewGuideSr (v2.44/2.96) but Brew-Along — the PRIMARY guided path (the big CTA) — is aria-modal and its changing content (#baStepLabel/#baTarget/#baTechnique) had no aria-live, and the only SR region (#brewGuideSr) sits OUTSIDE the modal (aria-modal hides it). So a blind user heard NOTHING on step advance or completion in immersive mode
+- [ ] Added an .sr-only role=status aria-live=polite #baSr INSIDE #baOverlay. renderBAStep (discrete step changes — not the per-tick updateBATheater, so no spam) announces "Step N of M, <label>. Pour to <targetCum> grams. <technique>." updateBATheater's done branch (guarded by baDoneFired, fires once) announces "Brew complete. That's brewed. Let it settle, then rate the cup below." Mirrors the Brew-tab pattern
+- [ ] npm run check green (2.107.0 synced); verified via preview: entering BA announces step 1 w/ cumulative target; baNext announces the next step; completion branch sets the done announce; per-tick updateBATheater does NOT rewrite #baSr mid-step
+- [ ] Update toast after deploy (cache v2.107.0)
