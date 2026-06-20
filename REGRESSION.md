@@ -930,3 +930,9 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] Added an .sr-only role=status aria-live=polite #baSr INSIDE #baOverlay. renderBAStep (discrete step changes — not the per-tick updateBATheater, so no spam) announces "Step N of M, <label>. Pour to <targetCum> grams. <technique>." updateBATheater's done branch (guarded by baDoneFired, fires once) announces "Brew complete. That's brewed. Let it settle, then rate the cup below." Mirrors the Brew-tab pattern
 - [ ] npm run check green (2.107.0 synced); verified via preview: entering BA announces step 1 w/ cumulative target; baNext announces the next step; completion branch sets the done announce; per-tick updateBATheater does NOT rewrite #baSr mid-step
 - [ ] Update toast after deploy (cache v2.107.0)
+
+## Sprint 120 (v2.108.0) — degassing freshness guidance gets a forward hook
+- [ ] Product Strategist lens (retention): the distinctive asset is the per-bean freshness timeline. Its guidance nudges across the lifecycle (peak = "great day to fine-tune", fading = "finish the bag soon"), but the degassing state was the only one with NO forward/return anchor — it told a fresh-bean user "don't over-judge this cup" (a dead end) without planting when it'll be good. (Bag tracking already does its own retention work: "running low, reorder soon" + low toast)
+- [ ] Appended an anticipatory clause to freshnessGuidance's fresh-degassing branch: filter → "…it hits its stride around day 4." (matches freshnessInfo's day-4 peak start); espresso → "…espresso especially wants a few more days to settle." (reinforces v2.99). Converts the one discouraging state into a reason to come back. Copy-only; other states untouched
+- [ ] npm run check green (2.108.0 synced); verified via preview: freshnessGuidance(degassing, filter/espresso) carries the new clause; peak/good/fading branches unchanged
+- [ ] Update toast after deploy (cache v2.108.0)

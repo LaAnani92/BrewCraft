@@ -2050,7 +2050,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.107.0';
+const APP_VERSION = '2.108.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
@@ -5371,8 +5371,8 @@ function freshnessGuidance(f, method) {
   switch (f.cls) {
     case 'fresh-degassing':
       return esp
-        ? 'Still degassing — shots will gush and taste sharp. Grind finer, expect inconsistency, and don’t over-judge it yet.'
-        : 'Still degassing — lots of CO₂. Use a longer bloom, grind a touch finer, and don’t over-judge this cup.';
+        ? 'Still degassing — shots will gush and taste sharp. Grind finer, expect inconsistency, and don’t over-judge it yet — espresso especially wants a few more days to settle.'
+        : 'Still degassing — lots of CO₂. Use a longer bloom, grind a touch finer, and don’t over-judge this cup — it hits its stride around day 4.';
     case 'fresh-peak':
       return 'Peak window — the bean at its best. A great day to fine-tune one variable.';
     case 'fresh-good':
