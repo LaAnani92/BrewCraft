@@ -1081,3 +1081,9 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] Changed both Del buttons btn-ghost → btn-danger (red text + faint red border, the app's existing destructive style) so they read as destructive and the eye avoids them. Pairs with the v2.131 undo (visual avoidance + recoverability = two safety layers). Targeted by onclick so the adjacent benign "New bag" ghost button is untouched
 - [ ] npm run check green (2.132.0 synced); verified via preview both Del buttons now compute the danger color (var(--danger)) and the "New bag" / Save buttons keep their styling
 - [ ] Update toast after deploy (cache v2.132.0)
+
+## Sprint 145 (v2.133.0) — beginner taste-word glossary under the dial-in chips
+- [ ] Beginner User lens: the dial-in needs a beginner to map "what I'm tasting" → one of 10 chips, but several are coffee jargon (Astringent, Hollow, Muted, Harsh, Unbalanced) or absence-flavours hard to self-identify. The existing coach-hint covers only the big-3 (sour/bitter/weak → cause+fix); the free-text box only feeds the AI path, so a KEYLESS beginner is stuck with the chips
+- [ ] Added a collapsed <details class="taste-help"> "What do these words mean?" right under the chip row, with a sensory gloss of all 10 (what each tastes/feels like — complements the hint's cause/fix angle). Native <details>/<summary> = zero JS, keyboard + SR accessible, offline. Gated to body.skill-beginner exactly like the coach-hint, so enthusiasts/experts never see it (zero clutter). Custom CSS triangle marker, rotates on open
+- [ ] npm run check green (2.133.0 synced); verified via preview: details present + collapsed; visible only under skill-beginner; toggling open reveals 10 glossed terms; one entry per chip (data-issue count == gloss count)
+- [ ] Update toast after deploy (cache v2.133.0)

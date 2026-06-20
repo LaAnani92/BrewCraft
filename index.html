@@ -557,6 +557,18 @@
   .dialin-coach-hint { display:none; font-size:12px; color:var(--text-secondary); line-height:1.6; margin:2px 0 12px; }
   body.skill-beginner .dialin-coach-hint { display:block; }
   .dialin-coach-hint strong { color:var(--accent-bright); font-weight:600; }
+  /* Beginner-only taste-word glossary — collapsed by default so it never clutters. The coach-hint
+     above maps the big-3 to causes/fixes; this maps every chip to what it tastes/feels like, the
+     piece a keyless beginner needs to pick a chip at all. Same skill-beginner gate as the hint. */
+  .taste-help { display:none; margin:0 0 12px; }
+  body.skill-beginner .taste-help { display:block; }
+  .taste-help summary { font-size:12px; color:var(--accent-bright); cursor:pointer; list-style:none; display:inline-flex; align-items:center; gap:6px; padding:6px 0; -webkit-tap-highlight-color:transparent; }
+  .taste-help summary::-webkit-details-marker { display:none; }
+  .taste-help summary::before { content:''; width:0; height:0; border-left:5px solid currentColor; border-top:4px solid transparent; border-bottom:4px solid transparent; transition:transform .15s; }
+  .taste-help[open] summary::before { transform:rotate(90deg); }
+  .taste-gloss { margin:6px 0 2px; padding:0; list-style:none; font-size:12px; color:var(--text-secondary); line-height:1.55; }
+  .taste-gloss li { margin:0 0 5px; }
+  .taste-gloss strong { color:var(--text-primary); font-weight:600; }
   /* Beginner-only one-line character note for the selected brew method — orients a newcomer who
      doesn't yet know V60 from Origami. Experts/enthusiasts see nothing. */
   .method-blurb { display:none; font-size:12px; line-height:1.5; color:var(--text-secondary); margin:8px 2px 2px; }
@@ -1500,6 +1512,21 @@
         <span class="tag issue" data-issue="salty" onclick="toggleTag(this)">Salty</span>
         <span class="tag issue" data-issue="unbalanced" onclick="toggleTag(this)">Unbalanced</span>
       </div>
+      <details class="taste-help">
+        <summary>What do these words mean?</summary>
+        <ul class="taste-gloss">
+          <li><strong>Sour</strong> &mdash; sharp and tangy, makes you wince (think lemon)</li>
+          <li><strong>Bitter</strong> &mdash; a dark, burnt, over-steeped edge</li>
+          <li><strong>Astringent / Dry</strong> &mdash; dries and puckers your mouth, like strong tea</li>
+          <li><strong>Weak / Watery</strong> &mdash; thin, barely any flavour</li>
+          <li><strong>Too Intense</strong> &mdash; overpowering, almost too much to drink</li>
+          <li><strong>Hollow / Flat</strong> &mdash; empty in the middle, missing sweetness</li>
+          <li><strong>Muted / Dull</strong> &mdash; the flavours are there but faint and lifeless</li>
+          <li><strong>Harsh</strong> &mdash; rough and scratchy, an aggressive finish</li>
+          <li><strong>Salty</strong> &mdash; a faint savoury, saline note</li>
+          <li><strong>Unbalanced</strong> &mdash; one thing dominates; it doesn&rsquo;t come together</li>
+        </ul>
+      </details>
       <textarea class="dialin-textarea" id="dialinNotes" aria-label="Describe the cup for dial-in advice" placeholder="Optional: describe the cup in your own words… e.g., 'juicy start but the finish turns drying, sweetness disappears as it cools'"></textarea>
       <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
         <button class="btn btn-primary" id="dialinBtn" onclick="getDialinAdvice()"><svg class="ico"><use href="#i-bolt"/></svg> Get Dial-In Advice</button>
@@ -2064,7 +2091,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.132.0';
+const APP_VERSION = '2.133.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
