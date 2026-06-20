@@ -2054,7 +2054,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.126.0';
+const APP_VERSION = '2.127.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
@@ -4803,8 +4803,11 @@ function bestRatioCluster() {
   Object.keys(byM).forEach(function(m) { if (byM[m].length >= 3 && (!pick || byM[m].length > pick.ratios.length)) pick = { method: m, ratios: byM[m] }; });
   if (!pick) return null;
   const sorted = pick.ratios.slice().sort(function(a, b) { return a - b; });
-  if (sorted[sorted.length - 1] - sorted[0] > 3) return null; // too scattered to be a real target
-  return { method: pick.method, median: sorted[Math.floor(sorted.length / 2)], n: sorted.length };
+  const median = sorted[Math.floor(sorted.length / 2)];
+  // "Cluster" tightness must scale with the ratio's magnitude: espresso (~1:2) clusters within a few
+  // tenths, filter (~1:16) within a few whole points. A flat ±3 would wrongly call 1:2 and 1:5 a cluster.
+  if (sorted[sorted.length - 1] - sorted[0] > Math.max(0.4, median * 0.2)) return null;
+  return { method: pick.method, median: median, n: sorted.length };
 }
 function drawScatterEY() {
   const b = chartBase('statsCanvas1');

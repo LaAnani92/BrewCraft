@@ -1045,3 +1045,9 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] Added ['espPressure','Pressure (bar)'] + ['espPreinfusion','Pre-infusion'] to DIFF_FIELDS → now flow into renderThread, renderVersionDiff, iterationHistory (dial-in), openCompare, and paramsChanged (brewAgain). Consistent with the existing espYield/espShotTime treatment (empty → "—" for non-espresso, same as today)
 - [ ] npm run check green (2.126.0 synced); verified via preview: iterationHistory for parent/child espresso recipes differing only in espPressure now reports "Pressure (bar) 9→6"; espPreinfusion change reported; DIFF_FIELDS length +2
 - [ ] Update toast after deploy (cache v2.126.0)
+
+## Sprint 139 (v2.127.0) — ratio sweet-spot cluster is scale-aware (espresso-trustworthy)
+- [ ] Emotional/Advanced lens: bestRatioCluster (Insights "Your best <method> cups cluster around 1:X") used a flat spread tolerance of 3 — fine for filter (1:15–1:18), but for espresso a spread of 3 spans 1:2→1:5 (ristretto to lungo, totally different shots), so it would claim a "cluster" that isn't one and the celebratory insight rings hollow
+- [ ] Tolerance now scales with the ratio magnitude: Math.max(0.4, median*0.2) → espresso median 2 → 0.4 (tight), filter median 16 → 3.2 (≈ old 3). Computes median first. Honors espresso-specificity; the insight is now a real cluster across methods
+- [ ] npm run check green (2.127.0 synced); verified via preview: espresso 4★+ ratios [2.0,2.1,2.2] → cluster ~1:2.1; [2.0,2.5,3.5] → null (correctly rejected, was wrongly a cluster); filter [15,16,17] → cluster 1:16; filter [14,16,19] → null
+- [ ] Update toast after deploy (cache v2.127.0)
