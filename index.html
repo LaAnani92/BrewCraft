@@ -584,6 +584,9 @@
   /* Quiet "welcome back" on the Brew landing for a returning user (>=3 days away) — a greeting on
      open, never a nag. Gated to users with real recipes (sample-only users get the starter hint). */
   .today-welcome { font-size:13px; color:var(--accent-bright); margin-bottom:9px; line-height:1.5; }
+  /* Beginner-only setup checklist in Brew-Along, shown at step 1 before Start — a first-timer doesn't
+     know the dripper goes on a zeroed scale. Hides the moment the timer starts (they're brewing now). */
+  .ba-prep { max-width:330px; margin:2px auto 10px; padding:10px 13px; font-size:12.5px; line-height:1.5; color:var(--text-secondary); background:rgba(255,255,255,0.06); border:1px solid var(--accent-glow); border-radius:10px; text-align:center; }
   /* Beginner-only one-line character note for the selected brew method — orients a newcomer who
      doesn't yet know V60 from Origami. Experts/enthusiasts see nothing. */
   .method-blurb { display:none; font-size:12px; line-height:1.5; color:var(--text-secondary); margin:8px 2px 2px; }
@@ -1750,6 +1753,7 @@
   <div class="ba-step" id="baStepLabel">Step 1 · Bloom</div>
   <div class="ba-target" id="baTarget">Pour to 45 g</div>
   <div class="ba-window" id="baWindow"></div>
+  <div class="ba-prep" id="baPrep" hidden></div>
   <div class="ba-ring-wrap">
     <svg class="ba-ring" viewBox="0 0 232 232" aria-hidden="true"><circle class="ring-bg" cx="116" cy="116" r="104"/><circle class="ring-fg" id="baRingFg" cx="116" cy="116" r="104"/></svg>
     <div class="ba-timer" id="baTimer" role="timer" aria-live="off">00:00.0</div>
@@ -2112,7 +2116,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.139.0';
+const APP_VERSION = '2.140.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
@@ -3298,6 +3302,20 @@ function renderBAStep() {
 
 function secToStr(sec) {
   return Math.floor(sec/60) + ':' + String(Math.floor(sec%60)).padStart(2,'0');
+}
+/* Beginner setup orientation for Brew-Along: shown only at step 1, before the timer starts. A first
+   pour-over is meaningless without "dripper on a zeroed scale"; experts/enthusiasts never see it. */
+function updateBAPrep() {
+  const el = document.getElementById('baPrep');
+  if (!el) return;
+  const show = settings.skill === 'beginner' && baActive && baIdx === 0 && (currentElapsedMs() || 0) < 100 && !baDoneFired;
+  if (!show) { el.hidden = true; return; }
+  const dose = document.getElementById('coffeeDose').value;
+  const doseStr = dose ? dose + ' g of' : 'your';
+  el.textContent = isImmersion(getSelectedMethod())
+    ? 'Before you tap Start: add ' + doseStr + ' grounds to the brewer, set it on your scale and zero (tare) it, water just off the boil.'
+    : 'Before you tap Start: rinse the paper filter with hot water, add ' + doseStr + ' grounds, then set the dripper on your scale and zero (tare) it. Water just off the boil.';
+  el.hidden = false;
 }
 function baNext() { dismissBAHint(true); if (baIdx < baSteps.length-1) { baIdx++; renderBAStep(); beep(660,0.15); vibrate(40); } }
 function baPrev() { dismissBAHint(true); if (baIdx > 0) { baIdx--; renderBAStep(); vibrate(20); } }
@@ -6082,6 +6100,7 @@ function updateTierPill() {
 
 /* ======= v10: THEATER, CELEBRATION, SWIPE ======= */
 function updateBATheater(sec) {
+  updateBAPrep();
   const C = 653.45;
   const fg = document.getElementById('baRingFg');
   if (baTotalSec > 0) {
