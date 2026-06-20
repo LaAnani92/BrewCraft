@@ -2054,7 +2054,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.124.0';
+const APP_VERSION = '2.125.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
@@ -4493,7 +4493,7 @@ function closeCompare() {
 function exportAllRecipes() {
   if (!recipes.length && !beanProfiles.length && !gearProfiles.length) { showToast('Nothing to export yet','warning'); return; }
   /* Full, restorable backup — recipes + bean profiles + gear setups (everything the user built). */
-  const bundle = { app: 'BrewCraft', type: 'brewcraft-backup', version: 2, exportedAt: new Date().toISOString(), recipes: recipes, beans: beanProfiles, gear: gearProfiles };
+  const bundle = { app: 'BrewCraft', type: 'brewcraft-backup', version: 3, exportedAt: new Date().toISOString(), recipes: recipes, beans: beanProfiles, gear: gearProfiles, tags: customTags };
   downloadJSON(bundle, 'brewcraft_backup.json');
   try { store.set('brewcraft_exported', new Date().toISOString()); } catch(e) {}
   renderBackupNudge();
@@ -4524,7 +4524,7 @@ function importRecipesFile(event) {
         recipes.unshift(r); added++;
       });
       /* Restore bean & gear profiles from a backup bundle — additive, dedupe by id (never overwrite). */
-      let beansAdded = 0, gearAdded = 0;
+      let beansAdded = 0, gearAdded = 0, tagsAdded = 0;
       if (data && Array.isArray(data.beans)) {
         data.beans.forEach(function(b) {
           if (!b || !b.id || beanProfiles.find(function(x) { return x.id === b.id; })) return;
@@ -4539,11 +4539,24 @@ function importRecipesFile(event) {
         });
         if (gearAdded) store.set('brewcraft_gear', JSON.stringify(gearProfiles));
       }
+      /* Restore the custom flavor-tag vocabulary (the user's personal tasting words) — additive, dedupe case-insensitively. */
+      if (data && Array.isArray(data.tags)) {
+        data.tags.forEach(function(t) {
+          const val = String(t || '').trim();
+          if (!val || customTags.some(function(x) { return String(x).toLowerCase() === val.toLowerCase(); })) return;
+          customTags.push(val); tagsAdded++;
+        });
+        if (tagsAdded) { store.set('brewcraft_tags', JSON.stringify(customTags)); if (typeof renderCustomTags === 'function') renderCustomTags(); }
+      }
       saveToStorage();
       renderLibrary();
       if ((beansAdded || gearAdded) && typeof renderProfileSelects === 'function') renderProfileSelects();
-      const extra = (beansAdded || gearAdded) ? ' (+' + beansAdded + ' bean' + (beansAdded !== 1 ? 's' : '') + ', ' + gearAdded + ' setup' + (gearAdded !== 1 ? 's' : '') + ')' : '';
-      showToast('Imported ' + added + ' recipe' + (added !== 1 ? 's' : '') + extra, (added || beansAdded || gearAdded) ? 'success' : 'warning');
+      const extras = [];
+      if (beansAdded) extras.push(beansAdded + ' bean' + (beansAdded !== 1 ? 's' : ''));
+      if (gearAdded) extras.push(gearAdded + ' setup' + (gearAdded !== 1 ? 's' : ''));
+      if (tagsAdded) extras.push(tagsAdded + ' tag' + (tagsAdded !== 1 ? 's' : ''));
+      const extra = extras.length ? ' (+' + extras.join(', ') + ')' : '';
+      showToast('Imported ' + added + ' recipe' + (added !== 1 ? 's' : '') + extra, (added || beansAdded || gearAdded || tagsAdded) ? 'success' : 'warning');
     } catch(err) { showToast('Invalid file format','warning'); }
   };
   reader.readAsText(file);

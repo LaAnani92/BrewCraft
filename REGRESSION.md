@@ -1033,3 +1033,9 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] Added one global guard `[hidden] { display:none !important; }` so the hidden attribute reliably wins over any flex/.btn display rule. Toggle behavior intact (hidden=false at completion → .btn display returns). Makes the 4 per-element patches redundant (left harmless)
 - [ ] npm run check green (2.124.0 synced); verified via preview: in an open Brew-Along, baRateBtn display:none + offsetParent null while hidden; updateBATheater completion → hidden=false → visible
 - [ ] Update toast after deploy (cache v2.124.0)
+
+## Sprint 137 (v2.125.0) — backup bundle includes the custom flavor-tag vocabulary
+- [ ] Product Strategist lens (data-ownership moat): exportAllRecipes bundled {recipes, beans, gear} and the toast claimed "everything the user built" — but the custom flavor-tag vocabulary (brewcraft_tags, v2.49 — flagged then as a follow-up) was omitted. A user who built personal tasting words loses that reusable chip set on restore / new device (recipes keep their flavorTags, but the vocabulary that re-appears for future brews is gone)
+- [ ] Export bundle now carries tags: customTags (schema version 2→3). importRecipesFile restores data.tags additively, case-insensitive dedupe → brewcraft_tags + renderCustomTags(). Toast rebuilt as a clean extras-join "(+N beans, M setups, K tags)". Old v2 bundles still import (tags absent = no-op)
+- [ ] npm run check green (2.125.0 synced); verified via preview: export bundle includes tags array; importRecipesFile with {tags:[...]} adds new tags (dedupes existing), persists brewcraft_tags, re-renders chips, toast shows tag count
+- [ ] Update toast after deploy (cache v2.125.0)
