@@ -978,3 +978,9 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] openCompare: gate the cmp-win mark on sameMethod ((a.method||'')===(b.method||'')). When methods differ AND a winner would otherwise have shown (both rated, ratings differ), reveal a caveat "Different brew methods — ratings aren't directly comparable, so no winner is marked." Same-method comparisons (the real dial-in use) keep the winner
 - [ ] npm run check green (2.115.0 synced); verified via preview: same-method 5★ vs 4★ → winner ✓ on higher + caveat hidden; cross-method 5★ vs 4★ → NO winner + caveat shown; same-method equal ratings → no winner, no caveat
 - [ ] Update toast after deploy (cache v2.115.0)
+
+## Sprint 128 (v2.116.0) — keyless recipe suggester factors roast level
+- [ ] AI Product lens: the AI suggester is bean+freshness+skill+goal aware, and ruleSuggest (keyless) gives a real attributed starting point (QUICK_RECIPES base + goal tweak). But ruleSuggest ignored the logged roast level — the one bean fact a rule engine can use. A keyless user with a dark roast got a suggestion that could brew too hot (bitter); the AI path already factored roastLevel
+- [ ] ruleSuggest now takes roastLevel: dark/medium-dark → tempC −2 + rationale "Cooler water suits the darker roast"; light/light-medium → tempC +2 + "Hotter water helps extract the lighter roast"; medium unchanged. Temp only (no grind) to avoid compounding with the goal tweak; clamped 80–100. Both runSuggest callers pass d.roastLevel
+- [ ] npm run check green (2.116.0 synced); verified via preview: ruleSuggest(V60, Balanced, 'Dark') temp 2 below the Medium baseline + dark rationale; 'Light' 2 above + light rationale; 'Medium' baseline; 'Medium-Dark'/'Light-Medium' match dark/light; clamped
+- [ ] Update toast after deploy (cache v2.116.0)

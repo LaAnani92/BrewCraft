@@ -2051,7 +2051,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.115.0';
+const APP_VERSION = '2.116.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
@@ -3659,7 +3659,7 @@ const SUGGEST_GOALS = ['Balanced', 'Brighter', 'Sweeter', 'Stronger'];
 const GRIND_ORDER = ['extra fine', 'espresso-fine', 'fine', 'medium-fine', 'medium', 'medium-coarse', 'coarse', 'extra coarse'];
 function coarserStep(g) { const i = GRIND_ORDER.indexOf((g || 'medium').toLowerCase()); return (i >= 0 && i < GRIND_ORDER.length - 1) ? GRIND_ORDER[i + 1] : (g || 'medium'); }
 function finerStep(g) { const i = GRIND_ORDER.indexOf((g || 'medium').toLowerCase()); return i > 0 ? GRIND_ORDER[i - 1] : (g || 'medium'); }
-function ruleSuggest(method, goal) {
+function ruleSuggest(method, goal, roastLevel) {
   const base = (QUICK_RECIPES[method] && QUICK_RECIPES[method][0]) || { doseG: 15, ratio: 16.5, tempC: 93, grind: 'medium-fine' };
   const isEsp = method === 'Espresso';
   const s = { doseG: base.doseG, ratio: base.ratio, tempC: base.tempC, grind: base.grind, espYield: base.espYield, espShot: base.espShot, rationale: '' };
@@ -3679,6 +3679,11 @@ function ruleSuggest(method, goal) {
   } else {
     s.rationale = 'A balanced, forgiving starting point for this method.';
   }
+  // Roast level shifts the extraction baseline — the one bean fact the keyless coach can use: dark roasts
+  // are more soluble (cooler water avoids bitterness), light roasts are dense (hotter helps extract).
+  const rl = (roastLevel || '').toLowerCase();
+  if (rl.indexOf('dark') !== -1) { s.tempC = Math.max(80, s.tempC - 2); s.rationale += ' Cooler water suits the darker roast.'; }
+  else if (rl.indexOf('light') !== -1) { s.tempC = Math.min(100, s.tempC + 2); s.rationale += ' Hotter water helps extract the lighter roast.'; }
   if (isEsp) { s.espYield = Math.round((parseFloat(s.doseG) || 18) * s.ratio); s.espShot = base.espShot || 28; }
   return s;
 }
@@ -3724,7 +3729,7 @@ async function runSuggest(goal) {
       '<span class="src">' + srcNote + '</span>';
   };
   if (!aiHasKey()) {
-    renderResult(ruleSuggest(method, goal), 'Built-in starting point (from a trusted recipe for this method). <button type="button" class="link-btn" onclick="openSettingsToKey()">Add an API key</button> for a suggestion tuned to your exact bean.');
+    renderResult(ruleSuggest(method, goal, d.roastLevel), 'Built-in starting point (from a trusted recipe for this method). <button type="button" class="link-btn" onclick="openSettingsToKey()">Add an API key</button> for a suggestion tuned to your exact bean.');
     return;
   }
   panel.innerHTML = aiThinking('Starting point \u00b7 ' + escapeHtml(goal), 'Thinking about your ' + escapeHtml(method));
@@ -3742,7 +3747,7 @@ async function runSuggest(goal) {
     if (s.espShot) s.espShot = parseFloat(s.espShot);
     renderResult(s, 'AI \u00b7 ' + escapeHtml(settings.model || 'claude-sonnet-4-6') + ' \u00b7 tuned to your bean & goal');
   } catch(e) {
-    renderResult(ruleSuggest(method, goal), 'AI unavailable (' + escapeHtml(aiErrorHint(e)) + ') \u2014 showing a trusted built-in starting point instead.');
+    renderResult(ruleSuggest(method, goal, d.roastLevel), 'AI unavailable (' + escapeHtml(aiErrorHint(e)) + ') \u2014 showing a trusted built-in starting point instead.');
   }
 }
 function applySuggestion() {
