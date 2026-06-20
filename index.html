@@ -1174,7 +1174,7 @@
       <div class="field-hint simple-only" style="margin:6px 0 18px">Ratio = grams of water per gram of coffee. Example: 15g coffee at 1:16 → 240g water.</div>
 
       <div class="field-grid" id="espressoFields" style="display:none;margin-bottom:22px">
-        <div class="field"><label>Yield Out <span class="unit">(g)</span></label><input type="number" inputmode="decimal" enterkeyhint="done" id="espYield" placeholder="e.g., 36" step="0.1" min="0" oninput="markDirty()"></div>
+        <div class="field"><label>Yield Out <span class="unit">(g)</span></label><input type="number" inputmode="decimal" enterkeyhint="done" id="espYield" placeholder="e.g., 36" step="0.1" min="0" oninput="markDirty();calcEspExtraction()"></div>
         <div class="field"><label>Shot Time <span class="unit">(s)</span></label><input type="number" inputmode="decimal" enterkeyhint="done" id="espShotTime" placeholder="e.g., 28" step="1" min="0" oninput="markDirty()"><div class="field-hint">Typical: 25-32s</div></div>
         <div class="field pro-only"><label>Pressure <span class="unit">(bar)</span></label><input type="number" inputmode="decimal" enterkeyhint="done" id="espPressure" placeholder="e.g., 9" step="0.1" min="0" oninput="markDirty()"><div class="field-hint">Typical: ~9 bar</div></div>
         <div class="field pro-only"><label>Pre-infusion <span class="unit">(s)</span></label><input type="number" inputmode="decimal" enterkeyhint="done" id="espPreinfusion" placeholder="e.g., 5" step="1" min="0" oninput="markDirty()"></div>
@@ -1545,6 +1545,10 @@
     </div>
     <div class="section-body">
       <div class="field-grid">
+        <div class="field" id="espExtractField" style="display:none">
+          <label>Brew ratio <span class="unit">— yield &divide; dose</span></label>
+          <div class="computed" id="espExtractOut">—</div>
+        </div>
         <div class="field"><label>Total Brew Time <span class="unit">(mm:ss)</span></label><input type="text" id="totalBrewTime" placeholder="e.g., 3:30" oninput="markDirty()"></div>
         <div class="field"><label>Beverage Weight <span class="unit">(g)</span></label><input type="number" inputmode="decimal" enterkeyhint="done" id="beverageWeight" placeholder="e.g., 225" step="0.1" oninput="calcExtraction()"></div>
         <div class="field pro-only"><label>TDS of Brew <span class="unit">(%) refractometer</span></label><input type="number" inputmode="decimal" enterkeyhint="done" id="brewTDS" placeholder="e.g., 1.35" step="0.01" min="0" max="5" oninput="calcExtraction()"></div>
@@ -2091,7 +2095,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.134.0';
+const APP_VERSION = '2.135.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
@@ -2737,6 +2741,7 @@ function toggleEspressoFields() {
   document.getElementById('espressoFields').style.display = isEsp ? 'grid' : 'none';
   const pours = document.getElementById('sec-pours');
   if (pours) pours.style.display = isEsp ? 'none' : '';
+  calcEspExtraction();
 }
 
 /* ======= BIDIRECTIONAL RATIO ======= */
@@ -2768,7 +2773,30 @@ function recalcFromWater() {
   if (dose > 0 && water > 0) document.getElementById('brewRatio').value = +(water/dose).toFixed(1);
   afterRecalc(); _recalcLock = false;
 }
-function afterRecalc() { updatePourTotals(); calcExtraction(); markDirty(); renderAllScrubbers(); }
+function afterRecalc() { updatePourTotals(); calcExtraction(); calcEspExtraction(); markDirty(); renderAllScrubbers(); }
+/* Espresso's extraction proxy is its brew ratio (yield ÷ dose), not the filter EY% bar — espresso
+   pours into espYield, leaving beverageWeight empty so computeEY is dark. Ratio needs no refractometer
+   and names the shot style (ristretto/normale/lungo). Espresso-only; the 18–22% filter band stays
+   filter-only since espresso EY (espYield≠beverageWeight; TDS 8–12%) is a different, contested scale. */
+function calcEspExtraction() {
+  const field = document.getElementById('espExtractField');
+  if (!field) return;
+  if (getSelectedMethod() !== 'Espresso') { field.style.display = 'none'; return; }
+  field.style.display = '';
+  const dose = parseFloat(document.getElementById('coffeeDose').value) || 0;
+  const yld = parseFloat(document.getElementById('espYield').value) || 0;
+  const out = document.getElementById('espExtractOut');
+  if (dose > 0 && yld > 0) {
+    const ratio = yld / dose;
+    let style;
+    if (ratio < 1.6) style = 'ristretto';
+    else if (ratio <= 2.4) style = 'normale';
+    else style = 'lungo';
+    out.textContent = '1:' + ratio.toFixed(1) + '  ·  ' + style;
+  } else {
+    out.textContent = '—';
+  }
+}
 
 /* ======= EXTRACTION ======= */
 function computeEY(r) {
