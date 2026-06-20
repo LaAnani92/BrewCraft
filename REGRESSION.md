@@ -996,3 +996,9 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] Added role="timer" + aria-live="off" to both #timerDisplay and #baTimer: correct ARIA for an elapsed-time counter + a hard no-announce guarantee (role=timer's implicit aria-live is off; explicit off defends against any SR/heuristic). No aria-labelledby (would risk hiding the value); the adjacent "Elapsed Time" label still gives context. Value text + tick logic unchanged
 - [ ] npm run check green (2.118.0 synced); verified via preview both timers have role=timer + aria-live=off and still update their text on tick
 - [ ] Update toast after deploy (cache v2.118.0)
+
+## Sprint 131 (v2.119.0) — share-link visitor isn't buried under onboarding
+- [ ] Product Strategist lens (growth loop): a brand-new visitor opening a #r= share link hit BOTH showOnboarding() (welcome wizard) AND checkHashImport() ("Recipe received" modal) on the same load — a confusing double-modal that wastes the invite. The recipe is why they came; it should be the clean first moment
+- [ ] init: compute hasShareLink (#r= in hash); suppress showOnboarding when a share link is present (and don't mark onboarded in that case, so a later plain visit can still greet them). Non-link loads unchanged (fresh → onboarding; returning → mark onboarded). checkHashImport then shows the import modal alone
+- [ ] npm run check green (2.119.0 synced); verified via preview: cleared storage + #r= link + reload → import modal shown, onboarding overlay NOT shown; control (cleared storage, no link, reload) → onboarding shown
+- [ ] Update toast after deploy (cache v2.119.0)
