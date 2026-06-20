@@ -569,6 +569,10 @@
   .taste-gloss { margin:6px 0 2px; padding:0; list-style:none; font-size:12px; color:var(--text-secondary); line-height:1.55; }
   .taste-gloss li { margin:0 0 5px; }
   .taste-gloss strong { color:var(--text-primary); font-weight:600; }
+  /* Beginner-only warm lead on the dial-in result — the advice body is dense expert coaching; this
+     one calm line normalizes iteration at the payoff moment so the jargon wall doesn't read as "you
+     failed". Gated to skill-beginner in JS, so experts/enthusiasts get the precise advice unsoftened. */
+  .dialin-warmlead { display:block; font-size:12.5px; color:var(--text-secondary); line-height:1.5; margin:0 0 11px; padding:8px 11px; background:var(--accent-glow); border-radius:8px; }
   /* Beginner-only one-line character note for the selected brew method — orients a newcomer who
      doesn't yet know V60 from Origami. Experts/enthusiasts see nothing. */
   .method-blurb { display:none; font-size:12px; line-height:1.5; color:var(--text-secondary); margin:8px 2px 2px; }
@@ -2095,7 +2099,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.136.0';
+const APP_VERSION = '2.137.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
@@ -3598,6 +3602,7 @@ async function getDialinAdvice() {
     }
     if (hist.length) txt += '\n\nIteration memory: ' + hist[0];
     outEl.textContent = txt;
+    if (settings.skill === 'beginner') outEl.insertAdjacentHTML('afterbegin', '<span class="dialin-warmlead">Dialing in is normal — nobody nails it first try. Make one small change, taste again, and the difference starts to show.</span>');
     outEl.innerHTML += '<span class="src">Built-in expert rules (extraction compass). <button type="button" class="link-btn" onclick="openSettingsToKey()">Add an API key</button> (gear icon, top right) for AI analysis of your exact recipe.</span>';
     outEl.classList.add('show');
     document.getElementById('dialinNext').style.display = 'block';
