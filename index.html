@@ -1783,9 +1783,9 @@
     <div class="section-body">
       <div class="field-grid field-grid-2">
         <div class="field">
-          <label>Anthropic API Key <span class="unit">(enables AI dial-in)</span></label>
-          <input type="password" id="labApiKey" placeholder="sk-ant-…" oninput="persistSettings()">
-          <div class="field-hint">Stored only in this browser. Get one at console.anthropic.com. Without a key, the assistant uses built-in expert rules.</div>
+          <label>Anthropic API Key <span class="unit">(enables AI dial-in)</span> <button type="button" class="link-btn" id="apiKeyToggle" onclick="toggleApiKeyVisible()" aria-pressed="false" style="margin-left:auto;text-transform:none;letter-spacing:0;font-size:12px">Show</button></label>
+          <input type="password" id="labApiKey" placeholder="sk-ant-…" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" oninput="persistSettings()">
+          <div class="field-hint">Stored only in this browser. Get one at console.anthropic.com — tap Show to check it pasted correctly. Without a key, the assistant uses built-in expert rules.</div>
         </div>
         <div class="field">
           <label>AI Model</label>
@@ -2050,7 +2050,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.110.0';
+const APP_VERSION = '2.111.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
@@ -5795,6 +5795,16 @@ function openSettingsToKey() {
     const k = document.getElementById('labApiKey');
     if (k) { k.scrollIntoView({ block: 'center' }); k.focus(); }
   }, 120);
+}
+/* The API key is a long opaque string pasted on a phone — let the user reveal it to confirm the paste
+   landed (a truncated paste otherwise drops them silently onto the keyless path). Default stays masked. */
+function toggleApiKeyVisible() {
+  const inp = document.getElementById('labApiKey');
+  const btn = document.getElementById('apiKeyToggle');
+  if (!inp) return;
+  const reveal = inp.type === 'password';
+  inp.type = reveal ? 'text' : 'password';
+  if (btn) { btn.textContent = reveal ? 'Hide' : 'Show'; btn.setAttribute('aria-pressed', String(reveal)); }
 }
 /* Open Settings straight to the experience-level picker — from the header tier pill. */
 function openSettingsToSkill() {

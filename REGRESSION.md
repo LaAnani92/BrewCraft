@@ -948,3 +948,9 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] getDialinAdvice keyless branch: when !issues.length && notes, returns an honest line — "The built-in coach reads the taste chips, not written notes — tap the one closest to your cup above. Adding an API key brings in AI that can read your description." Also reworded ruleDialIn's empty fallback to drop the misleading "or describe the cup": "Tap the taste chip closest to your cup above — the built-in coach works from those." (covers the AI-failed catch path too)
 - [ ] npm run check green (2.110.0 synced); verified via preview: keyless + notes-only → honest chips message; keyless + a chip → normal advice; ruleDialIn([]) → new fallback wording
 - [ ] Update toast after deploy (cache v2.110.0)
+
+## Sprint 123 (v2.111.0) — API key field has a show/hide to verify the paste
+- [ ] Mobile Kitchen UX lens: the Anthropic API key field (labApiKey) was type=password with no reveal and no verify. On a phone you paste a 100+ char sk-ant-… key into a masked box and can't confirm it landed — a truncated/fumbled paste silently leaves you on the keyless path, discovered only later via an AI error on another screen. This single step gates EVERY AI feature
+- [ ] Added a right-aligned "Show"/"Hide" link-btn (margin-left:auto in the flex label) → toggleApiKeyVisible() flips input.type password<->text + aria-pressed; default stays masked. Hardened the input: autocomplete/autocapitalize/autocorrect=off + spellcheck=false (so revealed text isn't mangled by the mobile keyboard, and it isn't captured as a login password). Hint now says "tap Show to check it pasted correctly"
+- [ ] npm run check green (2.111.0 synced); verified via preview: toggle flips type to text + label Hide + aria-pressed true, back to password + Show; input carries autocapitalize/autocorrect/spellcheck off
+- [ ] Update toast after deploy (cache v2.111.0)
