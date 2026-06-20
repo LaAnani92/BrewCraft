@@ -573,6 +573,14 @@
      one calm line normalizes iteration at the payoff moment so the jargon wall doesn't read as "you
      failed". Gated to skill-beginner in JS, so experts/enthusiasts get the precise advice unsoftened. */
   .dialin-warmlead { display:block; font-size:12.5px; color:var(--text-secondary); line-height:1.5; margin:0 0 11px; padding:8px 11px; background:var(--accent-glow); border-radius:8px; }
+  /* Carry the dial-in advice to the editing surface — "Start the next version" sends the user to the
+     params (the grinder), but the advice it acted on lives on the Taste tab. A read-only reminder so a
+     one-handed brewer doesn't have to tab back mid-adjust. Read-only by design (no auto-Apply). */
+  .dialin-carry { margin:0 0 14px; padding:10px 12px; background:var(--accent-glow); border:1px solid rgba(200,150,108,0.3); border-radius:10px; }
+  .carry-head { display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:6px; }
+  .carry-head strong { font-size:11px; text-transform:uppercase; letter-spacing:0.05em; color:var(--accent-bright); }
+  .carry-dismiss { background:none; border:none; color:var(--text-secondary); font-size:20px; line-height:1; cursor:pointer; padding:0; min-width:32px; min-height:32px; display:flex; align-items:center; justify-content:center; }
+  .carry-body { font-size:12.5px; color:var(--text-secondary); line-height:1.55; white-space:pre-wrap; max-height:170px; overflow-y:auto; }
   /* Beginner-only one-line character note for the selected brew method — orients a newcomer who
      doesn't yet know V60 from Origami. Experts/enthusiasts see nothing. */
   .method-blurb { display:none; font-size:12px; line-height:1.5; color:var(--text-secondary); margin:8px 2px 2px; }
@@ -1112,6 +1120,7 @@
       <div class="section-toggle"><svg class="ico"><use href="#i-chev-down"/></svg></div>
     </div>
     <div class="section-body">
+      <div class="dialin-carry" id="dialinCarry" style="display:none"></div>
       <div class="qrec-wrap" id="quickRecipesWrap" hidden>
         <div class="qrec-label">Quick recipes <span class="qrec-label-sub">· tap to load</span></div>
         <div class="qrec-rail" id="quickRecipes"></div>
@@ -2099,7 +2108,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.137.0';
+const APP_VERSION = '2.138.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
@@ -3576,6 +3585,24 @@ function scrollDialinIntoView() {
   const el = document.getElementById('dialinOut');
   if (el && typeof el.scrollIntoView === 'function') { try { el.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); } catch(e) { el.scrollIntoView(); } }
 }
+/* The last dial-in advice, stashed so "Start the next version" can carry a read-only reminder to the
+   Brew Parameters surface (the grinder). One-shot: consumed when shown so a later manual Brew Again
+   won't resurface stale advice. */
+let _carryAdvice = '';
+function showDialinCarry() {
+  const el = document.getElementById('dialinCarry');
+  if (!el) return;
+  if (!_carryAdvice) { el.style.display = 'none'; el.innerHTML = ''; return; }
+  el.innerHTML = '<div class="carry-head"><strong>From your dial-in</strong>' +
+    '<button type="button" class="carry-dismiss" aria-label="Dismiss this dial-in note" onclick="dismissDialinCarry()">×</button></div>' +
+    '<div class="carry-body">' + escapeHtml(_carryAdvice) + '</div>';
+  el.style.display = 'block';
+  _carryAdvice = '';
+}
+function dismissDialinCarry() {
+  const el = document.getElementById('dialinCarry');
+  if (el) { el.style.display = 'none'; el.innerHTML = ''; }
+}
 async function getDialinAdvice() {
   const issues = getSelectedIssues();
   const notes = document.getElementById('dialinNotes').value.trim();
@@ -3590,6 +3617,7 @@ async function getDialinAdvice() {
     let txt = (!issues.length && notes)
       ? 'The built-in coach reads the taste chips, not written notes — tap the one closest to your cup above. Adding an API key brings in AI that can read your description.'
       : ruleDialIn(issues);
+    _carryAdvice = issues.length ? txt : '';
     if (hist.length && hist[0].indexOf('worse') !== -1) {
       // Don't imply a single cause when the last version changed several things \u2014 count the diffs so the
       // heads-up is accurate and coaches one-variable-at-a-time (clean attribution).
@@ -3641,6 +3669,7 @@ async function getDialinAdvice() {
     const dataResp = await resp.json();
     const text = (dataResp.content || []).filter(function(b2) { return b2.type === 'text'; }).map(function(b2) { return b2.text; }).join('\n').trim();
     if (!text) throw new Error('empty response');
+    _carryAdvice = text;
     outEl.textContent = text;
     outEl.innerHTML += '<span class="src">AI analysis \u00b7 ' + escapeHtml(settings.model) + (hist.length ? ' \u00b7 informed by ' + hist.length + ' past iteration' + (hist.length > 1 ? 's' : '') : '') + '</span>';
   } catch(e) {
@@ -4090,6 +4119,7 @@ function gatherRecipeData() {
 }
 function loadRecipeData(r) {
   r = r || {};
+  dismissDialinCarry();
   document.getElementById('recipeName').value = r.name || '';
   syncHeaderName();
   setMethod(r.method || 'V60');
@@ -4232,6 +4262,7 @@ function brewAgain() {
   // a parameter. Land them in the lever zone (dose/ratio/grind/temp) so the editing surface is in view.
   const params = document.getElementById('sec-params');
   if (params && typeof params.scrollIntoView === 'function') { try { params.scrollIntoView({ behavior: 'smooth', block: 'start' }); } catch(e) { params.scrollIntoView(); } }
+  showDialinCarry();
 }
 
 /* ======= CRUD ======= */
