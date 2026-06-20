@@ -2046,7 +2046,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.101.0';
+const APP_VERSION = '2.102.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
@@ -4894,6 +4894,7 @@ function scrubberValueText(field, val) {
   if (field === 'coffeeDose') return val + ' grams';
   if (field === 'brewRatio') return '1 to ' + val;
   if (field === 'waterTemp') return val + (settings.tempUnit === 'F' ? ' degrees Fahrenheit' : ' degrees Celsius');
+  if (field === 'totalWater') return val + ' grams';
   return String(val);
 }
 function renderScrubber(field) {

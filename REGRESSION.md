@@ -893,3 +893,9 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] Split the else by recent avg (a2): >= 4.0 affirms earned consistency ("consistency at this level is its own kind of mastery"); < 4.0 stays warm but points forward ("solid and repeatable — nudge one variable in the Dial-In Assistant to climb higher"). 4.0 matches the app's own 4★-is-a-keeper line (v2.58 praise nudge). Copy + one threshold, no new UI, same data
 - [ ] npm run check green (2.101.0 synced); verified via preview: stubbed recipes with recent avg 4.0 → mastery line; 3.0 → climb-higher line; both only when |recent-prior|<0.3 and >=4 rated
 - [ ] Update toast after deploy (cache v2.101.0)
+
+## Sprint 114 (v2.102.0) — total-water dial announces its unit to screen readers
+- [ ] Accessibility lens (precision scrubber dials): the dials are otherwise strong (role=slider, tabindex 0, aria-valuemin/max + valuenow + valuetext, arrow/Shift/Home keys, visible .ruler:focus-visible ring, type-exact via the native .scrub-num input). But scrubberValueText gave totalWater the bare-number default ("250") while dose says "15 grams", temp "93 degrees Celsius", ratio "1 to 16" — a SR user adjusting the water dial heard a unitless number
+- [ ] Added `if (field === 'totalWater') return val + ' grams';` so all four dials announce a complete value. App is gram-native (ounces flagged-against), so the unit is always correct. aria-valuetext only; no behaviour/visual change
+- [ ] npm run check green (2.102.0 synced); verified via preview: ruler[data-field=totalWater] aria-valuetext now reads "<n> grams"; dose/ratio/temp valuetext unchanged
+- [ ] Update toast after deploy (cache v2.102.0)
