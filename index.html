@@ -1912,6 +1912,7 @@
   <div class="modal" style="max-width:640px">
     <h3>Recipe Comparison</h3>
     <div style="overflow-x:auto"><table class="compare-table" id="compareTable"><thead id="compareHead"></thead><tbody id="compareBody"></tbody></table></div>
+    <div class="field-hint" id="compareCaveat" hidden style="margin:-4px 0 12px">Different brew methods — ratings aren't directly comparable, so no winner is marked.</div>
     <div class="modal-actions">
       <button class="btn btn-secondary" onclick="closeCompare()">Close</button>
     </div>
@@ -2050,7 +2051,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.114.0';
+const APP_VERSION = '2.115.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
@@ -4419,10 +4420,13 @@ function openCompare(idA, idB) {
   const htr = document.createElement('tr');
   // The comparison's whole point is "which was better" — mark the higher-rated cup's column.
   const rA = a.rating || 0, rB = b.rating || 0;
+  // A "rated higher" winner only means something when the two cups are the same kind of brew — a 5-star
+  // espresso isn't "better than" a 4-star V60. Only crown a winner for same-method comparisons.
+  const sameMethod = (a.method || '') === (b.method || '');
   ['', a.name || 'Untitled', b.name || 'Untitled'].forEach(function(t, i) {
     const th = document.createElement('th');
     th.textContent = t;
-    if (rA && rB && rA !== rB && ((i === 1 && rA > rB) || (i === 2 && rB > rA))) {
+    if (sameMethod && rA && rB && rA !== rB && ((i === 1 && rA > rB) || (i === 2 && rB > rA))) {
       th.classList.add('cmp-win');
       th.title = 'Rated higher (' + Math.max(rA, rB) + '★ vs ' + Math.min(rA, rB) + '★)';
       const mark = document.createElement('span'); mark.setAttribute('aria-hidden', 'true'); mark.textContent = ' ✓';
@@ -4440,6 +4444,9 @@ function openCompare(idA, idB) {
   addRow('Brew time', a.totalBrewTime || '\u2014', b.totalBrewTime || '\u2014');
   addRow('Rating', a.rating ? a.rating + '/5' : '\u2014', b.rating ? b.rating + '/5' : '\u2014');
   addRow('Tags', (a.flavorTags||[]).join(', ') || '\u2014', (b.flavorTags||[]).join(', ') || '\u2014');
+  // Explain the missing winner mark when methods differ (and a winner would otherwise have shown).
+  const caveat = document.getElementById('compareCaveat');
+  if (caveat) caveat.hidden = !(!sameMethod && rA && rB && rA !== rB);
   document.getElementById('compareModal').classList.add('show');
 }
 function closeCompare() {

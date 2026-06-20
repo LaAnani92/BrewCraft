@@ -972,3 +972,9 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] enterBrewAlong empty-steps guard: if totalWater>0 and pour cards exist, show an action-toast "No pour weights yet — split the water into even pours?" with an "Auto-distribute" button → autoDistributePours() then re-enters Brew-Along. If no water, plain "Add a dose, water, and pour weights first". Reuses existing fns; no new storage
 - [ ] npm run check green (2.114.0 synced); verified via preview: water set + empty weights → action toast, overlay NOT shown; tapping Auto-distribute fills weights + opens the overlay; water=0 + empty → plain toast, no auto-distribute offer
 - [ ] Update toast after deploy (cache v2.114.0)
+
+## Sprint 127 (v2.115.0) — Compare winner only crowns same-method cups
+- [ ] Advanced Coffee User lens (Compare): the feature is comprehensive (2-tap select, all DIFF_FIELDS + Extraction % + Brew time + Rating + Tags, diff highlight, winner mark, SR-accessible). But the "✓ rated higher" winner fired even across different methods — declaring a 5★ espresso the winner over a 4★ V60 is apples-to-oranges; ratings across drink categories aren't comparable
+- [ ] openCompare: gate the cmp-win mark on sameMethod ((a.method||'')===(b.method||'')). When methods differ AND a winner would otherwise have shown (both rated, ratings differ), reveal a caveat "Different brew methods — ratings aren't directly comparable, so no winner is marked." Same-method comparisons (the real dial-in use) keep the winner
+- [ ] npm run check green (2.115.0 synced); verified via preview: same-method 5★ vs 4★ → winner ✓ on higher + caveat hidden; cross-method 5★ vs 4★ → NO winner + caveat shown; same-method equal ratings → no winner, no caveat
+- [ ] Update toast after deploy (cache v2.115.0)
