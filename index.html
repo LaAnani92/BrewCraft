@@ -1418,7 +1418,10 @@
           <div class="field-hint" style="margin-bottom:7px">An off cup is the most useful one: it shows exactly what to nudge next.</div>
           <button class="btn btn-sm btn-secondary" onclick="openDialinFromNudge()">Not quite right? Get dial-in advice</button>
         </div>
-        <div id="ratingPraise" class="field-hint" style="display:none;margin-top:10px">A keeper: it's saved, and ready to brew again whenever.</div>
+        <div id="ratingPraise" style="display:none;margin-top:10px">
+          <div class="field-hint" style="margin-bottom:7px">A keeper: it's saved, and ready to brew again whenever.</div>
+          <button class="btn btn-sm btn-secondary" onclick="shareFromPraise()">Loved it? Send this recipe to a friend</button>
+        </div>
       </div>
       <div style="margin-bottom:20px">
         <span class="eval-label">Flavor Descriptors <span style="font-weight:400;color:var(--text-muted);text-transform:none;letter-spacing:0">(tap to toggle)</span></span>
@@ -2046,7 +2049,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.102.0';
+const APP_VERSION = '2.103.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
@@ -4506,6 +4509,19 @@ async function nativeShare() {
   if (isHosted()) { opts.text = 'Open this coffee recipe in BrewCraft:'; opts.url = makeShareLink(code); }
   else { opts.text = 'BrewCraft recipe code for "' + (r.name || 'Untitled') + '" \u2014 paste it in Share \u2192 Receive a recipe:\n\n' + code; }
   try { await navigator.share(opts); } catch(e) {}
+}
+/* Surface the share loop at the emotional peak: a 4-5★ rating is when the user is proudest and
+   most likely to pass a recipe on. Build the share code for the just-rated recipe, then take the
+   lowest-friction path — the native share sheet on mobile, a copied link on a hosted desktop, or
+   the Share section as a fallback (local file:// can't make a tappable link). */
+function shareFromPraise() {
+  refreshSharePanel();
+  if (navigator.share) { nativeShare(); return; }
+  if (isHosted()) { copyShareLink(); return; }
+  if (typeof switchTab === 'function') switchTab('recipe');
+  const sec = document.getElementById('sec-sharehub');
+  if (sec && sec.classList.contains('collapsed') && typeof toggleSection === 'function') toggleSection('sec-sharehub');
+  if (sec && typeof sec.scrollIntoView === 'function') { try { sec.scrollIntoView({ behavior: 'smooth', block: 'start' }); } catch(e) { sec.scrollIntoView(); } }
 }
 function toggleQR() {
   const wrap = document.getElementById('qrWrap');

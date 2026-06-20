@@ -899,3 +899,9 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] Added `if (field === 'totalWater') return val + ' grams';` so all four dials announce a complete value. App is gram-native (ounces flagged-against), so the unit is always correct. aria-valuetext only; no behaviour/visual change
 - [ ] npm run check green (2.102.0 synced); verified via preview: ruler[data-field=totalWater] aria-valuetext now reads "<n> grams"; dose/ratio/temp valuetext unchanged
 - [ ] Update toast after deploy (cache v2.102.0)
+
+## Sprint 115 (v2.103.0) — share loop surfaces at the rating peak
+- [ ] Product Strategist lens (share/growth loop): the recipient side is polished (preview card v2.83, warm hand-off v2.43), but the SENDER had no reason/moment to share — sharing lived only in the collapsed Share & Receive section. Asymmetry: the off cup (#ratingNudge, v<=3) offered a next action ("Get dial-in advice"), the great cup (#ratingPraise, v>=4) was a dead-end compliment at the exact moment the user is proudest and most likely to pass a recipe on
+- [ ] Restructured #ratingPraise to mirror the nudge (hint line + btn-sm) and added shareFromPraise(): builds the share code via refreshSharePanel() then takes the lowest-friction path — navigator.share (native sheet, mobile) → copyShareLink (hosted desktop) → expand+scroll the Share section (local file://). Reuses existing share fns; no new storage, no clutter (only shows at >=4 stars)
+- [ ] npm run check green (2.103.0 synced); verified via preview: praise box shows the button at 5 stars / hidden at <=3; shareFromPraise with navigator.share stubbed builds a #r= link and calls the native sheet
+- [ ] Update toast after deploy (cache v2.103.0)
