@@ -887,3 +887,9 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] Tightened the Sour/Bitter clauses ("usually means…—" → "= …,") to make room, then added a third axis: "Weak & watery = too little coffee, not grind." Copy-only, beginner-scoped (.dialin-coach-hint is display:none except body.skill-beginner); chips/advice/engine unchanged. Net length ~unchanged
 - [ ] npm run check green (2.100.0 synced; version intentionally 2.100.0 not 3.0.0 per the no-"v3.0" directive); verified via preview the hint shows the Weak clause under skill-beginner and stays hidden for expert
 - [ ] Update toast after deploy (cache v2.100.0)
+
+## Sprint 113 (v2.101.0) — the "holding steady" insight reads the plateau's level
+- [ ] Emotional Design lens: renderInsights celebrates an upswing ("the dial-in is working") and routes a dip to the Dial-In Assistant, but the plateau branch just stated a number ("Holding steady around X★ across N brews."). Same flat line whether stuck low (deflating, no path) or steady high (a missed affirmation)
+- [ ] Split the else by recent avg (a2): >= 4.0 affirms earned consistency ("consistency at this level is its own kind of mastery"); < 4.0 stays warm but points forward ("solid and repeatable — nudge one variable in the Dial-In Assistant to climb higher"). 4.0 matches the app's own 4★-is-a-keeper line (v2.58 praise nudge). Copy + one threshold, no new UI, same data
+- [ ] npm run check green (2.101.0 synced); verified via preview: stubbed recipes with recent avg 4.0 → mastery line; 3.0 → climb-higher line; both only when |recent-prior|<0.3 and >=4 rated
+- [ ] Update toast after deploy (cache v2.101.0)

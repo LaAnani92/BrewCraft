@@ -2046,7 +2046,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.100.0';
+const APP_VERSION = '2.101.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
@@ -4792,7 +4792,8 @@ function renderInsights() {
     const a1 = avg(prior), a2 = avg(recent), d = a2 - a1;
     if (d >= 0.3) chips.push('Trending up: your last 3 brews average <strong>' + a2.toFixed(1) + '\u2605</strong> vs ' + a1.toFixed(1) + '\u2605 before \u2014 the dial-in is working.');
     else if (d <= -0.3) chips.push('Recent dip: last 3 brews average <strong>' + a2.toFixed(1) + '\u2605</strong> vs ' + a1.toFixed(1) + '\u2605 before. Check the Dial-In Assistant\u2019s iteration history.');
-    else chips.push('Holding steady around <strong>' + a2.toFixed(1) + '\u2605</strong> across ' + rated.length + ' rated brews.');
+    else if (a2 >= 4.0) chips.push('Holding steady around <strong>' + a2.toFixed(1) + '\u2605</strong> across ' + rated.length + ' rated brews \u2014 consistency at this level is its own kind of mastery.');
+    else chips.push('Holding steady around <strong>' + a2.toFixed(1) + '\u2605</strong> across ' + rated.length + ' rated brews \u2014 solid and repeatable. Nudge one variable in the Dial-In Assistant to climb higher.');
   }
   const byOrigin = {};
   rated.forEach(function(r) {
