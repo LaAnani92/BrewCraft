@@ -2091,7 +2091,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.133.0';
+const APP_VERSION = '2.134.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
@@ -4725,6 +4725,16 @@ function importFromCode() {
 function addImportedRecipe(raw) {
   const r = normalizeRecipe(raw);
   if (!r) { showToast('Invalid recipe data','warning'); return; }
+  // A shared recipe is a plan to brew, not a log entry. The sender's measured results, cupping scores,
+  // tasting tags, roast date, and device-local bean link are theirs — clearing them keeps the
+  // recipient's Journal/Insights honest (only cups they actually brew). The sender's rating already
+  // showed in the import preview as social proof. Brew params, pours, notes, bean descriptors carry over.
+  r.rating = 0;
+  ['brewTDS','beverageWeight','totalBrewTime','scoreAcidity','scoreSweetness','scoreBody','scoreFinish','roastDate'].forEach(function(k) { r[k] = ''; });
+  r.cupping = null;
+  r.flavorTags = [];
+  r.beanId = null;
+  r.bagDeducted = false;
   r.id = generateId();
   r.parentId = null;
   r.createdAt = new Date().toISOString();
