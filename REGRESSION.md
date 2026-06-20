@@ -874,3 +874,10 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] Added min-height:44px to .scan-f input. iOS input-zoom already handled by the global pointer:coarse 16px rule. Single-column on phones (≤480px) so full-width + 44px tall; visual otherwise unchanged
 - [ ] npm run check green (2.98.0 synced); verified via preview the scan-review inputs now report >=44px
 - [ ] Update toast after deploy (cache v2.98.0)
+
+## Sprint 111 (v2.99.0) — keyless espresso dial-in factors bean freshness
+- [ ] AI Product lens: the AI dial-in path factors freshness, but the keyless espressoDialIn fallback didn't. Its "sour AND bitter together" branch diagnoses channeling and sends the user to redo WDT/level/tamp — yet gassy, too-fresh beans channel and read sour-and-harsh regardless of prep, and espresso wants more rest than filter. A user pulling day-2 beans chases prep fruitlessly
+- [ ] (Rejected first: wiring measured EY into espressoDialIn — espresso yield is espYield not beverageWeight so EY isn't even computed, and the 18-22% filter band is contested for percolation espresso; importing it violates the espresso-specific guardrail)
+- [ ] Added const fresh = freshnessInfo(r.roastDate) in espressoDialIn; in the under&&over (channeling) branch, when fresh.cls === 'fresh-degassing' (day <4, the window the app already flags) prepend a freshness line naming gas as the likely cause and to rest the beans before re-working the puck. Targeted (only that symptom + that freshness state), espresso-specific (rest > filter), uses the logged roast date
+- [ ] npm run check green (2.99.0 synced); verified via preview: degassing roast date + sour&bitter shows the freshness line first; peak-window date omits it; espresso-only (filter/immersion paths untouched)
+- [ ] Update toast after deploy (cache v2.99.0)

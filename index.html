@@ -2046,7 +2046,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.98.0';
+const APP_VERSION = '2.99.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
@@ -5927,6 +5927,7 @@ function espressoDialIn(issues, r) {
   function has(x) { return issues.includes(x); }
   const dose = parseFloat(r.coffeeDose), yld = parseFloat(r.espYield), time = parseFloat(r.espShotTime);
   const ratio = (dose > 0 && yld > 0) ? (yld / dose) : null;
+  const fresh = freshnessInfo(r.roastDate);
   const shot = (dose ? dose + 'g in' : '') + (yld ? ' \u2192 ' + yld + 'g out' : '') + (time ? ' in ' + time + 's' : '') + (ratio ? ' (1:' + ratio.toFixed(1) + ')' : '');
   if (shot.trim()) out.push('Current shot: ' + shot.trim() + '.');
   const under = has('sour') || has('salty');
@@ -5938,6 +5939,7 @@ function espressoDialIn(issues, r) {
     out.push('PRIMARY \u2192 Pull extraction DOWN. Grind coarser' + grinderHint('coarser') + ', or cut the shot earlier' + (yld ? ' (' + yld + 'g \u2192 ' + Math.max(20, Math.round(yld - (dose || 18) * 0.3)) + 'g out)' : '') + '.');
     out.push('Secondary \u2192 Drop temperature ' + fmtTempAdvice(2, 0) + ' \u2014 darker roasts often shine at 90\u201392\u00b0C' + (time && time > 32 ? '. Your ' + time + 's shot is on the long side; coarser will speed it up too.' : '.'));
   } else if (under && over) {
+    if (fresh && fresh.cls === 'fresh-degassing') out.push('First, freshness: your roast is ' + fresh.label + '. Gassy fresh coffee channels and reads sour-and-harsh whatever your prep \u2014 espresso wants more rest than filter. Give it a few days before re-working the puck.');
     out.push('PRIMARY \u2192 Sour AND bitter together = uneven puck, not grind size. Fix preparation: WDT to break clumps, level the bed, tamp flat and consistent. Check the naked-portafilter flow for spritzes \u2014 channeling shows fast.');
     out.push('Secondary \u2192 Verify your basket isn\u2019t over/under-dosed for its size (\u00b11g matters) and your grinder isn\u2019t clumping.');
   }
