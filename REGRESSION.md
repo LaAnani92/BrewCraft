@@ -905,3 +905,9 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] Restructured #ratingPraise to mirror the nudge (hint line + btn-sm) and added shareFromPraise(): builds the share code via refreshSharePanel() then takes the lowest-friction path — navigator.share (native sheet, mobile) → copyShareLink (hosted desktop) → expand+scroll the Share section (local file://). Reuses existing share fns; no new storage, no clutter (only shows at >=4 stars)
 - [ ] npm run check green (2.103.0 synced); verified via preview: praise box shows the button at 5 stars / hidden at <=3; shareFromPraise with navigator.share stubbed builds a #r= link and calls the native sheet
 - [ ] Update toast after deploy (cache v2.103.0)
+
+## Sprint 116 (v2.104.0) — trustworthy scanned roast dates
+- [ ] AI Product lens (camera OCR): roast date is the highest-value field (drives freshness) but had two trust gaps. (1) Prompt said "roastDate ISO if any date is printed" — specialty bags print a roast date AND a best-before, so "any date" invited grabbing the best-before. (2) fillScanReview accepted any valid-format ISO incl. a FUTURE date (a mis-grabbed best-before); freshnessInfo returns null for future dates, so freshness silently vanished
+- [ ] Prompt now targets the ROAST/ROASTED date only ("never a best before/best by/enjoy by/expiry; if only best-before is printed, use ''"). fillScanReview drops a roastDate that fails the ISO regex OR is in the future (new Date(rd) <= Date.now(); also catches impossible dates like 2026-13-45 → NaN). The "Read N fields" note now counts actual post-validation field values, so it never claims a date/size we just dropped
+- [ ] npm run check green (2.104.0 synced); verified via preview: fillScanReview with a future roastDate → scRoastDate empty + count excludes it; with a valid past date → kept + counted; impossible date → dropped
+- [ ] Update toast after deploy (cache v2.104.0)

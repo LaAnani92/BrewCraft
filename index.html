@@ -2049,7 +2049,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.103.0';
+const APP_VERSION = '2.104.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
@@ -6037,7 +6037,7 @@ async function runScanRead() {
   const st = document.getElementById('scanStatus');
   st.classList.remove('err');
   st.textContent = 'Claude is reading the label\u2026';
-  const sys = 'You read specialty coffee bag labels from a photo and extract structured data. Return ONLY a JSON object, no markdown, no prose. Keys: roaster, origin (the coffee name/region as printed, e.g. "Ethiopia Yirgacheffe Konga"), process, varietal, roastDate (ISO YYYY-MM-DD if any date is printed, else ""), roastLevel (one of: Light, Light-Medium, Medium, Medium-Dark, Dark, or ""), bagSize (grams as a number, converting kg/oz/lb to grams, else ""), elevation (masl number or range as printed, else ""). Use "" for anything not visible. Do not guess values that are not on the label.';
+  const sys = 'You read specialty coffee bag labels from a photo and extract structured data. Return ONLY a JSON object, no markdown, no prose. Keys: roaster, origin (the coffee name/region as printed, e.g. "Ethiopia Yirgacheffe Konga"), process, varietal, roastDate (ISO YYYY-MM-DD — the ROAST or ROASTED date only; never a "best before", "best by", "enjoy by", or expiry date; if only a best-before date is printed, use ""), roastLevel (one of: Light, Light-Medium, Medium, Medium-Dark, Dark, or ""), bagSize (grams as a number, converting kg/oz/lb to grams, else ""), elevation (masl number or range as printed, else ""). Use "" for anything not visible. Do not guess values that are not on the label.';
   try {
     const resp = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
@@ -6076,11 +6076,18 @@ function fillScanReview(d) {
   document.getElementById('scOrigin').value = d.origin || '';
   document.getElementById('scProcess').value = d.process || '';
   document.getElementById('scVarietal').value = d.varietal || '';
-  document.getElementById('scRoastDate').value = /^\d{4}-\d{2}-\d{2}$/.test(d.roastDate || '') ? d.roastDate : '';
+  // A roast date can't be in the future — a future ISO date almost always means the model grabbed a
+  // "best before" by mistake. Drop it rather than silently breaking freshness (which returns null for
+  // future dates). The regex also rejects impossible dates (e.g. 2026-13-45 → Invalid Date → NaN).
+  const rd = d.roastDate || '';
+  const rdOk = /^\d{4}-\d{2}-\d{2}$/.test(rd) && new Date(rd + 'T00:00:00').getTime() <= Date.now();
+  document.getElementById('scRoastDate').value = rdOk ? rd : '';
   document.getElementById('scRoastLevel').value = d.roastLevel || '';
   document.getElementById('scBagSize').value = (d.bagSize !== '' && !isNaN(parseFloat(d.bagSize))) ? parseFloat(d.bagSize) : '';
   document.getElementById('scElevation').value = d.elevation || '';
-  const filled = ['roaster','origin','process','varietal','roastDate','roastLevel','bagSize','elevation'].filter(function(k) { return d[k] !== '' && d[k] != null; }).length;
+  // Count what actually landed in the review fields (post-validation), so the note never claims a
+  // roast date / bag size we just dropped.
+  const filled = ['scRoaster','scOrigin','scProcess','scVarietal','scRoastDate','scRoastLevel','scBagSize','scElevation'].filter(function(id) { return document.getElementById(id).value !== ''; }).length;
   document.getElementById('scanNote').textContent = filled ? ('Read ' + filled + ' field' + (filled > 1 ? 's' : '') + ' from the label.') : 'Nothing clear was found — fill in by hand or retake.';
   document.getElementById('scanStep2').style.display = 'none';
   document.getElementById('scanStep3').style.display = 'block';
