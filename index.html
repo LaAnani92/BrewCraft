@@ -2064,7 +2064,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.129.0';
+const APP_VERSION = '2.130.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
@@ -3454,6 +3454,14 @@ function immersionDialIn(issues, r) {
 }
 function ruleDialIn(issues) {
   const r = gatherRecipeData();
+  // Contradictory pair: "Weak" (thin) and "Too Intense" (overpowering) point opposite ways, so the
+  // per-method bodies would otherwise stack tighten-ratio + loosen-ratio. Reframe once; let them pick.
+  if (issues.includes('weak') && issues.includes('strong')) {
+    return '"Weak" and "Too Intense" point opposite ways — a cup is usually one or the other, so separate them first.\n\n' +
+      'Thin / watery → more coffee (a tighter ratio).\n\n' +
+      'Overpowering → more water (a looser ratio, or a splash in the finished cup).\n\n' +
+      'Fix the bigger problem, re-taste, then tap whatever is still off.';
+  }
   if ((r.method || '') === 'Espresso') return espressoDialIn(issues, r);
   if (isImmersion(r.method)) return immersionDialIn(issues, r);
   const out = [];
