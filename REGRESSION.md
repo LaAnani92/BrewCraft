@@ -1020,3 +1020,10 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] Reframed the eval-label "Overall Rating" → "How was this cup?" — a reflective question consistent with the existing question-style "What's off about the cup?" label; copy-only, no per-value labels forced
 - [ ] npm run check green (2.122.0 synced); verified via preview the rating label reads "How was this cup?"
 - [ ] Update toast after deploy (cache v2.122.0)
+
+## Sprint 135 (v2.123.0) — Tab focus-trap for the immersive overlays
+- [ ] Accessibility lens: .modal-overlay modals have a full focus-trap (initModalA11y), but .ba-overlay (Brew-Along) + .ob-overlay (onboarding) only got focus-into + Escape (v2.33/v2.69) — the Tab-wrap was deferred. A keyboard user could Tab past the last overlay button onto the visually-hidden page behind the immersive overlay, losing focus offscreen
+- [ ] Extended initModalA11y: for #baOverlay + #obOverlay, add a Tab keydown handler (only when .show) that wraps focus at the visible-focusables boundary (last→first, Shift+Tab first→last); one-time guard (_tabTrap). (Escape + focus-into already exist from v2.33/v2.69)
+- [ ] Also fixed a latent bug in BOTH focusables queries: `[href]` matched SVG `<use href>` icons (non-focusable) inside buttons → the boundary element was a `<use>` and the wrap never fired. Changed `[href]` → `a[href]` (focusable anchors only); hardens the existing modal trap too
+- [ ] npm run check green (2.123.0 synced); verified via preview: in Brew-Along, focus last control + dispatch Tab → wraps to first; focus first + Shift+Tab → wraps to last; trap inert when overlay hidden
+- [ ] Update toast after deploy (cache v2.123.0)

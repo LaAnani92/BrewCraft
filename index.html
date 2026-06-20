@@ -2051,7 +2051,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.122.0';
+const APP_VERSION = '2.123.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
@@ -2456,7 +2456,7 @@ function initModalA11y() {
     dialog.setAttribute('aria-modal', 'true');
     let lastFocus = null;
     const focusables = function() {
-      return Array.from(dialog.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'))
+      return Array.from(dialog.querySelectorAll('button, a[href], input, select, textarea, [tabindex]:not([tabindex="-1"])'))
         .filter(function(el) { return el.offsetParent !== null && !el.disabled; });
     };
     new MutationObserver(function() {
@@ -2470,6 +2470,22 @@ function initModalA11y() {
       if (e.key === 'Escape') { ov.classList.remove('show'); return; }
       if (e.key !== 'Tab') return;
       const f = focusables();
+      if (!f.length) return;
+      const first = f[0], last = f[f.length - 1];
+      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+    });
+  });
+  // The Brew-Along + onboarding overlays got focus-into + Escape (v2.33/v2.69) but no Tab-wrap, so a
+  // keyboard user could Tab onto the hidden page behind the immersive overlay. Add the wrap here.
+  ['baOverlay', 'obOverlay'].forEach(function(id) {
+    const ov = document.getElementById(id);
+    if (!ov || ov._tabTrap) return;
+    ov._tabTrap = true;
+    ov.addEventListener('keydown', function(e) {
+      if (e.key !== 'Tab' || !ov.classList.contains('show')) return;
+      const f = Array.from(ov.querySelectorAll('button, a[href], input, select, textarea, [tabindex]:not([tabindex="-1"])'))
+        .filter(function(el) { return el.offsetParent !== null && !el.disabled; });
       if (!f.length) return;
       const first = f[0], last = f[f.length - 1];
       if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
