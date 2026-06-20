@@ -2049,7 +2049,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.105.0';
+const APP_VERSION = '2.106.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
@@ -4140,6 +4140,15 @@ function loadParentVersion() {
   showToast('Back on v' + (parent.version || 1) + ' — your better cup. Brew it again from the Brew tab.', 'success');
 }
 function newRecipe() {
+  // "New" throws away whatever is in the form. Delete has undo; this had no safety net —
+  // so guard unsaved edits with a one-tap confirm (matches confirmResetTimer), else proceed.
+  if (isDirty) {
+    showActionToast('Start a fresh recipe? Unsaved changes here will be lost.', 'Start fresh', doNewRecipe, 'warning', 7000);
+    return;
+  }
+  doNewRecipe();
+}
+function doNewRecipe() {
   currentRecipeId = null;
   try { store.set('brewcraft_draft', ''); } catch(e) {}
   loadRecipeData({});

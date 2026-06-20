@@ -917,3 +917,10 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] Reworded to parallel, show-more-axis copy keeping voice: "Beginner — keep it simple, guide me" / "Enthusiast — show more, I tweak my cups" / "Expert — every tool, nothing hidden". Copy-only; obChoose values/toasts/skill mapping unchanged
 - [ ] npm run check green (2.105.0 synced); verified via preview the three ob-choice buttons render the new labels and still call obChoose('beginner'/'enthusiast'/'expert')
 - [ ] Update toast after deploy (cache v2.105.0)
+
+## Sprint 118 (v2.106.0) — "New Recipe" guards unsaved work
+- [ ] Emotional Design lens (destructive moments): delete-recipe is exemplary (instant + 7s Undo + restore), but newRecipe() silently discarded the form — cleared brewcraft_draft, loadRecipeData({}), clearDirty() — with no confirm and no undo. The New Recipe button + Cmd/Ctrl+N would vaporize unsaved edits/a half-built recipe. Cold and punishing for a trusted companion
+- [ ] Split newRecipe into a guard + doNewRecipe worker (mirrors confirmResetTimer/resetTimer v2.81): if isDirty, show a one-tap action-toast "Start a fresh recipe? Unsaved changes here will be lost." → "Start fresh" runs doNewRecipe; else proceed immediately. No confirm() (validator-safe). Only 2 callers (button + Cmd+N), both user-initiated — no internal flow affected
+- [ ] npm run check green (2.106.0 synced); verified via preview: dirty form + newRecipe() keeps the form + shows the toast; tapping the toast btn wipes; clean form + newRecipe() wipes immediately
+- [ ] Update toast after deploy (cache v2.106.0)
+- [ ] Flagged follow-up: loadRecipe() (switching recipes from the library) also discards unsaved edits silently — bigger UX call (could nag on every switch), left for owner
