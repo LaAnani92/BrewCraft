@@ -2051,7 +2051,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.120.0';
+const APP_VERSION = '2.121.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
@@ -3616,19 +3616,25 @@ function ruleExplainParams(d) {
   const ratio = parseFloat(d.brewRatio) || 0;
   const water = parseFloat(d.totalWater) || (dose && ratio ? dose * ratio : 0);
   const tempC = parseFloat(d.waterTemp);
+  // Cite the user's own grind too, so every line in "your settings" reflects what they actually set.
+  const gParts = [];
+  if (d.grindSize) gParts.push(String(d.grindSize));
+  const gcl = parseInt(d.grindCoarseness, 10);
+  if (gcl > 0 && COARSE_LABELS[gcl]) gParts.push(COARSE_LABELS[gcl]);
+  const gShown = gParts.length ? ' (yours: ' + gParts.join(' · ') + ')' : '';
   const lines = [];
   if (d.method === 'Espresso') {
     const yld = parseFloat(d.espYield) || (dose && ratio ? dose * ratio : 0);
     lines.push('\u2022 Dose ' + (dose || '\u2014') + 'g \u2014 how much ground coffee goes in the basket. A bigger dose makes a more intense shot.');
     lines.push('\u2022 Ratio 1:' + (ratio || '\u2014') + (yld ? ' (about ' + Math.round(yld) + 'g out)' : '') + ' \u2014 how much liquid you pull. Shorter (1:1.5) is thick and intense; longer (1:3) is lighter and easier to drink.');
     if (isFinite(tempC)) lines.push('\u2022 Temp ' + tempC + '\u00b0C \u2014 hotter pulls more from the coffee (good for light roasts); cooler tames bitterness (good for dark roasts).');
-    lines.push('\u2022 Grind \u2014 the biggest lever. Finer slows the shot and extracts more; coarser speeds it up. Dial grind until the shot time lands in range.');
+    lines.push('\u2022 Grind' + gShown + ' \u2014 the biggest lever. Finer slows the shot and extracts more; coarser speeds it up. Dial grind until the shot time lands in range.');
   } else {
     const cups = water ? Math.max(1, Math.round(water / 220)) : 0;
     lines.push('\u2022 Dose ' + (dose || '\u2014') + 'g \u2014 the amount of ground coffee. With your ratio that makes about ' + (water ? Math.round(water) + 'g of coffee' + (cups ? ' (~' + cups + ' cup' + (cups > 1 ? 's' : '') + ')' : '') : '\u2014') + '.');
     lines.push('\u2022 Ratio 1:' + (ratio || '\u2014') + ' \u2014 grams of water per gram of coffee. Lower brews stronger and heavier; higher brews lighter and more tea-like. Most pour-over sits around 1:15\u20131:17.');
     if (isFinite(tempC)) lines.push('\u2022 Temp ' + tempC + '\u00b0C \u2014 hotter water extracts faster: more body and sweetness, but too hot turns bitter. Cooler stays bright and delicate. 90\u201396\u00b0C suits most coffees.');
-    lines.push('\u2022 Grind \u2014 finer grounds slow the water and pull out more (risking bitter); coarser runs faster and lighter (risking sour). Adjust grind first when a brew tastes off.');
+    lines.push('\u2022 Grind' + gShown + ' \u2014 finer grounds slow the water and pull out more (risking bitter); coarser runs faster and lighter (risking sour). Adjust grind first when a brew tastes off.');
   }
   return lines.join('\n');
 }

@@ -1008,3 +1008,9 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] updateGrindVisual pos===null branch now names the method's target texture: grindBandKey → {espresso:2, pourOver:3, frenchPress:6} → "aim " + COARSE_LABELS[lvl] (e.g. "aim Medium-Fine" for V60, "aim Fine" espresso, "aim Coarse" French press). Reuses the v2.97 "aim X" posLabel pattern; no new element. Selecting a grinder still upgrades to exact clicks
 - [ ] npm run check green (2.120.0 synced); verified via preview: no grinder + no coarseness + empty grindSize → V60 posLabel "aim Medium-Fine"; Espresso "aim Fine"; French Press "aim Coarse"; with a coarseness preset → unchanged ("approx"); with a grinder → band path unchanged
 - [ ] Update toast after deploy (cache v2.120.0)
+
+## Sprint 133 (v2.121.0) — "Explain my settings" cites the user's grind too
+- [ ] AI Product lens: ruleExplainParams (keyless "What do these mean?") is genuinely contextual — cites the user's dose, ratio, water (computes cups), temp — but the Grind line was principle-only ("• Grind — finer slows…"), the one setting not tied to their value, even when grind is set. Slightly undercuts the "your settings" promise
+- [ ] Compute gShown once (d.grindSize and/or COARSE_LABELS[grindCoarseness]) → " (yours: 18 · Medium-Fine)"; append to both the filter + espresso Grind lines. Empty when no grind set. AI path already says "be concrete about their actual numbers". No new storage
+- [ ] npm run check green (2.121.0 synced); verified via preview: grindSize 18 + coarseness 3 → "Grind (yours: 18 · Medium-Fine) —…"; coarseness only → "(yours: Medium-Fine)"; none → plain "Grind —"; espresso branch likewise
+- [ ] Update toast after deploy (cache v2.121.0)
