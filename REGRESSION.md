@@ -911,3 +911,9 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] Prompt now targets the ROAST/ROASTED date only ("never a best before/best by/enjoy by/expiry; if only best-before is printed, use ''"). fillScanReview drops a roastDate that fails the ISO regex OR is in the future (new Date(rd) <= Date.now(); also catches impossible dates like 2026-13-45 → NaN). The "Read N fields" note now counts actual post-validation field values, so it never claims a date/size we just dropped
 - [ ] npm run check green (2.104.0 synced); verified via preview: fillScanReview with a future roastDate → scRoastDate empty + count excludes it; with a valid past date → kept + counted; impossible date → dropped
 - [ ] Update toast after deploy (cache v2.104.0)
+
+## Sprint 117 (v2.105.0) — onboarding tier labels are parallel + concrete
+- [ ] Beginner User lens (first-run): the skill-tier choice is the most consequential first decision but the 3 labels mixed framings (Beginner=help / Enthusiast=behavior / Expert=tools), and the middle one "Enthusiast — I dial in my cups" described a behavior a beginner doesn't understand yet rather than what the choice DOES. The subtitle promises it "tunes how much the app shows you" but only 2 labels hinted at that axis. (Structure is otherwise sound: Skip → obFinish leaves skill unset → init defaults to beginner; choice reversible in Settings)
+- [ ] Reworded to parallel, show-more-axis copy keeping voice: "Beginner — keep it simple, guide me" / "Enthusiast — show more, I tweak my cups" / "Expert — every tool, nothing hidden". Copy-only; obChoose values/toasts/skill mapping unchanged
+- [ ] npm run check green (2.105.0 synced); verified via preview the three ob-choice buttons render the new labels and still call obChoose('beginner'/'enthusiast'/'expert')
+- [ ] Update toast after deploy (cache v2.105.0)
