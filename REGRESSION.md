@@ -942,3 +942,9 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] After switchTab, brewAgain now scrollIntoView's #sec-params (smooth, block:start; v2.39 scroll-margin-top clears the sticky header) so they land in the lever zone. Non-presumptuous (params holds every dial-in lever, not just grind); all 3 brewAgain callers make a new version to change a param. (Carrying the SPECIFIC advice text forward stays part of the flagged structured-dial-in Apply fork)
 - [ ] npm run check green (2.109.0 synced); verified via preview: brewAgain lands on the recipe tab, adds 1 version, and calls sec-params.scrollIntoView({behavior:smooth,block:start})
 - [ ] Update toast after deploy (cache v2.109.0)
+
+## Sprint 122 (v2.110.0) — keyless dial-in is honest about what it reads
+- [ ] AI Product lens (transparency): the keyless coach is honestly labeled and uses real values, BUT the notes field invites "describe the cup in your own words" while ruleDialIn only reads chips. A keyless user who wrote a description but tapped no chip got ruleDialIn([])'s fallback "Select at least one issue chip, or describe the cup" — telling them to describe the cup they just described, and implying the rule coach reads free text (it can't)
+- [ ] getDialinAdvice keyless branch: when !issues.length && notes, returns an honest line — "The built-in coach reads the taste chips, not written notes — tap the one closest to your cup above. Adding an API key brings in AI that can read your description." Also reworded ruleDialIn's empty fallback to drop the misleading "or describe the cup": "Tap the taste chip closest to your cup above — the built-in coach works from those." (covers the AI-failed catch path too)
+- [ ] npm run check green (2.110.0 synced); verified via preview: keyless + notes-only → honest chips message; keyless + a chip → normal advice; ruleDialIn([]) → new fallback wording
+- [ ] Update toast after deploy (cache v2.110.0)

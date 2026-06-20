@@ -2050,7 +2050,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.109.0';
+const APP_VERSION = '2.110.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
@@ -3384,7 +3384,7 @@ function immersionDialIn(issues, r) {
     out.push('Start with the biggest lever: move grind 2 steps the way the cup suggests (sour → finer, bitter → coarser), then tune steep time — everything else fixed.');
   }
   if (!out.length) {
-    out.push('Select at least one issue chip, or describe the cup — then I can point at the right variable.');
+    out.push('Tap the taste chip closest to your cup above — the built-in coach works from those.');
   } else {
     if (ey !== null && ey >= 18 && ey <= 22) out.push('Measured extraction ' + ey.toFixed(1) + '% sits in the 18–22% target — extraction is on point, so chase balance with ratio or steep time, not grind.');
     out.push('Golden rule: change ONE variable per brew, then hit "Brew Again" to log the iteration.');
@@ -3435,7 +3435,7 @@ function ruleDialIn(issues) {
     out.push('Start with the biggest lever: move grind 2 steps in the direction the cup suggests (sour-leaning \u2192 finer, bitter-leaning \u2192 coarser), everything else fixed.');
   }
   if (!out.length) {
-    out.push('Select at least one issue chip, or describe the cup \u2014 then I can point at the right variable.');
+    out.push('Tap the taste chip closest to your cup above \u2014 the built-in coach works from those.');
   } else {
     if (ey !== null && ey >= 18 && ey <= 22) out.push('Measured extraction ' + ey.toFixed(1) + '% sits in the 18\u201322% target \u2014 extraction is on point, so chase balance with ratio or water, not grind.');
     out.push('Golden rule: change ONE variable per brew, then hit "Brew Again" to log the iteration.');
@@ -3457,7 +3457,11 @@ async function getDialinAdvice() {
   const data = gatherRecipeData();
   const hist = iterationHistory(data);
   if (!settings.apiKey) {
-    let txt = ruleDialIn(issues);
+    // The keyless coach works from the taste chips only. If they wrote a description but tapped no chip,
+    // don't bounce them with "describe the cup" (they did) — be honest about what the built-in coach reads.
+    let txt = (!issues.length && notes)
+      ? 'The built-in coach reads the taste chips, not written notes — tap the one closest to your cup above. Adding an API key brings in AI that can read your description.'
+      : ruleDialIn(issues);
     if (hist.length && hist[0].indexOf('worse') !== -1) {
       txt = 'Heads-up: your LAST change made the cup worse \u2014 consider reverting it before stacking new changes.\n\n' + txt;
     }
