@@ -498,7 +498,9 @@
   .scrub-num { -webkit-appearance:none; appearance:none; width:100%; text-align:center; font-family:'JetBrains Mono',monospace; font-size:30px; font-weight:600; letter-spacing:0.5px; color:var(--text-primary); background:transparent; border:none; padding:2px 0; outline:none; min-height:42px; }
   .scrub-num::-webkit-inner-spin-button, .scrub-num::-webkit-outer-spin-button { -webkit-appearance:none; margin:0; }
   .scrub-num:focus { color:var(--accent-bright); }
-  .ruler { position:relative; height:46px; border-radius:var(--radius-sm); background:var(--bg-input); border:1px solid var(--border); overflow:hidden; cursor:ew-resize; touch-action:none; -webkit-user-select:none; user-select:none; }
+  /* pan-y (not none): a vertical drag starting on the ruler scrolls the page, while a horizontal drag
+     still scrubs — the scrubber already handles the pointercancel the browser fires on a vertical takeover. */
+  .ruler { position:relative; height:46px; border-radius:var(--radius-sm); background:var(--bg-input); border:1px solid var(--border); overflow:hidden; cursor:ew-resize; touch-action:pan-y; -webkit-user-select:none; user-select:none; }
   .ruler:focus-visible { border-color:var(--accent); box-shadow:0 0 0 2px var(--accent-glow); outline:none; }
   .ruler.dragging { border-color:var(--accent); background:var(--bg-surface); }
   .ruler-ticks { position:absolute; top:0; bottom:0; left:-50%; width:200%; background-image:repeating-linear-gradient(90deg, var(--border-light,#4f4436) 0 1.5px, transparent 1.5px var(--gap,25px)); -webkit-mask-image:linear-gradient(90deg,transparent,#000 18%,#000 82%,transparent); mask-image:linear-gradient(90deg,transparent,#000 18%,#000 82%,transparent); will-change:transform; }
@@ -2062,7 +2064,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.128.0';
+const APP_VERSION = '2.129.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
