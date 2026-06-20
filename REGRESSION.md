@@ -1051,3 +1051,9 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] Tolerance now scales with the ratio magnitude: Math.max(0.4, median*0.2) → espresso median 2 → 0.4 (tight), filter median 16 → 3.2 (≈ old 3). Computes median first. Honors espresso-specificity; the insight is now a real cluster across methods
 - [ ] npm run check green (2.127.0 synced); verified via preview: espresso 4★+ ratios [2.0,2.1,2.2] → cluster ~1:2.1; [2.0,2.5,3.5] → null (correctly rejected, was wrongly a cluster); filter [15,16,17] → cluster 1:16; filter [14,16,19] → null
 - [ ] Update toast after deploy (cache v2.127.0)
+
+## Sprint 140 (v2.128.0) — enthusiasts get a breadcrumb that water tuning exists
+- [ ] Beginner/Strategist lens: water chemistry (a distinctive feature) is Expert-only (body.simple #sec-water display:none; skillToMode maps beginner+enthusiast→simple). So an ENTHUSIAST who's heard "water matters" has zero in-flow signal the feature exists — invisible until a tier flip they may not know unlocks it. Beginners are correctly shielded
+- [ ] Added a calm enthusiast-only breadcrumb at the water position (order:4): ".water-grow" display:none by default, shown only under body.skill-enthusiast (NOT beginner, NOT expert). Copy: "Water chemistry — measure or mix your brewing water — is an Expert-mode tool. [Switch your level] when you want to go deeper" → openSettingsToSkill. Muted line, no box, grow-into framing (not pushy upsell)
+- [ ] npm run check green (2.128.0 synced); verified via preview: under skill-enthusiast the .water-grow shows (display block) + #sec-water hidden; under skill-beginner BOTH hidden; under skill-expert .water-grow hidden + #sec-water shown
+- [ ] Update toast after deploy (cache v2.128.0)
