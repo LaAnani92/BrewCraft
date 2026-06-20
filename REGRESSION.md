@@ -936,3 +936,9 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] Appended an anticipatory clause to freshnessGuidance's fresh-degassing branch: filter → "…it hits its stride around day 4." (matches freshnessInfo's day-4 peak start); espresso → "…espresso especially wants a few more days to settle." (reinforces v2.99). Converts the one discouraging state into a reason to come back. Copy-only; other states untouched
 - [ ] npm run check green (2.108.0 synced); verified via preview: freshnessGuidance(degassing, filter/espresso) carries the new clause; peak/good/fading branches unchanged
 - [ ] Update toast after deploy (cache v2.108.0)
+
+## Sprint 121 (v2.109.0) — "Start the next version" lands in the lever zone
+- [ ] Mobile Kitchen UX lens (grind-adjust after dial-in): brewAgain ("Start the next version to try this") creates the new version then switchTab('recipe'), which ends with window.scrollTo({top:0}) — dumping the user at the top (recipe name + Method), two sections above Brew Parameters where dose/ratio/grind/temp live. One-handed, they scroll past Method + Bean to find the lever the dial-in just told them to move
+- [ ] After switchTab, brewAgain now scrollIntoView's #sec-params (smooth, block:start; v2.39 scroll-margin-top clears the sticky header) so they land in the lever zone. Non-presumptuous (params holds every dial-in lever, not just grind); all 3 brewAgain callers make a new version to change a param. (Carrying the SPECIFIC advice text forward stays part of the flagged structured-dial-in Apply fork)
+- [ ] npm run check green (2.109.0 synced); verified via preview: brewAgain lands on the recipe tab, adds 1 version, and calls sec-params.scrollIntoView({behavior:smooth,block:start})
+- [ ] Update toast after deploy (cache v2.109.0)

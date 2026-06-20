@@ -2050,7 +2050,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.108.0';
+const APP_VERSION = '2.109.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
@@ -4076,6 +4076,10 @@ function brewAgain() {
   renderLibrary();
   switchTab('recipe');
   showToast('v' + child.version + ' created \u2014 change ONE variable, then brew', 'success');
+  // switchTab jumps to the top (recipe name + method); but the dial-in that sent the user here is about
+  // a parameter. Land them in the lever zone (dose/ratio/grind/temp) so the editing surface is in view.
+  const params = document.getElementById('sec-params');
+  if (params && typeof params.scrollIntoView === 'function') { try { params.scrollIntoView({ behavior: 'smooth', block: 'start' }); } catch(e) { params.scrollIntoView(); } }
 }
 
 /* ======= CRUD ======= */
