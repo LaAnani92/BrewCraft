@@ -2051,7 +2051,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.119.0';
+const APP_VERSION = '2.120.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
@@ -2807,7 +2807,11 @@ function updateGrindVisual() {
   }
   if (pos === null) {
     bar.classList.add('grind-bar-empty');
-    caret.style.display = 'none'; band.style.display = 'none'; posLabel.textContent = '';
+    caret.style.display = 'none'; band.style.display = 'none';
+    // No grinder picked and no preset = nothing to position, but still name the method's target texture
+    // so the grind isn't a blind guess. (Selecting a grinder upgrades this to exact clicks — v2.97.)
+    const tlvl = { espresso: 2, pourOver: 3, frenchPress: 6 }[grindBandKey(getSelectedMethod())] || 0;
+    posLabel.textContent = tlvl ? 'aim ' + COARSE_LABELS[tlvl] : '';
     return;
   }
   bar.classList.remove('grind-bar-empty');

@@ -1002,3 +1002,9 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] init: compute hasShareLink (#r= in hash); suppress showOnboarding when a share link is present (and don't mark onboarded in that case, so a later plain visit can still greet them). Non-link loads unchanged (fresh → onboarding; returning → mark onboarded). checkHashImport then shows the import modal alone
 - [ ] npm run check green (2.119.0 synced); verified via preview: cleared storage + #r= link + reload → import modal shown, onboarding overlay NOT shown; control (cleared storage, no link, reload) → onboarding shown
 - [ ] Update toast after deploy (cache v2.119.0)
+
+## Sprint 132 (v2.120.0) — grind names a target texture even with no grinder
+- [ ] Beginner User lens (grind from guided→guess): beginners are guided (read-only grindReadout) and enthusiast/expert with a preset or grinder get descriptor/band guidance. The remaining gap: an enthusiast/expert building from scratch with NO grinder AND no preset saw an unanchored grind bar (pos null → blank posLabel) — a blind guess
+- [ ] updateGrindVisual pos===null branch now names the method's target texture: grindBandKey → {espresso:2, pourOver:3, frenchPress:6} → "aim " + COARSE_LABELS[lvl] (e.g. "aim Medium-Fine" for V60, "aim Fine" espresso, "aim Coarse" French press). Reuses the v2.97 "aim X" posLabel pattern; no new element. Selecting a grinder still upgrades to exact clicks
+- [ ] npm run check green (2.120.0 synced); verified via preview: no grinder + no coarseness + empty grindSize → V60 posLabel "aim Medium-Fine"; Espresso "aim Fine"; French Press "aim Coarse"; with a coarseness preset → unchanged ("approx"); with a grinder → band path unchanged
+- [ ] Update toast after deploy (cache v2.120.0)
