@@ -1027,3 +1027,9 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] Also fixed a latent bug in BOTH focusables queries: `[href]` matched SVG `<use href>` icons (non-focusable) inside buttons → the boundary element was a `<use>` and the wrap never fired. Changed `[href]` → `a[href]` (focusable anchors only); hardens the existing modal trap too
 - [ ] npm run check green (2.123.0 synced); verified via preview: in Brew-Along, focus last control + dispatch Tab → wraps to first; focus first + Shift+Tab → wraps to last; trap inert when overlay hidden
 - [ ] Update toast after deploy (cache v2.123.0)
+
+## Sprint 136 (v2.124.0) — hidden attribute now wins everywhere (Brew-Along Rate button)
+- [ ] Mobile Kitchen UX / bug: #baRateBtn (.btn) is hidden=true until the Brew-Along completion (v2.71), but .btn{display:inline-flex} overrode the [hidden] UA rule — so once the overlay opened, "Rate this cup →" was VISIBLE through the whole guided brew; a mid-brew tap exits early to Taste. The author had patched this per-element (.grind-custom-row/.ai-panel/.tier-pill/.template-row[hidden]) but missed .btn
+- [ ] Added one global guard `[hidden] { display:none !important; }` so the hidden attribute reliably wins over any flex/.btn display rule. Toggle behavior intact (hidden=false at completion → .btn display returns). Makes the 4 per-element patches redundant (left harmless)
+- [ ] npm run check green (2.124.0 synced); verified via preview: in an open Brew-Along, baRateBtn display:none + offsetParent null while hidden; updateBATheater completion → hidden=false → visible
+- [ ] Update toast after deploy (cache v2.124.0)

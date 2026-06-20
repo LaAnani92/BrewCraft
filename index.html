@@ -207,6 +207,9 @@
   .grind-bar-caret { position:absolute; top:-3px; bottom:-3px; width:3px; border-radius:2px; background:var(--accent-bright); transform:translateX(-50%); box-shadow:0 0 6px var(--accent-glow); transition:left 0.18s ease; }
   .grind-bar-caret.out { background:var(--warning); box-shadow:0 0 6px rgba(212,160,74,0.5); }
   .grind-pos { font-size:10px; font-weight:600; }
+  /* The hidden attribute must win over flex/.btn display rules everywhere (previously patched
+     per-element, which missed cases like the Brew-Along Rate button). One global guard. */
+  [hidden] { display:none !important; }
   .grind-custom-row { display:flex; gap:6px; margin-top:8px; }
   .grind-custom-row[hidden] { display:none; }
   .grind-custom-row input { flex:1; min-width:0; }
@@ -2051,7 +2054,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.123.0';
+const APP_VERSION = '2.124.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
