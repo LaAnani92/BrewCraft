@@ -966,3 +966,9 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] getDialinAdvice keyless: when hist[0] is "worse", count the actual diffs (data vs parent over DIFF_FIELDS). >1 → "your last version changed N things and scored lower — revert, then change just ONE variable at a time so you can tell what actually works"; ==1 → "your last change scored lower — consider reverting it…". More accurate + coaches single-variable discipline (clean attribution)
 - [ ] npm run check green (2.113.0 synced); verified via preview: stubbed parent(5★)+child(3★) with 2 diffs → multi-change wording w/ count; 1 diff → single-change wording; non-worse → no heads-up
 - [ ] Update toast after deploy (cache v2.113.0)
+
+## Sprint 126 (v2.114.0) — Brew-Along no-pours dead-end becomes one-tap recoverable
+- [ ] Beginner User lens: tapping "Brew-Along Mode" (the #1 CTA) on a recipe with no pour weights bailed with a passive toast "Add pour weights first (try Auto-Distribute)" — naming a feature the beginner must go find. A dead-end on the primary action
+- [ ] enterBrewAlong empty-steps guard: if totalWater>0 and pour cards exist, show an action-toast "No pour weights yet — split the water into even pours?" with an "Auto-distribute" button → autoDistributePours() then re-enters Brew-Along. If no water, plain "Add a dose, water, and pour weights first". Reuses existing fns; no new storage
+- [ ] npm run check green (2.114.0 synced); verified via preview: water set + empty weights → action toast, overlay NOT shown; tapping Auto-distribute fills weights + opens the overlay; water=0 + empty → plain toast, no auto-distribute offer
+- [ ] Update toast after deploy (cache v2.114.0)
