@@ -2064,7 +2064,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.130.0';
+const APP_VERSION = '2.131.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
@@ -5216,13 +5216,26 @@ function applyBeanProfile() {
 function deleteBeanProfile() {
   const id = document.getElementById('beanProfileSelect').value;
   if (!id) { showToast('Pick a saved bean first','warning'); return; }
-  beanProfiles = beanProfiles.filter(function(x) { return x.id !== id; });
+  const idx = beanProfiles.findIndex(function(x) { return x.id === id; });
+  if (idx < 0) return;
+  const removed = beanProfiles[idx];
+  const wasCurrent = currentBeanId === id;
+  beanProfiles.splice(idx, 1);
   store.set('brewcraft_beans', JSON.stringify(beanProfiles));
-  if (currentBeanId === id) currentBeanId = null;
+  if (wasCurrent) currentBeanId = null;
   renderProfileSelects();
   document.getElementById('bagSizeInput').value = '';
   renderBagStatus();
-  showToast('Bean profile removed','warning');
+  // A bean carries origin/roaster/roast date/bag tracking the user entered — deletion gets the same
+  // undo safety net as recipes (restoring its id re-links any recipes that referenced it).
+  showActionToast('Removed "' + (removed.beanOrigin || removed.roaster || 'bean') + '"', 'Undo', function() {
+    beanProfiles.splice(Math.min(idx, beanProfiles.length), 0, removed);
+    store.set('brewcraft_beans', JSON.stringify(beanProfiles));
+    if (wasCurrent) currentBeanId = removed.id;
+    renderProfileSelects();
+    renderBagStatus();
+    showToast('Bean restored','success');
+  }, 'warning', 7000);
 }
 
 function saveGearProfile() {
@@ -5248,10 +5261,18 @@ function applyGearProfile() {
 function deleteGearProfile() {
   const id = document.getElementById('gearProfileSelect').value;
   if (!id) { showToast('Pick a saved setup first','warning'); return; }
-  gearProfiles = gearProfiles.filter(function(x) { return x.id !== id; });
+  const idx = gearProfiles.findIndex(function(x) { return x.id === id; });
+  if (idx < 0) return;
+  const removed = gearProfiles[idx];
+  gearProfiles.splice(idx, 1);
   store.set('brewcraft_gear', JSON.stringify(gearProfiles));
   renderProfileSelects();
-  showToast('Setup removed','warning');
+  showActionToast('Removed "' + (removed.label || 'setup') + '"', 'Undo', function() {
+    gearProfiles.splice(Math.min(idx, gearProfiles.length), 0, removed);
+    store.set('brewcraft_gear', JSON.stringify(gearProfiles));
+    renderProfileSelects();
+    showToast('Setup restored','success');
+  }, 'warning', 7000);
 }
 
 /* ======= v5: TEMPLATES & QUICK BREW ======= */

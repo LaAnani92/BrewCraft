@@ -1069,3 +1069,9 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] Added a method-agnostic early-return at the top of ruleDialIn (before the espresso/immersion routing): when issues include BOTH 'weak' and 'strong', return a reframe — "they point opposite ways; thin → more coffee (tighter ratio), overpowering → more water (looser ratio/splash); fix the bigger problem and re-taste". Covers all methods in one place; the wording is method-agnostic
 - [ ] npm run check green (2.130.0 synced); verified via preview: ruleDialIn(['weak','strong']) → the conflict reframe, no contradictory tighten+loosen lines; ['weak'] alone → normal tighten advice; ['strong'] alone → normal loosen advice; espresso method + ['weak','strong'] → same reframe (routed before espressoDialIn)
 - [ ] Update toast after deploy (cache v2.130.0)
+
+## Sprint 143 (v2.131.0) — bean + gear profile deletes get instant-undo (parity with recipes)
+- [ ] Emotional Design lens: recipe-delete is exemplary (instant + 7s Undo), but deleteBeanProfile / deleteGearProfile were instant + UNRECOVERABLE (no undo, no confirm). A mis-tap on "Del" irreversibly lost a saved bean (origin/roaster/roast date/bag tracking) or gear setup — cold, inconsistent with the app's trust guarantee
+- [ ] Both now mirror the recipe undo: splice-out (capture index + removed), then showActionToast 'Removed "<name>"' + Undo → re-splice at the original index + persist + re-render. Bean undo restores currentBeanId if it was current (re-links recipes that referenced its id). Reuses showActionToast (pausable since v2.112)
+- [ ] npm run check green (2.131.0 synced); verified via preview: deleteBeanProfile removes the bean + shows Undo toast; tapping Undo restores it (same id, re-rendered); deleteGearProfile likewise
+- [ ] Update toast after deploy (cache v2.131.0)
