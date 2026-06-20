@@ -581,6 +581,9 @@
   .carry-head strong { font-size:11px; text-transform:uppercase; letter-spacing:0.05em; color:var(--accent-bright); }
   .carry-dismiss { background:none; border:none; color:var(--text-secondary); font-size:20px; line-height:1; cursor:pointer; padding:0; min-width:32px; min-height:32px; display:flex; align-items:center; justify-content:center; }
   .carry-body { font-size:12.5px; color:var(--text-secondary); line-height:1.55; white-space:pre-wrap; max-height:170px; overflow-y:auto; }
+  /* Quiet "welcome back" on the Brew landing for a returning user (>=3 days away) — a greeting on
+     open, never a nag. Gated to users with real recipes (sample-only users get the starter hint). */
+  .today-welcome { font-size:13px; color:var(--accent-bright); margin-bottom:9px; line-height:1.5; }
   /* Beginner-only one-line character note for the selected brew method — orients a newcomer who
      doesn't yet know V60 from Origami. Experts/enthusiasts see nothing. */
   .method-blurb { display:none; font-size:12px; line-height:1.5; color:var(--text-secondary); margin:8px 2px 2px; }
@@ -1359,6 +1362,7 @@
 <div class="tab-panel active" id="tab-brew">
 
   <div class="info-card" id="todayHero">
+    <div class="today-welcome" id="todayWelcome" hidden></div>
     <div class="section-subtitle" id="todaySubtitle">Now brewing</div>
     <div class="today-name" id="todayName">—</div>
     <div class="recipe-card-meta" id="todayMeta"></div>
@@ -2108,7 +2112,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.138.0';
+const APP_VERSION = '2.139.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
@@ -5534,6 +5538,14 @@ function freshnessInfo(d) {
   if (days <= 35) return { cls:'fresh-good', label:'Day ' + days + ' \u00b7 still good' };
   return { cls:'fresh-fading', label:'Day ' + days + ' \u00b7 fading' };
 }
+let _welcomeBackMsg = '';
+function humanGap(d) {
+  if (d >= 60) return 'a while';
+  if (d >= 25) return 'about a month';
+  if (d >= 12) return Math.round(d / 7) + ' weeks';
+  if (d >= 6) return 'about a week';
+  return d + ' days';
+}
 function renderToday() {
   const name = document.getElementById('recipeName').value.trim();
   document.getElementById('todayName').textContent = name || 'New recipe';
@@ -5556,6 +5568,13 @@ function renderToday() {
     starterHint.textContent = 'New to BrewCraft? A forgiving first brew \u2014 tap Brew-Along below and it guides every pour.';
   } else {
     starterHint.hidden = true;
+  }
+  const welcomeEl = document.getElementById('todayWelcome');
+  if (welcomeEl) {
+    // Show the welcome-back only to a genuinely returning user (real recipes, not sample-only \u2014 those
+    // get the starter hint instead). Persists for the session; rare by nature (>=3-day gaps).
+    if (_welcomeBackMsg && !allSamples) { welcomeEl.textContent = _welcomeBackMsg; welcomeEl.hidden = false; }
+    else { welcomeEl.hidden = true; }
   }
   const f = freshnessInfo(document.getElementById('roastDate').value);
   document.getElementById('todayFresh').innerHTML =
@@ -6498,6 +6517,16 @@ function init() {
   } else {
     loadRecipeData({});
   }
+  // Re-engagement: a quiet welcome back when you return after a gap (>=3 days). Only a greeting on
+  // open — no nags. New visitors have no prior stamp, so they get nothing. Stamp refreshed each launch.
+  try {
+    const seen = store.get('brewcraft_lastseen');
+    if (seen) {
+      const away = Math.floor((Date.now() - new Date(seen).getTime()) / 86400000);
+      if (away >= 3) _welcomeBackMsg = 'Welcome back — it’s been ' + humanGap(away) + '. Good coffee’s waiting.';
+    }
+    store.set('brewcraft_lastseen', new Date().toISOString());
+  } catch(e) {}
   renderToday();
   renderBrewBar();
   document.getElementById('appVersion').textContent = 'v' + APP_VERSION;
