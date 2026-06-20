@@ -1075,3 +1075,9 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] Both now mirror the recipe undo: splice-out (capture index + removed), then showActionToast 'Removed "<name>"' + Undo → re-splice at the original index + persist + re-render. Bean undo restores currentBeanId if it was current (re-links recipes that referenced its id). Reuses showActionToast (pausable since v2.112)
 - [ ] npm run check green (2.131.0 synced); verified via preview: deleteBeanProfile removes the bean + shows Undo toast; tapping Undo restores it (same id, re-rendered); deleteGearProfile likewise
 - [ ] Update toast after deploy (cache v2.131.0)
+
+## Sprint 144 (v2.132.0) — bean/gear "Del" buttons look destructive (mis-tap reduction)
+- [ ] Mobile Kitchen UX lens: the bean + gear profile "Del" buttons were btn-ghost (neutral) — the bean one sandwiched between "Save bean" and "New bag" (both benign). A destructive action camouflaged as harmless invites a mis-tap; the eye doesn't avoid it
+- [ ] Changed both Del buttons btn-ghost → btn-danger (red text + faint red border, the app's existing destructive style) so they read as destructive and the eye avoids them. Pairs with the v2.131 undo (visual avoidance + recoverability = two safety layers). Targeted by onclick so the adjacent benign "New bag" ghost button is untouched
+- [ ] npm run check green (2.132.0 synced); verified via preview both Del buttons now compute the danger color (var(--danger)) and the "New bag" / Save buttons keep their styling
+- [ ] Update toast after deploy (cache v2.132.0)

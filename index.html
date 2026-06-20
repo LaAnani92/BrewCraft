@@ -1011,7 +1011,7 @@
         </select>
         <input type="number" inputmode="decimal" enterkeyhint="done" id="bagSizeInput" placeholder="Bag g" min="0" step="10" oninput="updateBagSize()" aria-label="Bag size in grams" title="Bag size in grams">
         <button class="btn btn-sm btn-secondary" onclick="saveBeanProfile()"><svg class="ico"><use href="#i-plus"/></svg> Save bean</button>
-        <button class="btn btn-sm btn-ghost" onclick="deleteBeanProfile()" title="Delete selected bean" aria-label="Delete selected bean">Del</button>
+        <button class="btn btn-sm btn-danger" onclick="deleteBeanProfile()" title="Delete selected bean" aria-label="Delete selected bean">Del</button>
         <button class="btn btn-sm btn-ghost" id="bagResetBtn" onclick="newBag()" style="display:none" title="Refilled? Reset the grams counter" aria-label="New bag">New bag</button>
       </div>
       <div class="bag-status" id="bagStatus"></div>
@@ -1173,7 +1173,7 @@
           <option value="">Saved setups…</option>
         </select>
         <button class="btn btn-sm btn-secondary" onclick="saveGearProfile()"><svg class="ico"><use href="#i-plus"/></svg> Save setup</button>
-        <button class="btn btn-sm btn-ghost" onclick="deleteGearProfile()" title="Delete selected setup" aria-label="Delete selected setup">Del</button>
+        <button class="btn btn-sm btn-danger" onclick="deleteGearProfile()" title="Delete selected setup" aria-label="Delete selected setup">Del</button>
       </div>
       <div class="profile-row beginner-hide" id="gearNameRow" style="display:none">
         <input type="text" id="gearNameInput" placeholder="Name this setup (e.g., V60 daily driver)" aria-label="Name this gear setup" onkeydown="if(event.key==='Enter')confirmSaveGear()">
@@ -2064,7 +2064,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.131.0';
+const APP_VERSION = '2.132.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
