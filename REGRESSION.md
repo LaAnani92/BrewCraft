@@ -881,3 +881,9 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] Added const fresh = freshnessInfo(r.roastDate) in espressoDialIn; in the under&&over (channeling) branch, when fresh.cls === 'fresh-degassing' (day <4, the window the app already flags) prepend a freshness line naming gas as the likely cause and to rest the beans before re-working the puck. Targeted (only that symptom + that freshness state), espresso-specific (rest > filter), uses the logged roast date
 - [ ] npm run check green (2.99.0 synced); verified via preview: degassing roast date + sour&bitter shows the freshness line first; peak-window date omits it; espresso-only (filter/immersion paths untouched)
 - [ ] Update toast after deploy (cache v2.99.0)
+
+## Sprint 112 (v2.100.0) — beginner dial-in hint covers the Weak axis
+- [ ] Beginner User lens: the dial-in's beginner-only coach hint (v2.63) explained only Sour (→finer) and Bitter (→coarser), but Weak/Watery is a top-3 beginner complaint AND the most misdiagnosed — the beginner instinct is "grind finer," which just makes it sour. ruleDialIn agrees weak-alone is strength/ratio ("more coffee"), not extraction
+- [ ] Tightened the Sour/Bitter clauses ("usually means…—" → "= …,") to make room, then added a third axis: "Weak & watery = too little coffee, not grind." Copy-only, beginner-scoped (.dialin-coach-hint is display:none except body.skill-beginner); chips/advice/engine unchanged. Net length ~unchanged
+- [ ] npm run check green (2.100.0 synced; version intentionally 2.100.0 not 3.0.0 per the no-"v3.0" directive); verified via preview the hint shows the Weak clause under skill-beginner and stays hidden for expert
+- [ ] Update toast after deploy (cache v2.100.0)
