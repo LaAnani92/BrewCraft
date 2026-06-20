@@ -984,3 +984,9 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] ruleSuggest now takes roastLevel: dark/medium-dark → tempC −2 + rationale "Cooler water suits the darker roast"; light/light-medium → tempC +2 + "Hotter water helps extract the lighter roast"; medium unchanged. Temp only (no grind) to avoid compounding with the goal tweak; clamped 80–100. Both runSuggest callers pass d.roastLevel
 - [ ] npm run check green (2.116.0 synced); verified via preview: ruleSuggest(V60, Balanced, 'Dark') temp 2 below the Medium baseline + dark rationale; 'Light' 2 above + light rationale; 'Medium' baseline; 'Medium-Dark'/'Light-Medium' match dark/light; clamped
 - [ ] Update toast after deploy (cache v2.116.0)
+
+## Sprint 129 (v2.117.0) — bag line names the coffee, not "a bag"
+- [ ] Emotional Design lens: the bean is well-contextualized (freshness-as-character, best-result history, bag tracking), but bagLine read a generic "Bag: 120g of 250g left · ≈8 brews — running low, reorder soon" — as if it's any bag, not your coffee. Cold, and ambiguous when several beans are tracked
+- [ ] bagLine now prefixes the bean identity (b.beanOrigin || b.roaster) → "Ethiopia Konga · 120g of 250g left · ≈8 brews — running low, reorder soon"; falls back to "Bag:" when unnamed. Shared by the Brew-landing todayBag + Recipe bagStatus + the low toast context. Warmer + tells you which bean to reorder. Uses existing data; no new storage
+- [ ] npm run check green (2.117.0 synced); verified via preview: bagLine with beanOrigin → name-prefixed; roaster-only → roaster-prefixed; neither → "Bag:"; low case keeps "running low, reorder soon"
+- [ ] Update toast after deploy (cache v2.117.0)
