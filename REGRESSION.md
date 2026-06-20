@@ -960,3 +960,9 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] Added shared armToastTimer() (wired once on #toast): pause (clearTimeout) on pointerenter + focusin, resume (re-arm with t._dur) on pointerleave + focusout. Routed both showToast (2600ms) and showActionToast (duration||6000) through it via t._dur. So focusing the Undo button stops the countdown — unlimited time to act; resumes on blur
 - [ ] npm run check green (2.112.0 synced); verified via preview: showActionToast → t._timer armed; dispatch focusin on #toast → t._timer null (paused) + toast still shown; focusout → re-armed (number); clicking the button still removes show + runs fn (no re-arm)
 - [ ] Update toast after deploy (cache v2.112.0)
+
+## Sprint 125 (v2.113.0) — dial-in "worse" heads-up is change-count aware
+- [ ] Advanced Coffee User lens (iterationHistory accuracy): the history itself is honest — lists real field diffs incl. beanOrigin (bean swap shows, avoiding misattribution), skips no-change versions (no false cause), reports outcome only when both rated. But the keyless "worse" heads-up said "your LAST change made the cup worse — revert it" even when the last version changed 2+ variables, implying a single cause and clean revert
+- [ ] getDialinAdvice keyless: when hist[0] is "worse", count the actual diffs (data vs parent over DIFF_FIELDS). >1 → "your last version changed N things and scored lower — revert, then change just ONE variable at a time so you can tell what actually works"; ==1 → "your last change scored lower — consider reverting it…". More accurate + coaches single-variable discipline (clean attribution)
+- [ ] npm run check green (2.113.0 synced); verified via preview: stubbed parent(5★)+child(3★) with 2 diffs → multi-change wording w/ count; 1 diff → single-change wording; non-worse → no heads-up
+- [ ] Update toast after deploy (cache v2.113.0)

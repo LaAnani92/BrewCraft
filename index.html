@@ -2050,7 +2050,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.112.0';
+const APP_VERSION = '2.113.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
@@ -3480,7 +3480,14 @@ async function getDialinAdvice() {
       ? 'The built-in coach reads the taste chips, not written notes — tap the one closest to your cup above. Adding an API key brings in AI that can read your description.'
       : ruleDialIn(issues);
     if (hist.length && hist[0].indexOf('worse') !== -1) {
-      txt = 'Heads-up: your LAST change made the cup worse \u2014 consider reverting it before stacking new changes.\n\n' + txt;
+      // Don't imply a single cause when the last version changed several things \u2014 count the diffs so the
+      // heads-up is accurate and coaches one-variable-at-a-time (clean attribution).
+      const parent = data.parentId ? recipes.find(function(x) { return x.id === data.parentId; }) : null;
+      let nChg = 0;
+      if (parent) DIFF_FIELDS.forEach(function(f) { if (fmtDiffVal(f[0], parent[f[0]]) !== fmtDiffVal(f[0], data[f[0]])) nChg++; });
+      txt = (nChg > 1
+        ? 'Heads-up: your last version changed ' + nChg + ' things and scored lower \u2014 revert, then change just ONE variable at a time so you can tell what actually works.'
+        : 'Heads-up: your last change scored lower \u2014 consider reverting it before stacking new changes.') + '\n\n' + txt;
     }
     if (hist.length) txt += '\n\nIteration memory: ' + hist[0];
     outEl.textContent = txt;
