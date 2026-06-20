@@ -796,7 +796,7 @@
   .scan-actions .btn { flex:1; }
   .scan-fields { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:10px 0; }
   .scan-f { display:flex; flex-direction:column; gap:4px; font-size:11px; font-weight:600; letter-spacing:0.05em; text-transform:uppercase; color:var(--text-muted); }
-  .scan-f input { background:var(--bg-input); border:1px solid var(--border); border-radius:9px; padding:10px; color:var(--text-primary); font-size:15px; font-weight:400; text-transform:none; letter-spacing:0; }
+  .scan-f input { background:var(--bg-input); border:1px solid var(--border); border-radius:9px; padding:10px; min-height:44px; color:var(--text-primary); font-size:15px; font-weight:400; text-transform:none; letter-spacing:0; }
   .scan-f:first-child, .scan-f:nth-child(2) { grid-column:1 / -1; }
   .scan-note { font-size:13px; color:var(--text-muted); margin:8px 0; min-height:18px; }
   @media (max-width:480px) { .scan-fields { grid-template-columns:1fr; } }
@@ -2046,7 +2046,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.97.0';
+const APP_VERSION = '2.98.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;

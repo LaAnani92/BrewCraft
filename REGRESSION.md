@@ -868,3 +868,9 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] Changed the off-band posLabel from "off target" to "aim <range>" (data[grindBandKey(method)], e.g. "aim 20-30" / "aim 2.5-3.5 turns"); the caret's 'out' style still shows you're off, so the label is free to state the target. Same/shorter length, no crowding; in-range/approx/custom-grinder cases unchanged
 - [ ] npm run check green (2.97.0 synced); verified via preview: Comandante + V60 (band 20-30) with grind 15 shows "aim 20-30"; grind 24 shows "in range"; custom grinder (no band) shows blank
 - [ ] Update toast after deploy (cache v2.97.0)
+
+## Sprint 110 (v2.98.0) — scan-review inputs meet the 44px tap target
+- [ ] Mobile Kitchen UX lens: the 8 OCR scan-review inputs (.scan-f input — roaster/origin/process/varietal/roast date/level/bag size/elevation) rendered ~39px tall (padding:10px, no min-height), below the app's 44px standard (enforced for other form controls in v2.62/2.76/2.81). These are tapped/edited one-handed at the counter right after a bag scan
+- [ ] Added min-height:44px to .scan-f input. iOS input-zoom already handled by the global pointer:coarse 16px rule. Single-column on phones (≤480px) so full-width + 44px tall; visual otherwise unchanged
+- [ ] npm run check green (2.98.0 synced); verified via preview the scan-review inputs now report >=44px
+- [ ] Update toast after deploy (cache v2.98.0)
