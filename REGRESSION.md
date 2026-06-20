@@ -990,3 +990,9 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] bagLine now prefixes the bean identity (b.beanOrigin || b.roaster) → "Ethiopia Konga · 120g of 250g left · ≈8 brews — running low, reorder soon"; falls back to "Bag:" when unnamed. Shared by the Brew-landing todayBag + Recipe bagStatus + the low toast context. Warmer + tells you which bean to reorder. Uses existing data; no new storage
 - [ ] npm run check green (2.117.0 synced); verified via preview: bagLine with beanOrigin → name-prefixed; roaster-only → roaster-prefixed; neither → "Bag:"; low case keeps "running low, reorder soon"
 - [ ] Update toast after deploy (cache v2.117.0)
+
+## Sprint 130 (v2.118.0) — elapsed-time displays carry role=timer + explicit aria-live=off
+- [ ] Accessibility lens: the brew timer (#timerDisplay) + Brew-Along timer (#baTimer) are plain divs updating ~10x/s. They're correctly NOT live regions (SR-readable on demand via the live DOM value + adjacent "Elapsed Time" label; the brew is followable via the v2.44/2.96 step+completion announces). But the elapsed-time counter lacked the correct role=timer semantic, and there was no explicit guarantee against an SR treating the rapid updates as a polite live region (spam)
+- [ ] Added role="timer" + aria-live="off" to both #timerDisplay and #baTimer: correct ARIA for an elapsed-time counter + a hard no-announce guarantee (role=timer's implicit aria-live is off; explicit off defends against any SR/heuristic). No aria-labelledby (would risk hiding the value); the adjacent "Elapsed Time" label still gives context. Value text + tick logic unchanged
+- [ ] npm run check green (2.118.0 synced); verified via preview both timers have role=timer + aria-live=off and still update their text on tick
+- [ ] Update toast after deploy (cache v2.118.0)

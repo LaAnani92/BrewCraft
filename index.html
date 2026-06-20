@@ -1359,7 +1359,7 @@
       </svg>
       <div class="timer-ring-center">
         <div class="timer-label">Elapsed Time</div>
-        <div class="timer-display" id="timerDisplay">00:00.0</div>
+        <div class="timer-display" id="timerDisplay" role="timer" aria-live="off">00:00.0</div>
       </div>
     </div>
     <div class="brew-guide" id="brewGuide"></div>
@@ -1691,7 +1691,7 @@
   <div class="ba-window" id="baWindow"></div>
   <div class="ba-ring-wrap">
     <svg class="ba-ring" viewBox="0 0 232 232" aria-hidden="true"><circle class="ring-bg" cx="116" cy="116" r="104"/><circle class="ring-fg" id="baRingFg" cx="116" cy="116" r="104"/></svg>
-    <div class="ba-timer" id="baTimer">00:00.0</div>
+    <div class="ba-timer" id="baTimer" role="timer" aria-live="off">00:00.0</div>
   </div>
   <div class="ba-fill-wrap">
     <div class="ba-fill-track"><div class="ba-fill" id="baFill"></div></div>
@@ -2051,7 +2051,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.117.0';
+const APP_VERSION = '2.118.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
