@@ -1135,3 +1135,9 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] Extracted baPrepText() + baPrepShowing() helpers (shared by updateBAPrep). renderBAStep now prepends the prep to the #baSr step announcement when baPrepShowing() — discrete (entry/step-change only, not per-tick) so no spam; the SR beginner hears "…zero (tare) it… Step 1 of N, Bloom. Pour to 45 grams." Verified .ba-prep text contrast (var(--text-secondary) on bg-deep+6% panel) meets AA in both themes
 - [ ] npm run check green (2.141.0 synced); verified via preview: beginner step-0 entry → baSr includes the prep text + the step line; non-beginner / after-start → baSr has only the step line; contrast ratio measured ≥4.5 both themes
 - [ ] Update toast after deploy (cache v2.141.0)
+
+## Sprint 154 (v2.142.0) — precise in-window pacing readout in Brew-Along
+- [ ] Advanced Coffee User lens: during a live pour the Brew-Along fill label just said static "pour pace" — nothing actionable for a brewer pouring by weight against a time window. The app can't read the scale, but it knows the time left in the window + the cumulative target
+- [ ] Replaced "pour pace" with a live countdown: a real pour shows "Ns → <targetCum> g" (seconds left in the window to reach the cumulative target); the bloom (a rest after the pour, not a pour-to-target) shows "blooming · Ns left". buildBASteps now carries isBloom (card.classList.contains('bloom')) to branch correctly. "starts at m:ss" (pre-window) and "window done" (post-window) unchanged
+- [ ] npm run check green (2.142.0 synced); verified via preview: regular pour step at sec mid-window → "8s → 150 g"; bloom step → "blooming · Ns left" (no →target); before window → "starts at…"; after → "window done"; buildBASteps sets isBloom true for the .bloom card
+- [ ] Update toast after deploy (cache v2.142.0)
