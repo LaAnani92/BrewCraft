@@ -2136,7 +2136,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.162.0';
+const APP_VERSION = '2.163.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
@@ -3724,21 +3724,24 @@ async function getDialinAdvice() {
     let txt = (!issues.length && notes)
       ? 'The built-in coach reads the taste chips, not written notes — tap the one closest to your cup above. Adding an API key brings in AI that can read your description.'
       : ruleDialIn(issues);
-    // Ground the advice in the user's OWN proven numbers: if they have a tight ratio cluster for this
-    // method, cite it as a target anchor (more trustworthy + distinctive than a generic textbook ratio).
+    // Ground the advice in the user's OWN proven numbers (ratio cluster + measured-EY sweet spot),
+    // consolidated into ONE "from your track record" line so the two anchors don't stack into a wall.
+    // Each bit fires only when the current value is off the user's own band; espresso has no computeEY,
+    // so the EY bit naturally never fires there.
     if (issues.length) {
+      const _histBits = [];
       const _rc = ratioClusterForMethod(data.method);
       const _cr = parseFloat(data.brewRatio);
       if (_rc && _cr > 0 && Math.abs(_cr - _rc.median) > 0.3) {
-        txt += '\n\nYou’ve nailed this before: your best ' + data.method + 's land around 1:' + _rc.median.toFixed(1) + ' (' + _rc.n + ' cups at 4★+). You’re at 1:' + _cr.toFixed(1) + ' now — worth finding your way back.';
+        _histBits.push('your best ' + data.method + 's land around 1:' + _rc.median.toFixed(1) + ' (you’re at 1:' + _cr.toFixed(1) + ')');
       }
-      // Same idea for measured extraction: cite the user's OWN EY band (where their best cups land),
-      // which is often tighter than the 18–22% textbook — the distinctive "your data beats the table"
-      // moment. Only fires for refractometer users (computeEY needs beverageWeight+TDS; null for espresso).
       const _ey = computeEY(data);
       const _ss = sweetSpot();
       if (_ey !== null && _ss && (_ey < _ss.lo - 0.3 || _ey > _ss.hi + 0.3)) {
-        txt += '\n\nYour sweet spot: your best cups extract at ' + _ss.lo.toFixed(1) + '–' + _ss.hi.toFixed(1) + '% (' + _ss.n + ' at 4★+). You measured ' + _ey.toFixed(1) + '% this time — ' + (_ey < _ss.lo ? 'under' : 'over') + ' your own range.';
+        _histBits.push('your best cups sit at ' + _ss.lo.toFixed(1) + '–' + _ss.hi.toFixed(1) + '% extraction (you measured ' + _ey.toFixed(1) + '%)');
+      }
+      if (_histBits.length) {
+        txt += '\n\nYou’ve nailed this before — ' + _histBits.join(', and ') + '. Worth getting back to what’s worked.';
       }
     }
     _carryAdvice = issues.length ? txt : '';
