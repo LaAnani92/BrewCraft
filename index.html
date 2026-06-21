@@ -2154,7 +2154,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.181.0';
+const APP_VERSION = '2.182.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
@@ -6801,7 +6801,13 @@ function fillScanReview(d) {
   // Count what actually landed in the review fields (post-validation), so the note never claims a
   // roast date / bag size we just dropped.
   const filled = ['scRoaster','scOrigin','scProcess','scVarietal','scRoastDate','scRoastLevel','scBagSize','scElevation'].filter(function(id) { return document.getElementById(id).value !== ''; }).length;
-  document.getElementById('scanNote').textContent = filled ? ('Read ' + filled + ' field' + (filled > 1 ? 's' : '') + ' from the label.') : 'Nothing clear was found — fill in by hand or retake.';
+  // The roast date is the freshness-critical field AND the hardest to eyeball (a misread digit looks
+  // plausible). Surface what it implies right now, so the read feels intelligent and the user can
+  // sanity-check the one field most worth confirming before applying.
+  const fr = rdOk ? freshnessInfo(rd) : null;
+  let _note = filled ? ('Read ' + filled + ' field' + (filled > 1 ? 's' : '') + ' from the label.') : 'Nothing clear was found — fill in by hand or retake.';
+  if (fr) _note += ' Roast date reads ' + fr.label + ' — double-check it matches the bag.';
+  document.getElementById('scanNote').textContent = _note;
   document.getElementById('scanStep2').style.display = 'none';
   document.getElementById('scanStep3').style.display = 'block';
 }
