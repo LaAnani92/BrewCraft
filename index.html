@@ -2155,7 +2155,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.200.0';
+const APP_VERSION = '2.201.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
@@ -3353,8 +3353,21 @@ async function enterBrewAlong() {
   syncWakeLock();
 }
 
-function rateFromBrewAlong() { exitBrewAlong(); switchTab('evaluate'); }
+function rateFromBrewAlong() { doExitBrewAlong(); switchTab('evaluate'); }
 function exitBrewAlong() {
+  // The Exit button sits top-right, within reach of a one-handed grip; a mis-tap mid-pour would yank away
+  // the big pour target and step guidance right when you're pouring. When a brew is genuinely live (timer
+  // started, not finished), confirm first. The timer keeps running on the Brew tab either way — leaving
+  // only drops the guided overlay — but losing it mid-pour by accident is disruptive. Escape and the finish
+  // ("Rate this cup") flow call doExitBrewAlong directly and skip the prompt (deliberate, and Escape can't
+  // reach a toast button through the overlay's focus trap).
+  if ((timerRunning || currentElapsedMs() > 0) && !baDoneFired) {
+    showActionToast('Leave the guided brew? Your timer keeps running.', 'Leave', doExitBrewAlong, 'warning', 6000);
+    return;
+  }
+  doExitBrewAlong();
+}
+function doExitBrewAlong() {
   baActive = false;
   document.getElementById('baOverlay').classList.remove('show');
   syncWakeLock();
@@ -6974,7 +6987,7 @@ function applyScan() {
 document.addEventListener('keydown', function(e) {
   if ((e.metaKey || e.ctrlKey) && e.key === 's') { e.preventDefault(); saveRecipe(); }
   if ((e.metaKey || e.ctrlKey) && e.key === 'n') { e.preventDefault(); newRecipe(); }
-  if (e.key === 'Escape' && baActive) { e.preventDefault(); exitBrewAlong(); }
+  if (e.key === 'Escape' && baActive) { e.preventDefault(); doExitBrewAlong(); }
 });
 window.addEventListener('beforeunload', function(e) {
   if (isDirty) { e.preventDefault(); e.returnValue = ''; }
