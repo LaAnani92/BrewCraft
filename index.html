@@ -1591,6 +1591,7 @@
         <div class="field pro-only">
           <label>Extraction Yield <span class="unit">(%) — auto</span></label>
           <div class="computed" id="extractionYield">—</div>
+          <div class="field-hint" id="eyPersonalNote" hidden style="margin:6px 0 2px"></div>
           <div class="extraction-bar-container" id="extractionBarContainer" style="display:none">
             <div class="extraction-bar">
               <div class="extraction-ideal" style="left:33.3%;width:33.3%"></div>
@@ -2136,7 +2137,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.173.0';
+const APP_VERSION = '2.174.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
@@ -2884,13 +2885,24 @@ function calcExtraction() {
   });
   const box = document.getElementById('extractionBarContainer');
   const disp = document.getElementById('extractionYield');
+  const note = document.getElementById('eyPersonalNote');
   if (ey !== null) {
     disp.textContent = ey.toFixed(2) + '%';
     box.style.display = 'block';
     const pct = Math.max(0, Math.min(100, ((ey-14)/12)*100));
     document.getElementById('extractionMarker').style.left = pct + '%';
+    // Grade the measurement against the user's OWN proven band, not just the textbook 18-22% on the bar \u2014
+    // an expert cares whether this cup lands where THEIR best cups have. Self-gating: sweetSpot needs prior
+    // rated+measured cups, so it stays silent until there is a personal band to compare against.
+    const ss = sweetSpot();
+    if (ss && note) {
+      const where = ey < ss.lo - 0.3 ? 'Below' : ey > ss.hi + 0.3 ? 'Above' : 'Right in';
+      note.textContent = where + ' your sweet spot \u2014 your best cups extract ' + ss.lo.toFixed(1) + '\u2013' + ss.hi.toFixed(1) + '%.';
+      note.hidden = false;
+    } else if (note) { note.hidden = true; note.textContent = ''; }
   } else {
     disp.textContent = '\u2014'; box.style.display = 'none';
+    if (note) { note.hidden = true; note.textContent = ''; }
   }
   markDirty();
 }
