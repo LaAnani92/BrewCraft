@@ -2155,7 +2155,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.199.0';
+const APP_VERSION = '2.200.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
@@ -5138,7 +5138,11 @@ function addImportedRecipe(raw) {
   clearDirty();
   renderLibrary();
   switchTab('brew');
-  showToast((r.name || 'Recipe') + ' is yours, ready to brew', 'success');
+  // A first-timer who arrived via a shared link skipped onboarding and has never used the app: point the
+  // landing toast at the exact next tap (the prominent Brew-Along button) rather than a vague "ready to
+  // brew". A returning/onboarded importer already knows the app, so keep theirs concise.
+  const _oriented = store.get('brewcraft_onboarded');
+  showToast((r.name || 'Recipe') + (_oriented ? ' is yours, ready to brew' : ' is yours — tap Brew-Along to make it'), 'success');
 }
 
 /* A recipe-at-a-glance line so a recipient (often a first-time visitor via a share link) sees the
