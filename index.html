@@ -2177,7 +2177,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.216.0';
+const APP_VERSION = '2.217.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
@@ -3929,7 +3929,7 @@ async function getDialinAdvice() {
   scrollDialinIntoView();
   try {
     const r = stripForShare(data);
-    const fresh = freshnessInfo(data.roastDate);
+    const fresh = freshnessInfo(data.roastDate, data.method);
     const freshLine = fresh ? '\nFRESHNESS: ' + fresh.label : '\nFRESHNESS: roast date not logged';
     const ey = computeEY(data);
     const eyLine = ey !== null ? '\nMEASURED EXTRACTION: ' + ey.toFixed(1) + '% (filter target 18–22%; below = under-extracted, above = over-extracted)' : '';
@@ -4185,7 +4185,7 @@ async function runSuggest(goal) {
   panel.innerHTML = aiThinking('Starting point \u00b7 ' + escapeHtml(goal), 'Thinking about your ' + escapeHtml(method));
   try {
     const sys = 'You are a specialty coffee expert. Given a bean (including its freshness / days off roast), brew method, the user skill level, and a taste goal, propose ONE realistic starting recipe. Tailor it to the skill level: for a beginner, favour a forgiving, hard-to-mess-up starting point and keep the rationale plain and jargon-free; for an expert, a more precise or ambitious target is fine. Account for freshness when given: very fresh coffee still degassing brews unevenly, while coffee well past roast has faded aromatics. Reply ONLY with minified JSON (no prose, no markdown, no code fence). Keys: doseG (number, grams), ratio (number, water:coffee e.g. 16.5; for espresso the brew ratio e.g. 2.0), tempC (number, Celsius), grind (one of EXACTLY: "extra fine","espresso-fine","fine","medium-fine","medium","medium-coarse","coarse","extra coarse"), rationale (one short plain-text sentence). For espresso ALSO include espYield (grams out) and espShot (seconds). Keep values realistic for the method and bean. If a USER TRACK RECORD is provided (their best-rated ratio cluster and the extraction band of their best cups for this method), prefer it as the starting point over generic defaults; it reflects what THIS drinker actually likes.';
-    const fresh = freshnessInfo(d.roastDate);
+    const fresh = freshnessInfo(d.roastDate, d.method);
     const beanBits = { origin: d.beanOrigin, roaster: d.roaster, process: d.beanProcess, roastLevel: d.roastLevel, freshness: fresh ? fresh.label : 'roast date not logged' };
     const _rcS = ratioClusterForMethod(method);
     const _ssS = sweetSpot();
@@ -4353,7 +4353,7 @@ async function explainDiff() {
     const sys = 'You are a specialty coffee expert. The user turned one brewing recipe into a new version. Given the parameter changes (from \u2192 to) and any rating change, explain in plain, friendly language what each change likely did to the cup (flavour, body, acidity, sweetness, extraction). When bean details are provided (origin, varietal, process, roast level, freshness), make the explanation specific to THAT coffee \u2014 e.g. how the change interacts with a washed vs natural process, a light vs dark roast, or coffee that is still degassing vs past its peak \u2014 not generic. Be concrete and brief. 2-4 short bullets starting with the bullet character, under 120 words, no markdown.';
     const beanBits = [diff.beanOrigin, diff.beanVarietal, diff.beanProcess, diff.roastLevel ? diff.roastLevel + ' roast' : ''].filter(Boolean);
     const beanLine = beanBits.length ? '\nBEAN: ' + beanBits.join(', ') : '';
-    const fresh = freshnessInfo(diff.roastDate);
+    const fresh = freshnessInfo(diff.roastDate, diff.method);
     const freshLine = fresh ? '\nFRESHNESS: ' + fresh.label : '';
     const espLine = (diff.method === 'Espresso') ? '\nNOTE: This is ESPRESSO \u2014 explain in espresso terms (dose, yield, shot time, pressure, temperature). No pour-over language (no pours, swirls, blooms).' : '';
     const userMsg = 'METHOD: ' + (diff.method || '') + beanLine + freshLine + '\nCHANGES: ' + diff.changes.map(function(c) { return c.label + ': ' + c.from + ' -> ' + c.to; }).join('; ') + ((diff.ratingFrom && diff.ratingTo) ? '\nRATING: ' + diff.ratingFrom + ' -> ' + diff.ratingTo : '') + espLine;
@@ -5762,7 +5762,7 @@ function setTempChip(c) {
 }
 function updateFreshness() {
   const badge = document.getElementById('freshBadge');
-  const f = freshnessInfo(document.getElementById('roastDate').value);
+  const f = freshnessInfo(document.getElementById('roastDate').value, getSelectedMethod());
   if (!f) { badge.style.display = 'none'; return; }
   badge.className = 'fresh-badge ' + f.cls;
   badge.textContent = f.label;
@@ -6068,13 +6068,17 @@ function toggleBeanExtra() {
   document.getElementById('moreBeanBtn').textContent =
     document.body.classList.contains('show-bean-extra') ? 'Less details \u25b4' : 'More details \u25be';
 }
-function freshnessInfo(d) {
+function freshnessInfo(d, method) {
   if (!d) return null;
   const days = Math.floor((Date.now() - new Date(d + 'T00:00:00').getTime()) / 86400000);
   if (isNaN(days) || days < 0) return null;
-  if (days < 4) return { cls:'fresh-degassing', label:'Day ' + days + ' \u00b7 still degassing' };
-  if (days <= 21) return { cls:'fresh-peak', label:'Day ' + days + ' \u00b7 peak window \u2713' };
-  if (days <= 35) return { cls:'fresh-good', label:'Day ' + days + ' \u00b7 still good' };
+  // Espresso needs a longer rest than filter \u2014 more pressure means more CO2 to off-gas \u2014 so its peak window
+  // opens and closes later. Filter: <4 degassing / \u226421 peak / \u226435 good. Espresso: <8 / \u226428 / \u226442. Callers
+  // without a method (e.g. the OCR sanity-check, a method-agnostic bean) get the filter bands.
+  const t = (method === 'Espresso') ? { degas:8, peak:28, good:42 } : { degas:4, peak:21, good:35 };
+  if (days < t.degas) return { cls:'fresh-degassing', label:'Day ' + days + ' \u00b7 still degassing' };
+  if (days <= t.peak) return { cls:'fresh-peak', label:'Day ' + days + ' \u00b7 peak window \u2713' };
+  if (days <= t.good) return { cls:'fresh-good', label:'Day ' + days + ' \u00b7 still good' };
   return { cls:'fresh-fading', label:'Day ' + days + ' \u00b7 fading' };
 }
 let _welcomeBackMsg = '';
@@ -6147,7 +6151,7 @@ function renderToday() {
     if (_welcomeBackMsg && !allSamples) { welcomeEl.textContent = _welcomeBackMsg; welcomeEl.hidden = false; }
     else { welcomeEl.hidden = true; }
   }
-  const f = freshnessInfo(document.getElementById('roastDate').value);
+  const f = freshnessInfo(document.getElementById('roastDate').value, getSelectedMethod());
   document.getElementById('todayFresh').innerHTML =
     f ? '<span class="fresh-badge ' + f.cls + '">' + escapeHtml(f.label) + '</span>' : '';
   const tipEl = document.getElementById('todayFreshTip');
@@ -6919,7 +6923,7 @@ function espressoDialIn(issues, r) {
   function has(x) { return issues.includes(x); }
   const dose = parseFloat(r.coffeeDose), yld = parseFloat(r.espYield), time = parseFloat(r.espShotTime);
   const ratio = (dose > 0 && yld > 0) ? (yld / dose) : null;
-  const fresh = freshnessInfo(r.roastDate);
+  const fresh = freshnessInfo(r.roastDate, r.method);
   const shot = (dose ? dose + 'g in' : '') + (yld ? ' \u2192 ' + yld + 'g out' : '') + (time ? ' in ' + time + 's' : '') + (ratio ? ' (1:' + ratio.toFixed(1) + ')' : '');
   if (shot.trim()) out.push('Current shot: ' + shot.trim() + '.');
   // Lead with the objective signal: shot time is espresso's ground truth (like EY for filter, v2.79).

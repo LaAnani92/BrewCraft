@@ -1586,3 +1586,9 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] Added motionScroll(el, block) helper that resolves behavior to 'auto' when matchMedia('(prefers-reduced-motion: reduce)').matches else 'smooth', with the null-check + try/catch folded in. Replaced all 6 call sites (scrollDialinIntoView + 5 others). No behavior:'smooth' remains outside the helper
 - [ ] npm run check green (2.216.0 synced); verified via preview: stubbing el.scrollIntoView to capture the arg, motionScroll uses behavior 'auto' when matchMedia is stubbed reduce=true and 'smooth' when false; null el is a safe no-op
 - [ ] Update toast after deploy (cache v2.216.0)
+
+## Sprint 229 (v2.217.0) — freshness model is now espresso-aware
+- [ ] Advanced Coffee / espresso-specific: freshnessInfo(d) was filter-calibrated and method-AGNOSTIC (<4 degassing / ≤21 peak / ≤35 good / fading). Espresso needs a longer rest (more pressure = more CO2 to off-gas), so "Day 5 · peak window ✓" was wrong for espresso — 5-day espresso is still degassing
+- [ ] freshnessInfo(d, method): espresso uses <8 degassing / ≤28 peak / ≤42 good / fading; filter unchanged. Passed the method at the 6 recipe-context callers (dial-in AI data.method, params-explainer d.method, diff-explainer diff.method, the two recipe badges getSelectedMethod(), a recipe r.method). OCR sanity-check (fillScanReview, no recipe method) keeps the filter default — just a validity preview. Graceful: missing/future/invalid date still → null
+- [ ] npm run check green (2.217.0 synced); verified via preview (dates N days back): day 2 → both degassing; day 6 → filter peak but espresso degassing; day 25 → filter good but espresso peak; day 40 → filter fading but espresso good; no method → filter bands; future date → null
+- [ ] Update toast after deploy (cache v2.217.0)
