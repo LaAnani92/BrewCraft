@@ -1225,3 +1225,9 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] drawStats now branches on n2 (rated count): n2===0 → an anticipatory teaching line "Rate your brews and your Insights take shape — your strongest methods, the beans you return to, and how each cup extracts, all building here." (no false "your brewing", no "0 rated"); n2>0 → the v2.155 identity breadth line. Empty (0 recipes) state unchanged
 - [ ] npm run check green (2.156.0 synced); verified via preview: 2 unrated samples → anticipatory line (no "0 rated"/"recipes across"); after one rated cup → identity line; 0 recipes → unchanged empty msg
 - [ ] Update toast after deploy (cache v2.156.0)
+
+## Sprint 169 (v2.157.0) — Insights empty-chart messages word-wrap (stop clipping on phones)
+- [ ] Mobile Kitchen UX lens: chartEmpty drew the empty-state guidance as a single centered fillText with no wrapping. The scatter line ("Log a few rated brews with extraction % — your sweet spot maps here", ~63 chars/13px) is wider than a 375px phone's canvas, so it clipped at both ends — exactly the beginner anticipatory guidance. Charts otherwise legible (DPR-aware, responsive width, sparse axis labels, v2.91 resize redraw)
+- [ ] chartEmpty now word-wraps to fit (maxW = canvas W − 24) via ctx.measureText, rendering centered multi-line (18px line-height, vertically centered); wide screens stay one line. Returns lines.length
+- [ ] npm run check green (2.157.0 synced); verified via preview: at ~343px canvas the scatter message wraps to 2 lines, each ≤ maxW; at ~900px it stays 1 line; timeline message likewise
+- [ ] Update toast after deploy (cache v2.157.0)

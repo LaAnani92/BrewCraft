@@ -2136,7 +2136,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.156.0';
+const APP_VERSION = '2.157.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
@@ -5031,7 +5031,20 @@ function chartEmpty(b, text) {
   b.ctx.fillStyle = b.col.text;
   b.ctx.font = '13px sans-serif';
   b.ctx.textAlign = 'center';
-  b.ctx.fillText(text, b.W / 2, b.H / 2);
+  // Canvas fillText doesn't wrap — on a 375px phone these guidance lines are wider than the canvas and
+  // clip at both ends. Word-wrap to fit so the (beginner-facing) empty-state message stays legible.
+  const maxW = b.W - 24;
+  const words = text.split(' ');
+  const lines = []; let cur = '';
+  words.forEach(function(w) {
+    const test = cur ? cur + ' ' + w : w;
+    if (cur && b.ctx.measureText(test).width > maxW) { lines.push(cur); cur = w; }
+    else cur = test;
+  });
+  if (cur) lines.push(cur);
+  const lh = 18, startY = b.H / 2 - (lines.length - 1) * lh / 2;
+  lines.forEach(function(ln, i) { b.ctx.fillText(ln, b.W / 2, startY + i * lh); });
+  return lines.length;
 }
 function sweetSpot() {
   const good = recipes.map(function(r) { return { ey: computeEY(r), rating: r.rating || 0 }; })
