@@ -2167,7 +2167,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.205.0';
+const APP_VERSION = '2.206.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
@@ -3001,6 +3001,11 @@ function nudgeGrind(delta) {
   updateGrindVisual();
   markDirty();
   vibrate(6);
+  // A blind user taps finer/coarser but can't see the new number or whether it landed in the method's
+  // band. Announce the resulting setting (and the in-range / aim-target hint) via the sr-only live region.
+  // Only on this discrete step — typing the field is self-evident, so it isn't announced.
+  const _pos = (document.getElementById('grindPosLabel') || {}).textContent || '';
+  announceAI('Grind ' + input.value + (_pos ? ', ' + _pos : ''));
 }
 function updateGrindVisual() {
   updateGrindReadout();

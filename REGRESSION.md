@@ -1520,3 +1520,9 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] Added −/+ steppers around #grindSize (44px tap targets matching .dial-reset, new #i-minus sprite). nudgeGrind(delta): steps a numeric setting by one native click toward range.min (finer) / range.max (coarser), clamped to grindRange(); the text input stays source of truth + editable for exact entry. updateGrindVisual hides the steppers for letter-based or empty settings (type-only). vibrate(6) per step
 - [ ] npm run check green (2.205.0 synced); verified via preview: nudgeGrind(-1)/(+1) steps the value and clamps to the grinder range; steppers hidden when the value is non-numeric (e.g. "F") and shown when numeric; updateGrindVisual repositions the caret after a step; markDirty fires (autosave)
 - [ ] Update toast after deploy (cache v2.205.0)
+
+## Sprint 218 (v2.206.0) — grind steppers announce the resulting setting to screen readers
+- [ ] Accessibility: the v2.205 grind finer/coarser buttons announced only the ACTION (aria-label "Grind one step finer"), never the resulting value or whether it landed in the method's band — a blind user tapped finer and didn't hear "now 23, in range". The scrubbers convey this via aria-valuetext; the grind steppers didn't
+- [ ] nudgeGrind now announceAI('Grind <value>' + posLabel) after stepping — e.g. "Grind 23, in range" or "Grind 21, aim 18-22 clicks", reading grindPosLabel (the same in-range/aim hint the caret shows). Only on the discrete step; typing the field stays self-evident and silent. Reuses the always-present sr-only #aiStatusSr (the v2.203 pattern)
+- [ ] npm run check green (2.206.0 synced); verified via preview: after nudgeGrind(-1)/(+1) #aiStatusSr reads "Grind <new value>" (+ position hint when a grinder band is set); typing #grindSize does NOT announce; value still steps + clamps as before
+- [ ] Update toast after deploy (cache v2.206.0)
