@@ -1580,3 +1580,9 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] Bumped --text-muted #9a8a76 → #a1917c (the :root override at ~842, dark theme). Now clears AA on every background: bg-surface 4.86, bg-card 5.55, bg-deep 6.07, bg-input 6.17. Still subtly muted (tiny lightening). Light-theme muted (#6a5945) was checked and already passes on all light surfaces. All other tokens (primary 15.1, secondary 6.6, accent 8.0, accentBright 11.4, success 7.9, danger 5.0, warning 7.9) already passed
 - [ ] npm run check green (2.215.0 synced); verified via preview: dark --text-muted now resolves to #a1917c and every text/bg pair >= 4.5; light theme muted >= 4.5 on all light bgs
 - [ ] Update toast after deploy (cache v2.215.0)
+
+## Sprint 228 (v2.216.0) — smooth-scroll honours prefers-reduced-motion
+- [ ] Mobile Kitchen / Accessibility (motion): the reduce handling was already thorough (two universal @media reduce blocks zero every keyframe + transition; celebrate() skips confetti under reduce; functional timer ring/display correctly keep moving). The one leak: 6 JS scrollIntoView({behavior:'smooth'}) calls — per spec the JS behavior overrides CSS scroll-behavior:auto, so a reduced-motion user still got smooth-scroll animations (dial-in result, suggest, scan, bean, etc.)
+- [ ] Added motionScroll(el, block) helper that resolves behavior to 'auto' when matchMedia('(prefers-reduced-motion: reduce)').matches else 'smooth', with the null-check + try/catch folded in. Replaced all 6 call sites (scrollDialinIntoView + 5 others). No behavior:'smooth' remains outside the helper
+- [ ] npm run check green (2.216.0 synced); verified via preview: stubbing el.scrollIntoView to capture the arg, motionScroll uses behavior 'auto' when matchMedia is stubbed reduce=true and 'smooth' when false; null el is a safe no-op
+- [ ] Update toast after deploy (cache v2.216.0)
