@@ -2155,7 +2155,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.191.0';
+const APP_VERSION = '2.192.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
@@ -3612,6 +3612,18 @@ function loadCupping(c) {
   CUP_FIELDS.forEach(function(id) { document.getElementById(id).value = (c && c[id] !== undefined) ? c[id] : ''; });
   calcCupping();
 }
+/* Pure SCA total from a stored cupping object (mirrors calcCupping's math) so a cupped recipe's hard-won
+   score can show where its identity lives — the card and journal — instead of being buried in the form.
+   Returns null when no quality attribute is scored. Defaults uniformity/clean/sweet to 5 cups, like the form. */
+function cuppingScore(c) {
+  if (!c) return null;
+  const q = ['cupFragrance','cupFlavor','cupAftertaste','cupAcidity','cupBody','cupBalance','cupOverall'];
+  if (!q.some(function(k) { return !isNaN(parseFloat(c[k])); })) return null;
+  function n(k, d) { const x = parseFloat(c[k]); return isNaN(x) ? d : x; }
+  const sum7 = q.reduce(function(a, k) { return a + n(k, 0); }, 0);
+  const cups = 2 * (n('cupUniformity', 5) + n('cupClean', 5) + n('cupSweet', 5));
+  return sum7 + cups - n('cupTaints', 0) * 2 - n('cupFaults', 0) * 4;
+}
 
 /* ======= DIAL-IN ASSISTANT ======= */
 function getSelectedIssues() {
@@ -4748,6 +4760,8 @@ function renderLibrary() {
     if (r.method) bits.push(r.method);
     if (r.coffeeDose) bits.push(r.coffeeDose + 'g');
     if (r.brewRatio) bits.push('1:' + r.brewRatio);
+    const _cs = cuppingScore(r.cupping);
+    if (_cs !== null) bits.push('SCA ' + _cs.toFixed(1));
     meta.textContent = bits.join(' \u00b7 ') || '\u2014';
     if (r.version && r.version > 1) {
       const vb = document.createElement('span');
@@ -6351,6 +6365,8 @@ function renderJournal() {
     if (r.method) mb.push(r.method);
     const ey = computeEY(r);
     if (ey !== null) mb.push('EY ' + ey.toFixed(1) + '%');
+    const _cs = cuppingScore(r.cupping);
+    if (_cs !== null) mb.push('SCA ' + _cs.toFixed(1));
     if (r.version && r.version > 1) mb.push('v' + r.version);
     meta.textContent = mb.join(' \u00b7 ');
     e.appendChild(meta);

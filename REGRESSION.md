@@ -1436,3 +1436,9 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] calcCupping now names the live SCA band next to the score: total >= 90 Outstanding / >= 85 Excellent / >= 80 Very good / else Below specialty. cupTotal shows "<total><small><band> · Total / 100</small>". Empty state keeps the explanatory "80+ = specialty grade" note. Math unchanged
 - [ ] npm run check green (2.191.0 synced); verified via preview: scores summing to 92 → "Outstanding"; 86.5 → "Excellent"; 82 → "Very good"; 78 → "Below specialty"; no scores → "—" + "80+ = specialty grade"; the toFixed(2) total is unchanged
 - [ ] Update toast after deploy (cache v2.191.0)
+
+## Sprint 204 (v2.192.0) — surface the cupping score where the recipe lives
+- [ ] Product Strategist lens: a meticulously-entered SCA cupping score (e.g. 86.5) was siloed inside the cupping section — invisible on the recipe card and in the journal, where the recipe's identity actually lives. The serious user's most precise judgment was the most hidden; the effort of cupping went unrewarded
+- [ ] Added pure cuppingScore(c) (mirrors calcCupping: sum 7 quality attrs + 2×(uniformity/clean/sweet, default 5) − taints×2 − faults×4; null if no quality attr scored). Both the library card meta and the journal-entry meta now append "SCA <score>" when a cupping exists. Self-gating — non-cupped recipes (the common case) show nothing, no clutter
+- [ ] npm run check green (2.192.0 synced); verified via preview: cupping helper of all-8s object → 86.0; recipe with cupping → card meta "…· SCA 86.0" + journal meta includes "SCA 86.0"; recipe without cupping → no SCA bit; cupping with only defects (no quality) → null, no bit. Math matches calcCupping
+- [ ] Update toast after deploy (cache v2.192.0)
