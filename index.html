@@ -2155,7 +2155,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.186.0';
+const APP_VERSION = '2.187.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
@@ -6683,6 +6683,7 @@ function espressoDialIn(issues, r) {
     if (time < 20) out.push('Read the shot before you taste it: ' + time + 's is fast — water is racing through, which reads thin and sour whatever the bean. Grind finer' + grinderHint('finer') + ' to slow it toward 25–30s, and check the puck prep if it stays fast.');
     else if (time > slowLimit) out.push('Read the shot before you taste it: ' + time + 's is slow — the puck is choking and pushing harsh, bitter flavours. Grind coarser' + grinderHint('coarser') + ' or ease the dose to bring it back toward 25–30s.');
     else if (time >= 24 && time <= 33) out.push('Your ' + time + 's shot time sits in a healthy range — so make small grind moves and trust your taste, not the clock.');
+    else out.push('Your ' + time + 's is workable but on the ' + (time < 24 ? 'fast' : 'slow') + ' side — let taste decide whether to nudge grind ' + (time < 24 ? 'finer' : 'coarser') + '.');
   }
   const under = has('sour') || has('salty');
   const over = has('bitter') || has('astringent') || has('harsh');

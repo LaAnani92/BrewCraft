@@ -1406,3 +1406,9 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] Made "console.anthropic.com" a real link → <a href="https://console.anthropic.com/settings/keys" target="_blank" rel="noopener noreferrer" style="color:var(--accent-bright)">. One tap to the Anthropic keys page (user-initiated external nav; new tab; noopener). Visible text unchanged; the rest of the hint (browser-only storage, Show toggle, works-without-key) unchanged
 - [ ] npm run check green (2.186.0 synced); verified via preview: the settings key-field hint contains an <a> with href console.anthropic.com/settings/keys, target=_blank, rel includes noopener, visible text "console.anthropic.com"
 - [ ] Update toast after deploy (cache v2.186.0)
+
+## Sprint 199 (v2.187.0) — espresso dial-in: no silent borderline shot times
+- [ ] AI Product lens: keyless espressoDialIn is excellent + espresso-native (shot time as the objective signal, dose/yield/ratio, grind, temp, WDT/puck/naked-portafilter, americano; reads r.espShotTime — field chain verified correct). But the shot-time bands weren't contiguous: fast <20, healthy 24–33, slow >slowLimit(35/45 lungo) — so 20–23s and 34–35s got NO shot-time read (silent borderline)
+- [ ] Added an else branch: any in-range-but-not-ideal time now gets "Your Xs is workable but on the fast/slow side — let taste decide whether to nudge grind finer/coarser" (direction keyed off time<24). Every shot time now gets a read; clearly-fast/slow keep their stronger guidance; espresso stays espresso (grind/shot only)
+- [ ] npm run check green (2.187.0 synced); verified via preview: time=28→healthy; 22→"workable…fast side…finer"; 34 (std ratio)→"…slow side…coarser"; 18→fast; 40 (std)→slow; 40 (lungo ratio>2.4)→"…slow side" (slowLimit 45, not slow yet); no time→no shot-time line
+- [ ] Update toast after deploy (cache v2.187.0)
