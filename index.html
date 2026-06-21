@@ -2119,7 +2119,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.147.0';
+const APP_VERSION = '2.148.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
@@ -4740,12 +4740,19 @@ function importRecipesFile(event) {
       saveToStorage();
       renderLibrary();
       if ((beansAdded || gearAdded) && typeof renderProfileSelects === 'function') renderProfileSelects();
-      const extras = [];
-      if (beansAdded) extras.push(beansAdded + ' bean' + (beansAdded !== 1 ? 's' : ''));
-      if (gearAdded) extras.push(gearAdded + ' setup' + (gearAdded !== 1 ? 's' : ''));
-      if (tagsAdded) extras.push(tagsAdded + ' tag' + (tagsAdded !== 1 ? 's' : ''));
-      const extra = extras.length ? ' (+' + extras.join(', ') + ')' : '';
-      showToast('Imported ' + added + ' recipe' + (added !== 1 ? 's' : '') + extra, (added || beansAdded || gearAdded || tagsAdded) ? 'success' : 'warning');
+      const parts = [];
+      if (added) parts.push(added + ' recipe' + (added !== 1 ? 's' : ''));
+      if (beansAdded) parts.push(beansAdded + ' bean' + (beansAdded !== 1 ? 's' : ''));
+      if (gearAdded) parts.push(gearAdded + ' setup' + (gearAdded !== 1 ? 's' : ''));
+      if (tagsAdded) parts.push(tagsAdded + ' tag' + (tagsAdded !== 1 ? 's' : ''));
+      // "Restored" (not "Imported") frames it as reclaiming your own calibration. An all-duplicate file
+      // — re-importing a backup you already hold — is "already up to date", not a 0-count warning that
+      // reads like a failure.
+      if (!parts.length) {
+        showToast('Already up to date — everything in that backup is already here.', 'info');
+      } else {
+        showToast('Restored ' + parts.join(', ') + '.', 'success');
+      }
     } catch(err) { showToast('Invalid file format','warning'); }
   };
   reader.readAsText(file);

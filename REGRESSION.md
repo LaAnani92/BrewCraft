@@ -1171,3 +1171,9 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] Added a minimal queue: showToast, if a toast is already showing, pushes (deduped by msg vs the showing _curMsg + the queue, capped at 3) and returns; armToastTimer's dismiss drains the next after a 280ms gap (lets the live region reset so SR re-announces). showActionToast (interactive Undo/confirm) keeps priority — clears the queue + shows immediately. Pause-on-hover/focus (v2.112) still holds
 - [ ] npm run check green (2.147.0 synced); verified via preview: single toast shows normally; two rapid showToasts → first shows, second queued then appears after dismiss; duplicate msg not queued; >3 capped; showActionToast clears a pending queue and shows now
 - [ ] Update toast after deploy (cache v2.147.0)
+
+## Sprint 160 (v2.148.0) — backup restore reads as reclaiming the moat, not "Imported 0"
+- [ ] Product Strategist lens: the data-ownership story is strong (complete bundle, ownership-framed nudge, import) but the import SUCCESS message had a flaw — re-importing a backup you already hold (the natural "did it work?" re-import / new-device-already-synced case) showed "Imported 0 recipes" with a WARNING icon, reading like a failure when it's actually "already up to date". "Imported" was also colder than the moat-reclaiming reality
+- [ ] importRecipesFile now builds a parts list of what was actually added (recipes/beans/setups/tags); if nothing new → info toast "Already up to date — everything in that backup is already here."; otherwise success "Restored <parts>." ("Restored" = reclaiming your own calibration, names the full asset incl. beans-only/gear-only restores)
+- [ ] npm run check green (2.148.0 synced); verified via preview: fresh bundle → "Restored 2 recipes, 1 bean."; re-import same → "Already up to date…" (info, not warning); beans-only new → "Restored N beans."
+- [ ] Update toast after deploy (cache v2.148.0)
