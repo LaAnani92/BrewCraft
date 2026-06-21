@@ -1460,3 +1460,9 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] renderProfileSelects gear options now append the setup's contents: "<label> · <grinder> · <grindSize OR coarseness label>" (only the bits present). Matches the bean dropdown's at-a-glance recognition. Display only — save/apply unchanged
 - [ ] npm run check green (2.195.0 synced); verified via preview: gear profile {label 'Morning', grinderName 'Comandante', grindSize '20'} → option "Morning · Comandante · 20"; coarseness-only (no size) → "<label> · <grinder> · <COARSE_LABELS[n]>"; label-only profile → just the label; applyGearProfile still sets grinder/grind/filter/method
 - [ ] Update toast after deploy (cache v2.195.0)
+
+## Sprint 208 (v2.196.0) — roast-date hint disambiguates roast vs best-before
+- [ ] Beginner User lens: the Bean section is well-built for beginners (specialty fields process/varietal/elevation hidden in simple mode behind "More details"; origin/roaster/roast-date/roast-level stay visible; all optional). But the most common beginner pitfall: a supermarket bag shows a BEST-BEFORE date prominently and the roast date small/absent, so a novice enters the best-before as the roast date → wrong/no freshness. The hint never disambiguated
+- [ ] roastDate field-hint: "Add it to unlock the freshness badge and brewing tips. Coffee usually peaks ~7-21 days after roast." → "Use the roast date, not the best-before. It unlocks the freshness badge and brewing tips; coffee usually peaks ~7-21 days after roast." Helps beginners, harmless to experts. (Future best-before dates already produce no badge via freshnessInfo; this prevents the wrong entry up front)
+- [ ] npm run check green (2.196.0 synced); verified via preview: the roastDate field-hint textContent contains "not the best-before" + still mentions the freshness badge + the 7-21 day peak window
+- [ ] Update toast after deploy (cache v2.196.0)
