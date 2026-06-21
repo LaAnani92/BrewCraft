@@ -1624,3 +1624,10 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] Consistency: OCR now uses the same aiErrorHint helper as dial-in / Suggest / explain / patterns / diff — one error-diagnosis path across all six AI features
 - [ ] npm run check green (2.222.0 synced); verified via preview: aiErrorHint maps API 401→key, 429→rate limit, 5xx→service hiccup, network→no connection; OCR catch produces the photo message only for 'no data' and aiErrorHint text otherwise
 - [ ] Update toast after deploy (cache v2.222.0)
+
+## Sprint 235 (v2.223.0) — skipping onboarding no longer drops you into an incoherent tier
+- [ ] Beginner: obChoose (picking a tier) sets settings.skill + mode, but obSkip() just called obFinish() without setting either. A skipper kept the defaults skill:'' / mode:'' — and applyMode reads mode!=='simple' as the FULL pro UI, adds no body.skill-* class (so no beginner coaching), while labSkill misleadingly displays "Beginner". The most-overwhelming screen with zero guidance, for the user most likely to be a non-expert
+- [ ] Fix: obSkip now defaults an unset skill to the balanced middle — settings.skill='enthusiast', settings.mode=skillToMode('enthusiast')='simple' — persists, applyMode(), and shows a neutral toast ("You're all set — tune your level anytime in Settings") that points to where they can change it without claiming a choice they didn't make. Guarded with if(!settings.skill) so it's idempotent / never overrides a real choice
+- [ ] Rationale: Enthusiast minimises harm across skippers — simple mode keeps it uncluttered for a beginner, and it doesn't hide precision gear or show patronising beginner coaching to a pro. obChoose path unchanged
+- [ ] npm run check green (2.223.0 synced); verified via preview: applyMode with skill='enthusiast'/mode='simple' yields body.simple + body.skill-enthusiast (no pro full-UI, coherent tier)
+- [ ] Update toast after deploy (cache v2.223.0)

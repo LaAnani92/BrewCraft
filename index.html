@@ -2180,7 +2180,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.222.0';
+const APP_VERSION = '2.223.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
@@ -6644,7 +6644,22 @@ function obChoose(skill) {
     : 'Expert \u2014 all tools unlocked \u2713';
   showToast(msg, 'success');
 }
-function obSkip() { obFinish(); }
+function obSkip() {
+  // A skipped intro still needs a coherent tier. Without one, settings.skill stays '' (no body.skill-*
+  // class, so no beginner coaching) and settings.mode stays '' (applyMode reads '' as not-'simple' = the
+  // full pro UI, while Settings misleadingly shows "Beginner"). That drops a skipper -- who skews "don't
+  // make me choose," not "I'm an expert" -- into the most complex screen with zero guidance. Default to
+  // the balanced middle (Enthusiast, simple mode): uncluttered for a newcomer, un-patronising for a pro,
+  // one tap to change in Settings.
+  if (!settings.skill) {
+    settings.skill = 'enthusiast';
+    settings.mode = skillToMode('enthusiast');
+    try { store.set('brewcraft_settings', JSON.stringify(settings)); } catch(e) {}
+    applyMode();
+    showToast('You’re all set — tune your level anytime in Settings (gear, top right)', 'success');
+  }
+  obFinish();
+}
 function obFinish() {
   try { store.set('brewcraft_onboarded','1'); } catch(e) {}
   document.getElementById('obOverlay').classList.remove('show');
