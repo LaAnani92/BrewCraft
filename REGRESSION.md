@@ -1231,3 +1231,9 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] chartEmpty now word-wraps to fit (maxW = canvas W − 24) via ctx.measureText, rendering centered multi-line (18px line-height, vertically centered); wide screens stay one line. Returns lines.length
 - [ ] npm run check green (2.157.0 synced); verified via preview: at ~343px canvas the scatter message wraps to 2 lines, each ≤ maxW; at ~900px it stays 1 line; timeline message likewise
 - [ ] Update toast after deploy (cache v2.157.0)
+
+## Sprint 170 (v2.158.0) — tappable Insights dots identify which brew
+- [ ] Advanced Coffee User lens: studying the EY-vs-rating scatter, an outlier dot (e.g. 5★ at 21% EY) raised "which brew is that?" — but the canvas points were inert, forcing a hunt through the journal
+- [ ] Both Insights charts now store each plotted point's recipe ref + screen coords (b.c._hitPoints) during draw and wire a once-per-canvas click handler (chartTapHit/wireChartTap). A tap finds the nearest point within 22px → showActionToast identifies it ("<name> · 21.3% EY · 5★" for scatter; "<name> · <date> · N★" for timeline) with a one-tap "Open" (loadRecipe + switchTab recipe). Empty-state paths clear _hitPoints. Canvases are aria-hidden, so this is a sighted-touch nicety (SR users have the journal)
+- [ ] npm run check green (2.158.0 synced); verified via preview: scatter/timeline _hitPoints populated with correct labels after draw; a synthetic click at a point's coords fires the action toast naming that brew; tap in empty space → no toast; canvases wired once (_tapWired)
+- [ ] Update toast after deploy (cache v2.158.0)

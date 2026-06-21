@@ -2136,7 +2136,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.157.0';
+const APP_VERSION = '2.158.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
@@ -5046,6 +5046,23 @@ function chartEmpty(b, text) {
   lines.forEach(function(ln, i) { b.ctx.fillText(ln, b.W / 2, startY + i * lh); });
   return lines.length;
 }
+/* Make the Insights dots identifiable: a tap finds the nearest plotted point and names the brew (with
+   a one-tap Open). The canvases are aria-hidden, so this is a sighted-touch nicety — screen-reader
+   users reach the same data in the journal. */
+function chartTapHit(canvas, e) {
+  const rect = canvas.getBoundingClientRect();
+  const x = e.clientX - rect.left, y = e.clientY - rect.top;
+  const pts = canvas._hitPoints || [];
+  let best = null, bestD = 22 * 22;
+  pts.forEach(function(p) { const dx = p.sx - x, dy = p.sy - y, d = dx * dx + dy * dy; if (d < bestD) { bestD = d; best = p; } });
+  if (best) showActionToast(best.label, 'Open', function() { loadRecipe(best.id); switchTab('recipe'); }, 'info', 6000);
+}
+function wireChartTap(canvas) {
+  if (canvas._tapWired) return;
+  canvas._tapWired = true;
+  canvas.style.cursor = 'pointer';
+  canvas.addEventListener('click', function(e) { chartTapHit(canvas, e); });
+}
 function sweetSpot() {
   const good = recipes.map(function(r) { return { ey: computeEY(r), rating: r.rating || 0 }; })
     .filter(function(p) { return p.ey !== null && p.rating >= 4; });
@@ -5075,9 +5092,9 @@ function bestRatioCluster() {
 }
 function drawScatterEY() {
   const b = chartBase('statsCanvas1');
-  const pts = recipes.map(function(r) { return { x: computeEY(r), y: r.rating || 0 }; })
+  const pts = recipes.map(function(r) { return { x: computeEY(r), y: r.rating || 0, id: r.id, name: r.name }; })
     .filter(function(p) { return p.x !== null && p.y > 0; });
-  if (pts.length < 2) { chartEmpty(b, 'Log a few rated brews with extraction % — your sweet spot maps here'); return pts.length; }
+  if (pts.length < 2) { b.c._hitPoints = []; chartEmpty(b, 'Log a few rated brews with extraction % — your sweet spot maps here'); return pts.length; }
   const x0 = 14, x1 = 26;
   const W = b.W - b.padL - b.padR, H = b.H - b.padT - b.padB;
   function mx(x) { return b.padL + (Math.min(Math.max(x, x0), x1) - x0) / (x1 - x0) * W; }
@@ -5117,13 +5134,15 @@ function drawScatterEY() {
     b.ctx.fill();
     b.ctx.restore();
   });
+  b.c._hitPoints = pts.map(function(p) { return { sx: mx(p.x), sy: my(p.y), id: p.id, label: (p.name || 'Untitled') + ' · ' + p.x.toFixed(1) + '% EY · ' + p.y + '★' }; });
+  wireChartTap(b.c);
   return pts.length;
 }
 function drawRatingTimeline() {
   const b = chartBase('statsCanvas2');
   const rated = recipes.filter(function(r) { return (r.rating || 0) > 0 && r.createdAt; })
     .sort(function(a, c) { return a.createdAt.localeCompare(c.createdAt); });
-  if (rated.length < 2) { chartEmpty(b, 'Rate a couple of brews — your progress curve grows here'); return rated.length; }
+  if (rated.length < 2) { b.c._hitPoints = []; chartEmpty(b, 'Rate a couple of brews — your progress curve grows here'); return rated.length; }
   const W = b.W - b.padL - b.padR, H = b.H - b.padT - b.padB;
   function mx(i) { return b.padL + i / (rated.length - 1) * W; }
   function my(y) { return b.padT + H - (y - 0.5) / 5 * H; }
@@ -5169,6 +5188,8 @@ function drawRatingTimeline() {
     b.ctx.fillStyle = last ? b.col.bright : b.col.accent;
     b.ctx.fill();
   });
+  b.c._hitPoints = rated.map(function(r, i) { return { sx: mx(i), sy: my(r.rating), id: r.id, label: (r.name || 'Untitled') + (r.createdAt ? ' · ' + r.createdAt.slice(0, 10) : '') + ' · ' + r.rating + '★' }; });
+  wireChartTap(b.c);
   return rated.length;
 }
 function renderInsights() {
