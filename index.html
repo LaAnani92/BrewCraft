@@ -2116,7 +2116,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.142.0';
+const APP_VERSION = '2.143.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
@@ -3373,10 +3373,11 @@ function setRating(v, silent) {
     vibrate(v === 5 ? 60 : 18);
     if (v === 5) celebrate();
     // A new best for this recipe's lineage — the payoff of dialing it in over several brews.
+    let _ratingToast = false;
     if (v > 0 && !_bestFired) {
       const prevBest = ancestorBestRating();
       if (prevBest > 0 && v > prevBest) {
-        _bestFired = true;
+        _bestFired = true; _ratingToast = true;
         showToast('New best for this recipe — ' + v + '★ beats your ' + prevBest + '★', 'success');
         if (v < 5) { vibrate(45); celebrate(); }
       }
@@ -3386,8 +3387,24 @@ function setRating(v, silent) {
     if (v > 0 && store.ok && !store.get('brewcraft_firstrated')) {
       if (!recipes.some(function(r) { return (r.rating || 0) > 0; })) {
         showToast('That’s your first rated cup — your brew journal starts here.', 'success');
+        _ratingToast = true;
       }
       try { store.set('brewcraft_firstrated', '1'); } catch(e) {}
+    }
+    // Quiet cumulative milestones — a sense of building a practice, NOT a streak (no chain to break,
+    // no guilt for a missed day). Fires once per threshold; defers a cup if a best/first toast already
+    // claimed this moment (toasts share one element). Count includes the cup being rated right now.
+    if (v > 0 && store.ok && !_ratingToast) {
+      const cur = recipes.find(function(r) { return r.id === currentRecipeId; });
+      const total = recipes.filter(function(r) { return (r.rating || 0) > 0; }).length + ((cur && (cur.rating || 0) > 0) ? 0 : 1);
+      const hit = [10, 25, 50, 100, 250].filter(function(m) { return m <= total; }).pop();
+      let prevM = 0;
+      try { prevM = parseInt(store.get('brewcraft_milestone'), 10) || 0; } catch(e) {}
+      if (hit && hit > prevM) {
+        const MM = { 10: '10 cups in your journal — you’re past dabbling now.', 25: '25 cups logged — that’s real range you’re building.', 50: '50 cups. You’ve brewed your way to instinct.', 100: '100 cups in — a practice now, not an experiment.', 250: '250 cups. Quietly, you’ve become the friend people ask about coffee.' };
+        showToast(MM[hit], 'success');
+        try { store.set('brewcraft_milestone', String(hit)); } catch(e) {}
+      }
     }
   }
   markDirty();

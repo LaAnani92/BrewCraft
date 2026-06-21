@@ -1141,3 +1141,9 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] Replaced "pour pace" with a live countdown: a real pour shows "Ns → <targetCum> g" (seconds left in the window to reach the cumulative target); the bloom (a rest after the pour, not a pour-to-target) shows "blooming · Ns left". buildBASteps now carries isBloom (card.classList.contains('bloom')) to branch correctly. "starts at m:ss" (pre-window) and "window done" (post-window) unchanged
 - [ ] npm run check green (2.142.0 synced); verified via preview: regular pour step at sec mid-window → "8s → 150 g"; bloom step → "blooming · Ns left" (no →target); before window → "starts at…"; after → "window done"; buildBASteps sets isBloom true for the .bloom card
 - [ ] Update toast after deploy (cache v2.142.0)
+
+## Sprint 155 (v2.143.0) — quiet cumulative brew-count milestones
+- [ ] Emotional Design lens: the app celebrates a personal best (v2.7) + the first rated cup (v2.75), but every cup between felt identical — no sense of accumulating practice over weeks. Missing a low "you're building something" beat
+- [ ] setRating now fires a one-time milestone toast at 10/25/50/100/250 rated cups (count INCLUDES the cup being rated now, since the rating isn't in recipes[] until autosave). Warm, craft-framed copy ("…you're past dabbling now" / "…the friend people ask about coffee") — deliberately NOT a streak (no chain to break, no missed-day guilt). New additive key brewcraft_milestone (highest threshold celebrated). Defers a cup if a best/first toast already claimed the moment (toasts share one element)
+- [ ] npm run check green (2.143.0 synced); verified via preview: 9 rated + rating a 10th → "10 cups…" fires + stores 10; re-rating doesn't re-fire; a 10th that's also a personal best → best toast wins, milestone deferred (not stored); jump (import-style) to 30 → fires 25 (highest crossed)
+- [ ] Update toast after deploy (cache v2.143.0)
