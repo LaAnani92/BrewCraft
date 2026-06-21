@@ -1466,3 +1466,9 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] roastDate field-hint: "Add it to unlock the freshness badge and brewing tips. Coffee usually peaks ~7-21 days after roast." → "Use the roast date, not the best-before. It unlocks the freshness badge and brewing tips; coffee usually peaks ~7-21 days after roast." Helps beginners, harmless to experts. (Future best-before dates already produce no badge via freshnessInfo; this prevents the wrong entry up front)
 - [ ] npm run check green (2.196.0 synced); verified via preview: the roastDate field-hint textContent contains "not the best-before" + still mentions the freshness badge + the 7-21 day peak window
 - [ ] Update toast after deploy (cache v2.196.0)
+
+## Sprint 209 (v2.197.0) — warm "bag finished" moment instead of "0 brews · running low"
+- [ ] Emotional Design lens: bag tracking already names the bean + nudges "running low, reorder soon" at <=2 brews. But the FINISHED state (left<=0) showed "<bean> · 0g of 250g left · ≈0 brews — running low, reorder soon" — calling an EMPTY bag "running low" (wrong) and ending cold. The end of a bag's life is a small beat worth marking
+- [ ] bagLine now has a finished branch (left<=0 && size>0): "<bean> — finished · about <size/dose> brews from it. Tap New bag for the next." Celebrates the brews the bag gave, points at the reset, low=false (not styled as a warning). Normal + low cases unchanged
+- [ ] npm run check green (2.197.0 synced); verified via preview (dose 15): bag 250g fully used → "Ethiopia Konga — finished · about 17 brews from it. Tap New bag for the next.", low=false; 250g with 230g used (20g left, ~1 brew) → "running low, reorder soon", low=true; 250g with 100g used → "150g of 250g left · ≈10 brews", low=false; renderBagStatus shows the finished text without the .low class
+- [ ] Update toast after deploy (cache v2.197.0)
