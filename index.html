@@ -2136,7 +2136,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.153.0';
+const APP_VERSION = '2.154.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
@@ -5698,10 +5698,20 @@ function renderToday() {
       const _r = recipes.find(function(x) { return x.id === currentRecipeId; });
       const _hrs = (_r && _r.updatedAt) ? (Date.now() - new Date(_r.updatedAt).getTime()) / 3600000 : 0;
       const _ready = _r && !(parseInt(_r.rating, 10) > 0) && _hrs >= (m === 'Cold Drip' ? 5 : 10) && _hrs <= 24 * 7;
-      _steepEl.textContent = _ready
+      const _newSteep = _ready
         ? 'Your ' + (m === 'Cold Drip' ? 'cold drip' : 'cold brew') + ' should be ready by now — strain it, pour over ice, and rate the first sip.'
         : longSteepBlurb(m);
+      const _prevSteep = _steepEl.textContent;
+      _steepEl.textContent = _newSteep;
       _steepEl.style.display = 'block';
+      // The visual note is invisible to a screen reader; when it transitions to "ready" (e.g. on resume
+      // after the steep window) announce it once via the polite sr-only region. Guarded to the genuine
+      // change (prev different AND non-empty) so renderToday's many calls — and the first-load read —
+      // don't re-announce.
+      if (_ready && _newSteep !== _prevSteep && _prevSteep) {
+        const _sr = document.getElementById('aiStatusSr');
+        if (_sr) _sr.textContent = _newSteep;
+      }
     } else {
       _steepEl.textContent = ''; _steepEl.style.display = 'none';
     }

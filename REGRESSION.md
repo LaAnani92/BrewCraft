@@ -1207,3 +1207,9 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] visibilitychange→visible now also calls renderToday() + updateFreshness() (read-only, no data mutation, safe to re-run). The cold-brew note recomputes against the now-current time, freshness badges advance their day-count, bag status refreshes
 - [ ] npm run check green (2.153.0 synced); verified via preview: a stale cold-brew note (manually set wrong) is corrected to "should be ready" after a dispatched visibilitychange; non-cold recipe unaffected; no errors firing the event repeatedly
 - [ ] Update toast after deploy (cache v2.153.0)
+
+## Sprint 166 (v2.154.0) — screen reader hears the cold-brew "ready" transition
+- [ ] Accessibility lens (closing the v2.152/2.153 thread): #brewSteepNote is a plain <div> with no live region. On resume (v2.153 re-renders), the note flips setup→"should be ready", but a screen-reader user — for whom the visual note is the only signal — never heard the change
+- [ ] renderToday now announces the steep note via the existing sr-only polite region (#aiStatusSr) ONLY when it transitions to the ready message AND the previous text was different and non-empty — so renderToday's many calls don't re-announce, and a first-load read (prev empty) isn't doubled. Targets exactly the setup→ready transition (the resume moment)
+- [ ] npm run check green (2.154.0 synced); verified via preview: setup→ready render writes the ready msg to #aiStatusSr; ready→ready re-render does NOT (no re-announce); first render with empty prev does NOT announce (page-read covers it); rated/non-cold never announce
+- [ ] Update toast after deploy (cache v2.154.0)
