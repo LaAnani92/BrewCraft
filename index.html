@@ -2155,7 +2155,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.198.0';
+const APP_VERSION = '2.199.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
@@ -5010,11 +5010,12 @@ function stripForShare(r) {
   const copy = JSON.parse(JSON.stringify(r));
   delete copy.id; delete copy.createdAt; delete copy.updatedAt;
   delete copy.parentId; delete copy.version;
-  // A shared recipe is the RECIPE (params + bean identity + pour schedule + targets), not the sender's brew
-  // INSTANCE. Strip personal results, evaluations, measurements, bag tracking, and the sender's bag roast
-  // date so the recipient gets a clean recipe to make and judge themselves — never someone else's 5★,
-  // tasting notes, cupping score, TDS / beverage weight, grams-used, or freshness.
-  ['rating','flavorTags','brewerNotes','scoreAcidity','scoreSweetness','scoreBody','scoreFinish','cupping','brewTDS','beverageWeight','gramsUsed','bagDeducted','roastDate'].forEach(function(k) { delete copy[k]; });
+  // A share is the plan to brew, plus the sender's rating (the receive preview shows it as social proof) and
+  // their brewing notes — NOT the full brew instance. Strip the rest of the sender's results from the share
+  // artifact so a QR/code never carries their cupping, TDS, beverage weight, sub-scores, tasting tags, roast
+  // date, bag tracking, or device-local bean link. Mirrors what addImportedRecipe clears on import, minus
+  // rating + brewerNotes (which carry over). KEEP rating + brewerNotes.
+  ['flavorTags','scoreAcidity','scoreSweetness','scoreBody','scoreFinish','cupping','brewTDS','beverageWeight','totalBrewTime','roastDate','beanId','bagDeducted','gramsUsed'].forEach(function(k) { delete copy[k]; });
   Object.keys(copy).forEach(function(k) {
     if (copy[k] === '' || copy[k] === null || copy[k] === undefined) delete copy[k];
   });
