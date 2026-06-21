@@ -2180,7 +2180,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.225.0';
+const APP_VERSION = '2.226.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
@@ -4809,6 +4809,11 @@ function renderBackupNudge() {
     el.classList.remove('show');
   }
 }
+function clearLibraryFilters() {
+  const s = document.getElementById('librarySearch'); if (s) s.value = '';
+  const m = document.getElementById('libraryMethodFilter'); if (m) m.value = '';
+  renderLibrary();
+}
 function renderLibrary() {
   renderBackupNudge();
   renderMethodFilterOptions();
@@ -4925,7 +4930,7 @@ function renderLibrary() {
   if (recipes.length && !list.length) {
     const div = document.createElement('div');
     div.className = 'library-empty';
-    div.innerHTML = '<div class="empty-title">No matches</div><p>Nothing fits that search or filter — try a different term, or clear them to see everything.</p>';
+    div.innerHTML = '<div class="empty-title">No matches</div><p>Nothing fits that search or filter — try a different term, or clear them to see everything.</p><button class="btn btn-sm btn-secondary" onclick="clearLibraryFilters()">Clear search &amp; filters</button>';
     listEl.appendChild(div);
   }
 }
@@ -6605,7 +6610,7 @@ function renderJournal() {
   if (recipes.length && !list.length) {
     const d = document.createElement('div');
     d.className = 'library-empty';
-    d.innerHTML = '<div class="empty-title">No matches</div><p>Nothing fits that search or filter. Try a different term, or clear them to see your whole journal.</p>';
+    d.innerHTML = '<div class="empty-title">No matches</div><p>Nothing fits that search or filter. Try a different term, or clear them to see your whole journal.</p><button class="btn btn-sm btn-secondary" onclick="clearLibraryFilters()">Clear search &amp; filters</button>';
     listEl.appendChild(d);
   }
 }

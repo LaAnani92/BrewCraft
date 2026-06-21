@@ -1645,3 +1645,10 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] Share flow otherwise verified solid: renderQRNow falls back to Copy Code when payload>2300, lazy-loads the QR lib with crossOrigin so the SW caches it (offline after one load), graceful load/draw errors; addImportedRecipe strips the sender's results (rating/TDS/scores/roastDate/cupping/flavorTags/beanId) so the recipient's Journal stays honest
 - [ ] npm run check green (2.225.0 synced); verified via preview: init source contains the share-link tier-default branch; applyMode('enthusiast'/'simple') yields body.simple + skill-enthusiast (coherent), matching the v2.223 proof
 - [ ] Update toast after deploy (cache v2.225.0)
+
+## Sprint 238 (v2.226.0) — one-tap recovery from a "No matches" journal filter
+- [ ] Beginner: journal browsing is well-built — the filter bar (search/method/sort) is hidden until >=5 recipes, hidden filters are force-cleared so they can't silently hide cards, and a 0-of-N filter shows a "No matches" card (not a blank "my recipes vanished" list). But that message told a beginner to "clear them" with no button — the lone guidance-text spot in an app that pairs guidance with an action everywhere else (rating nudge, empty states, no-key AI prompts)
+- [ ] Fix: added clearLibraryFilters() (clears librarySearch + libraryMethodFilter, re-renders) and a "Clear search & filters" button in both No-matches messages (card view renderLibrary ~4928, journal view renderJournal ~6608). One tap restores the full journal — the reassurance a confused beginner needs
+- [ ] Sort intentionally not cleared (it reorders, never hides); progressive-disclosure + force-clear-when-hidden behavior unchanged
+- [ ] npm run check green (2.226.0 synced); verified via preview: clearLibraryFilters empties both inputs and re-renders; both No-matches branches now carry the button
+- [ ] Update toast after deploy (cache v2.226.0)

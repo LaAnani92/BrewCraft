@@ -1,5 +1,5 @@
 /* BrewCraft service worker — offline app shell */
-const CACHE = 'brewcraft-v2.225.0';
+const CACHE = 'brewcraft-v2.226.0';
 const ASSETS = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png'];
 
 self.addEventListener('install', function(e) {
