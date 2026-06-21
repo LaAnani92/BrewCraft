@@ -2183,7 +2183,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.230.0';
+const APP_VERSION = '2.231.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
@@ -4367,7 +4367,7 @@ async function explainDiff() {
   }
   panel.innerHTML = aiThinking('What changed in the cup', 'Thinking');
   try {
-    const sys = 'You are a specialty coffee expert. The user turned one brewing recipe into a new version. Given the parameter changes (from \u2192 to) and any rating change, explain in plain, friendly language what each change likely did to the cup (flavour, body, acidity, sweetness, extraction). When bean details are provided (origin, varietal, process, roast level, freshness), make the explanation specific to THAT coffee \u2014 e.g. how the change interacts with a washed vs natural process, a light vs dark roast, or coffee that is still degassing vs past its peak \u2014 not generic. Be concrete and brief. 2-4 short bullets starting with the bullet character, under 120 words, no markdown.';
+    const sys = 'You are a specialty coffee expert. The user turned one brewing recipe into a new version. Given the parameter changes (from \u2192 to) and any rating change, explain in plain, friendly language what each change likely did to the cup (flavour, body, acidity, sweetness, extraction). If a rating change is provided, reconcile the explanation with it: when the rating rose, affirm the change worked; when it fell, say plainly the change likely hurt this cup despite the usual theory and lean toward reverting — never imply a change improved a cup whose rating dropped. When bean details are provided (origin, varietal, process, roast level, freshness), make the explanation specific to THAT coffee \u2014 e.g. how the change interacts with a washed vs natural process, a light vs dark roast, or coffee that is still degassing vs past its peak \u2014 not generic. Be concrete and brief. 2-4 short bullets starting with the bullet character, under 120 words, no markdown.';
     const beanBits = [diff.beanOrigin, diff.beanVarietal, diff.beanProcess, diff.roastLevel ? diff.roastLevel + ' roast' : ''].filter(Boolean);
     const beanLine = beanBits.length ? '\nBEAN: ' + beanBits.join(', ') : '';
     const fresh = freshnessInfo(diff.roastDate, diff.method);

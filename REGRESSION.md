@@ -1676,3 +1676,10 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] Fix: when no method is selected AND body.skill-beginner, renderQuickRecipes now shows a .qrec-hint in the rail — "Pick a brew method and I'll show you expert recipes to start from — no need to know the numbers yet." Nudges the action + reassures. Non-beginners keep the quiet hidden state; a method with no quick recipes still hides (the !method guard distinguishes them)
 - [ ] npm run check green (2.230.0 synced); verified via preview: with skill-beginner + no method, the rail shows the qrec-hint; selecting a method replaces it with quick-recipe cards; non-beginner with no method stays hidden
 - [ ] Update toast after deploy (cache v2.230.0)
+
+## Sprint 243 (v2.231.0) — diff-explain AI told to reconcile theory with the actual rating
+- [ ] AI Product: explainDiff explains what a version's parameter changes did to the cup. The keyless ruleExplainDiff is honest — per-change directional effect (diffEffect) PLUS the rating outcome ("scored higher, keep this direction" / "scored lower, consider reverting"). The AI path feeds the model the rating change too, but the prompt only said "explain what each change likely did" — so it could narrate optimistic theory ("finer grind = more sweetness") even when the rating dropped, the misleading causal story to avoid, and less honest than the free path
+- [ ] Fix: the explainDiff sys prompt now instructs reconciliation — "If a rating change is provided, reconcile the explanation with it: when the rating rose, affirm the change worked; when it fell, say plainly the change likely hurt this cup despite the usual theory and lean toward reverting — never imply a change improved a cup whose rating dropped"
+- [ ] No behavior change to the keyless path (already honest) or the espresso/bean-aware handling; rating still passed in userMsg
+- [ ] npm run check green (2.231.0 synced); verified via preview: the explainDiff prompt now contains the reconciliation instruction
+- [ ] Update toast after deploy (cache v2.231.0)
