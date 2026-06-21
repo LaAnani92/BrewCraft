@@ -1370,3 +1370,9 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] Added class "simple-only" to the taste-prompt. .simple-only{display:none}/body.simple .simple-only{display:revert} (css 534/535) shows it in simple mode (beginner+enthusiast) and hides it in pro mode (expert). .taste-prompt has no display prop so revert→block is correct. Beginners + enthusiasts keep the full reassurance (validated last iteration); experts get a calmer eval screen. The descriptor glossary .taste-help stays beginner-only as before
 - [ ] npm run check green (2.180.0 synced); verified via preview: body.skill-expert+pro → taste-prompt display:none; body.skill-enthusiast+simple → visible; body.skill-beginner+simple → visible; stars + rating reframing unaffected in all tiers
 - [ ] Update toast after deploy (cache v2.180.0)
+
+## Sprint 193 (v2.181.0) — bookend the journal Timeline with "where it began"
+- [ ] Emotional Design lens: the Timeline already leads with a clickable "Your best so far" peak (peak-end start) + per-day grouping, but the BOTTOM had no payoff — scrolling all the way back just runs out of entries. The journey had a peak with no roots
+- [ ] renderJournal now appends a clickable .journal-origin marker ("Where it began · <name> · <date>") for the OLDEST cup, closing the peak-end loop. Gated: unfiltered (no search/method), >=5 brews, and the journey spans more than the current day (oldest day !== newest day) so it never says "began today". Muted dashed-border style (roots, vs the best's accent glow); tap/Enter opens the first recipe; full aria-label
+- [ ] npm run check green (2.181.0 synced); verified via preview: journal view, 6 recipes across 3 days → origin marker at bottom names the oldest + its date, opens it on click; filtered (search/method) → no marker; <5 recipes → none; all-same-day → none
+- [ ] Update toast after deploy (cache v2.181.0)
