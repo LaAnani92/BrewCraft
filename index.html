@@ -1873,9 +1873,9 @@
 </div>
 
 <div class="modal-overlay" id="settingsModal" onclick="if(event.target===this)closeSettings()">
-  <div class="modal" style="max-width:620px">
+  <div class="modal" style="max-width:620px" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
-      <h3 style="margin:0">Settings</h3>
+      <h3 id="settingsTitle" style="margin:0">Settings</h3>
       <button class="icon-btn" onclick="closeSettings()" aria-label="Close settings"><svg class="ico"><use href="#i-close"/></svg></button>
     </div>
   <div class="section" id="sec-settings">
@@ -2174,7 +2174,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.210.0';
+const APP_VERSION = '2.211.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
@@ -6662,8 +6662,21 @@ function bbFocus(id) {
   el.scrollIntoView({ behavior:'smooth', block:'center' });
   setTimeout(function() { try { el.focus({ preventScroll:true }); } catch(e) { el.focus(); } }, 350);
 }
-function openSettings() { document.getElementById('settingsModal').classList.add('show'); }
-function closeSettings() { document.getElementById('settingsModal').classList.remove('show'); }
+let _settingsOpener = null;
+function openSettings() {
+  _settingsOpener = document.activeElement;
+  const m = document.getElementById('settingsModal');
+  m.classList.add('show');
+  // Move focus into the dialog so keyboard / screen-reader users land inside it (aria-modal marks the rest
+  // inert). Escape closes it (keydown handler) and closeSettings returns focus to whatever opened it.
+  const f = m.querySelector('.modal button, .modal input, .modal select, .modal [tabindex]:not([tabindex="-1"])');
+  if (f) { try { f.focus({ preventScroll: true }); } catch(e) {} }
+}
+function closeSettings() {
+  document.getElementById('settingsModal').classList.remove('show');
+  if (_settingsOpener && typeof _settingsOpener.focus === 'function') { try { _settingsOpener.focus({ preventScroll: true }); } catch(e) {} }
+  _settingsOpener = null;
+}
 /* Open Settings straight to the API-key field — used by the inline "Add an API key" links in AI panels. */
 function openSettingsToKey() {
   openSettings();
@@ -7084,6 +7097,7 @@ document.addEventListener('keydown', function(e) {
   if ((e.metaKey || e.ctrlKey) && e.key === 's') { e.preventDefault(); saveRecipe(); }
   if ((e.metaKey || e.ctrlKey) && e.key === 'n') { e.preventDefault(); newRecipe(); }
   if (e.key === 'Escape' && baActive) { e.preventDefault(); doExitBrewAlong(); }
+  else if (e.key === 'Escape' && document.getElementById('settingsModal').classList.contains('show')) { e.preventDefault(); closeSettings(); }
 });
 window.addEventListener('beforeunload', function(e) {
   if (isDirty) { e.preventDefault(); e.returnValue = ''; }
