@@ -1147,3 +1147,9 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] setRating now fires a one-time milestone toast at 10/25/50/100/250 rated cups (count INCLUDES the cup being rated now, since the rating isn't in recipes[] until autosave). Warm, craft-framed copy ("…you're past dabbling now" / "…the friend people ask about coffee") — deliberately NOT a streak (no chain to break, no missed-day guilt). New additive key brewcraft_milestone (highest threshold celebrated). Defers a cup if a best/first toast already claimed the moment (toasts share one element)
 - [ ] npm run check green (2.143.0 synced); verified via preview: 9 rated + rating a 10th → "10 cups…" fires + stores 10; re-rating doesn't re-fire; a 10th that's also a personal best → best toast wins, milestone deferred (not stored); jump (import-style) to 30 → fires 25 (highest crossed)
 - [ ] Update toast after deploy (cache v2.143.0)
+
+## Sprint 156 (v2.144.0) — dial-in grind advice anchors to your recorded setting
+- [ ] Advanced Coffee User lens: the app captures the exact grinder click setting (grindSize, e.g. "24") + grinder, but grinderHint only said a floating "~2 clicks finer on the Comandante C40" — it ignored the recorded number, so the most-repeated action (dial the grinder) wasn't a concrete from→to
+- [ ] grinderHint now reads the recorded grindSize: click grinder → "~2 clicks finer on the <grinder> — about 24 → 22"; non-click known grinder → "one small step finer on the <grinder>, from your <N>"; no setting recorded → unchanged (floating relative); no/unknown grinder → "" (unchanged). Feeds all three dial-in paths (filter/espresso/immersion). Finer target clamped ≥0
+- [ ] npm run check green (2.144.0 synced); verified via preview: Comandante (clicks) + grindSize 24 → finer hint contains "24 → 22", coarser "24 → 26"; grindSize empty → "~2 clicks finer" (no →); unknown grinder → ""
+- [ ] Update toast after deploy (cache v2.144.0)

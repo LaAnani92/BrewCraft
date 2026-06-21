@@ -2116,7 +2116,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.143.0';
+const APP_VERSION = '2.144.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
@@ -3517,9 +3517,19 @@ function getSelectedIssues() {
 function grinderHint(direction) {
   const grinder = getSelectOrCustom('grinderName','grinderCustom');
   const d = GRINDER_DATA[grinder];
-  if (d && /click/i.test(d.unit)) return ' (~2 clicks ' + direction + ' on the ' + grinder + ')';
-  if (d) return ' (one small step ' + direction + ' on the ' + grinder + ')';
-  return '';
+  if (!d) return '';
+  // Anchor the advice to the setting they actually recorded, in their grinder's own units, with a
+  // concrete from → to ("24 → 22 clicks") — far more repeatable than a floating "~2 clicks finer".
+  const cur = parseFloat(document.getElementById('grindSize').value);
+  const clicks = /click/i.test(d.unit);
+  if (isNaN(cur)) {
+    return clicks ? ' (~2 clicks ' + direction + ' on the ' + grinder + ')' : ' (one small step ' + direction + ' on the ' + grinder + ')';
+  }
+  if (clicks) {
+    const target = Math.max(0, direction === 'finer' ? cur - 2 : cur + 2);
+    return ' (~2 clicks ' + direction + ' on the ' + grinder + ' — about ' + cur + ' → ' + target + ')';
+  }
+  return ' (one small step ' + direction + ' on the ' + grinder + ', from your ' + cur + ')';
 }
 /* Immersion (French Press / AeroPress / Clever / Switch) is steep-then-press — no pours, swirls,
    bed-levelling or drawdown. Its levers are grind, water temp, steep time, ratio and (gentle) stirring. */
