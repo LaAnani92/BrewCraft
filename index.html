@@ -973,8 +973,8 @@
   ⚠ Preview mode — saving is disabled inside this viewer. Download the file and open it in your browser (or host it online) and recipes will save permanently on this device.
 </div>
 
-<nav class="tabbar">
-  <button class="tab-btn active" id="tabbtn-brew" onclick="switchTab('brew')"><span class="live-dot" id="brewLiveDot"></span><span class="t-icon"><svg class="ico"><use href="#i-timer"/></svg></span><span class="t-label">Brew</span></button>
+<nav class="tabbar" aria-label="Main">
+  <button class="tab-btn active" id="tabbtn-brew" aria-current="page" onclick="switchTab('brew')"><span class="live-dot" id="brewLiveDot"></span><span class="t-icon"><svg class="ico"><use href="#i-timer"/></svg></span><span class="t-label">Brew</span></button>
   <button class="tab-btn" id="tabbtn-recipe" onclick="switchTab('recipe')"><span class="t-icon"><svg class="ico"><use href="#i-bean"/></svg></span><span class="t-label">Recipe</span></button>
   <button class="tab-btn" id="tabbtn-evaluate" onclick="switchTab('evaluate')"><span class="t-icon"><svg class="ico"><use href="#i-star"/></svg></span><span class="t-label">Taste</span></button>
   <button class="tab-btn" id="tabbtn-library" onclick="switchTab('library')"><span class="t-icon"><svg class="ico"><use href="#i-book"/></svg></span><span class="t-label">Journal</span></button>
@@ -2179,7 +2179,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.219.0';
+const APP_VERSION = '2.220.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
@@ -2487,7 +2487,9 @@ function switchTab(name) {
   document.querySelectorAll('.tab-btn').forEach(function(b) { b.classList.remove('active'); });
   document.getElementById('tab-' + name).classList.add('active');
   document.getElementById('tabbtn-' + name).classList.add('active');
-  document.querySelectorAll('.tab-btn').forEach(function(b) { b.setAttribute('aria-selected', String(b.classList.contains('active'))); });
+  // App-level nav: mark the active view with aria-current="page" (valid on a button, announced as "current")
+  // — aria-selected isn't a real state for the button role, so a screen reader wasn't told which tab is on.
+  document.querySelectorAll('.tab-btn').forEach(function(b) { if (b.classList.contains('active')) b.setAttribute('aria-current', 'page'); else b.removeAttribute('aria-current'); });
   if (name === 'brew') { renderToday(); renderBrewBar(); }
   if (name === 'recipe') showDialHint();
   if (name === 'library') { renderLibrary(); refreshSharePanel(); }
