@@ -567,9 +567,9 @@
   .grind-anchor { color:var(--text-muted); font-size:0.9em; }
   /* Beginner-only orienting line above the dial-in chips: teaches the sour/bitter axis
      at the moment of need, so the defect vocabulary isn't a wall. Experts know this cold. */
-  .dialin-coach-hint { display:none; font-size:12px; color:var(--text-secondary); line-height:1.6; margin:2px 0 12px; }
-  body.skill-beginner .dialin-coach-hint { display:block; }
-  .dialin-coach-hint strong { color:var(--accent-bright); font-weight:600; }
+  .dialin-coach-hint, .taste-coach-hint { display:none; font-size:12px; color:var(--text-secondary); line-height:1.6; margin:2px 0 12px; }
+  body.skill-beginner .dialin-coach-hint, body.skill-beginner .taste-coach-hint { display:block; }
+  .dialin-coach-hint strong, .taste-coach-hint strong { color:var(--accent-bright); font-weight:600; }
   /* Beginner-only taste-word glossary — collapsed by default so it never clutters. The coach-hint
      above maps the big-3 to causes/fixes; this maps every chip to what it tastes/feels like, the
      piece a keyless beginner needs to pick a chip at all. Same skill-beginner gate as the hint. */
@@ -1515,6 +1515,7 @@
       </div>
       <div style="margin-bottom:20px">
         <span class="eval-label">Flavor Descriptors <span style="font-weight:400;color:var(--text-muted);text-transform:none;letter-spacing:0">(tap to toggle)</span></span>
+        <p class="taste-coach-hint">New to tasting? Tap whatever you notice &mdash; even just <strong>Sweet</strong> or <strong>Fruity</strong>. There's no wrong answer.</p>
         <div class="tag-container" id="flavorTags">
           <span class="tag" onclick="toggleTag(this)">Floral</span><span class="tag" onclick="toggleTag(this)">Fruity</span>
           <span class="tag" onclick="toggleTag(this)">Citrus</span><span class="tag" onclick="toggleTag(this)">Berry</span>
@@ -2179,7 +2180,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.220.0';
+const APP_VERSION = '2.221.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;

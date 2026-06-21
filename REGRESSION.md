@@ -1610,3 +1610,10 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] App-level nav pattern: switchTab now sets aria-current="page" on the active tab-btn and removes it from the others (aria-current is valid on any element and announced as "current"). Brew button carries aria-current="page" in the markup for the initial state; the <nav> got aria-label="Main"
 - [ ] npm run check green (2.220.0 synced); verified via preview: on load tabbtn-brew has aria-current=page; switchTab('library') moves aria-current to tabbtn-library and clears it from brew; exactly one tab has aria-current at a time; <nav> aria-label present
 - [ ] Update toast after deploy (cache v2.220.0)
+
+## Sprint 233 (v2.221.0) — beginner reassurance on the flavor-descriptor wall
+- [ ] Beginner: the Evaluate screen shows "Flavor Descriptors (tap to toggle)" + 24 chips (Floral, Stone Fruit, Wine-like…) on every brew. Tap-to-toggle is low-barrier, but a newcomer who can't name flavors reads the wall as a vocabulary quiz they're failing — and unlike the dial-in taste chips (which have a beginner coach-hint + glossary), the flavor descriptors had only a neutral "(tap to toggle)"
+- [ ] Fix: added a beginner-gated reassurance under the flavor label — "New to tasting? Tap whatever you notice — even just Sweet or Fruity. There's no wrong answer." Reuses the existing .dialin-coach-hint visual + gating, generalized to a sibling .taste-coach-hint class (display:none; body.skill-beginner shows it). Points at two real, simple chips (Sweet, Fruity)
+- [ ] Gating: visible only in Beginner skill tier (body.skill-beginner); Enthusiast/Expert never see it. No new gating mechanism — same pattern as the dial-in coach-hint
+- [ ] npm run check green (2.221.0 synced); verified via preview: hint hidden by default, shown when body.skill-beginner; copy renders with Sweet/Fruity bolded
+- [ ] Update toast after deploy (cache v2.221.0)
