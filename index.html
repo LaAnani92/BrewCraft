@@ -584,6 +584,9 @@
   /* Quiet "welcome back" on the Brew landing for a returning user (>=3 days away) — a greeting on
      open, never a nag. Gated to users with real recipes (sample-only users get the starter hint). */
   .today-welcome { font-size:13px; color:var(--accent-bright); margin-bottom:9px; line-height:1.5; }
+  /* Cold-brew / cold-drip brew screen: a calm steep note replaces the guided-pour CTA + live timer,
+     since those methods steep for hours, not minutes. */
+  .brew-steep-note { font-size:13px; color:var(--text-secondary); line-height:1.55; margin-bottom:16px; padding:12px 14px; background:var(--bg-input); border:1px solid var(--border); border-radius:12px; }
   /* Beginner-only orientation on a blank "New Recipe" — a newcomer facing an empty dose/ratio/grind form
      gets pointed at the existing helpers (method pick → Quick recipe / Suggest) instead of a wall of
      jargon. JS-gated (skill-beginner + new + no dose); auto-hides the moment a dose lands. */
@@ -1404,9 +1407,10 @@
     <button class="bb-stat" onclick="switchTab('recipe');bbFocus('waterTemp')"><span class="bb-label">Temp</span><span class="bb-val" id="bb2Temp">—</span></button>
   </div>
 
-  <button class="btn btn-primary btn-block" style="margin-bottom:16px;padding:14px" onclick="enterBrewAlong()"><svg class="ico"><use href="#i-play"/></svg> Brew-Along Mode (guided, keeps screen on)</button>
+  <div class="brew-steep-note" id="brewSteepNote" style="display:none"></div>
+  <button class="btn btn-primary btn-block" id="brewAlongBtn" style="margin-bottom:16px;padding:14px" onclick="enterBrewAlong()"><svg class="ico"><use href="#i-play"/></svg> Brew-Along Mode (guided, keeps screen on)</button>
 
-  <div class="timer-section">
+  <div class="timer-section" id="timerSection">
     <div class="timer-ring-wrap">
       <svg class="timer-ring" viewBox="0 0 220 220" aria-hidden="true">
         <circle class="timer-ring-track" cx="110" cy="110" r="100"></circle>
@@ -2031,6 +2035,12 @@ const BREW_RING_C = 628.319; // circumference of the r=100 ring
 function isImmersion(method) {
   return method === 'French Press' || method === 'AeroPress' || method === 'Clever' || method === 'Hario Switch';
 }
+// Long-steep methods steep for hours, not minutes — a live timer and a guided pour don't apply.
+function isLongSteep(method) { return method === 'Cold Brew' || method === 'Cold Drip'; }
+function longSteepBlurb(method) {
+  if (method === 'Cold Drip') return 'Cold drip runs slow — about 6 hours of steady dripping. Set the drip rate, then come back and rate it once the carafe is full. No live timer needed.';
+  return 'Cold brew is a long steep, not a live pour. Stir to fully saturate, refrigerate 12–24 hours (overnight is easiest), then come back and rate it. No live timer needed.';
+}
 function updateBrewGuide(sec) {
   const el = document.getElementById('brewGuide');
   if (!el) return;
@@ -2126,7 +2136,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.150.0';
+const APP_VERSION = '2.151.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
@@ -3261,6 +3271,11 @@ function buildBASteps() {
 async function enterBrewAlong() {
   baSteps = buildBASteps();
   if (!baSteps.length) {
+    // Cold brew/drip has no guided pour — don't tell them to "add pour weights"; name the real method.
+    if (isLongSteep(getSelectedMethod())) {
+      showToast('Cold brew is a long steep, not a guided pour — stir to saturate, refrigerate, then rate it once it’s ready.', 'info');
+      return;
+    }
     // The #1 CTA shouldn't dead-end a beginner. If water is set, offer one-tap auto-distribute then
     // enter — instead of just naming a feature they'd have to go find.
     const water = parseFloat(document.getElementById('totalWater').value) || 0;
@@ -5665,6 +5680,13 @@ function renderToday() {
   if (rt) bits.push('1:' + rt);
   if (w) bits.push('\u2192 ' + w + 'g water');
   document.getElementById('todayMeta').textContent = bits.join(' \u00b7 ') || 'Pick a Quick Start below or build your own';
+  // Long-steep methods (cold brew/drip) aren't a live pour \u2014 swap the guided-pour CTA + live timer for a
+  // calm steep note so the brew screen matches an overnight steep instead of dead-ending at a stopwatch.
+  const _longSteep = isLongSteep(m);
+  const _steepEl = document.getElementById('brewSteepNote');
+  if (_steepEl) { _steepEl.textContent = _longSteep ? longSteepBlurb(m) : ''; _steepEl.style.display = _longSteep ? 'block' : 'none'; }
+  const _baBtn = document.getElementById('brewAlongBtn'); if (_baBtn) _baBtn.style.display = _longSteep ? 'none' : '';
+  const _tSec = document.getElementById('timerSection'); if (_tSec) _tSec.style.display = _longSteep ? 'none' : '';
   // Welcoming "starter" framing for new users: the seeded samples are named "Sample \u2014 \u2026".
   const isStarter = /^Sample \u2014 /.test(name);
   const allSamples = recipes.length > 0 && recipes.every(function(r) { return /^Sample \u2014 /.test(r.name || ''); });

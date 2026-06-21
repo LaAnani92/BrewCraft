@@ -1189,3 +1189,9 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] Added isCold (Cold Brew/Cold Drip); a cold-specific goal branch adjusts ratio/grind and points at STEEP TIME, never tempC; the dark/light roast temp tweak is guarded with !isCold. Hot methods unchanged
 - [ ] npm run check green (2.150.0 synced); verified via preview: ruleSuggest('Cold Brew','Brighter') keeps tempC 20 (was 80) + coarser grind; ('Cold Brew','Stronger') lowers ratio; dark-roast cold brew stays 20°C; V60 Brighter still 80→ cooler-water path intact (93→91)
 - [ ] Update toast after deploy (cache v2.150.0)
+
+## Sprint 163 (v2.151.0) — cold-brew brew screen: steep note instead of a live timer / dead-end
+- [ ] Mobile Kitchen UX lens: cold methods steep 6–24h, but the Brew tab gave every recipe the prominent "Brew-Along Mode (guided pours)" button + a live mm:ss timer ring. Cold brew has no pours, so tapping Brew-Along dead-ended with a misleading "Add pour weights first" toast, and the live timer is useless for an overnight steep
+- [ ] Added isLongSteep(method) (Cold Brew/Cold Drip) + longSteepBlurb(). renderToday now, for long-steep methods, shows a calm #brewSteepNote ("Cold brew is a long steep… stir, refrigerate 12–24h, rate it later. No live timer needed.") and HIDES the Brew-Along button (#brewAlongBtn) + the live timer (#timerSection); hot/pour-over methods unchanged. enterBrewAlong also guards the long-steep case with an info toast instead of "add pour weights"
+- [ ] npm run check green (2.151.0 synced); verified via preview: method Cold Brew → steep note shown, Brew-Along btn + timer hidden; Cold Drip → cold-drip-specific note; switching back to V60 → note hidden, btn + timer restored; enterBrewAlong on cold brew → info toast (not "add pour weights")
+- [ ] Update toast after deploy (cache v2.151.0)
