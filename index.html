@@ -2174,7 +2174,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.213.0';
+const APP_VERSION = '2.214.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
@@ -5878,6 +5878,11 @@ function applyGearProfile() {
   if (!g) return;
   if (g.method) setMethod(g.method);
   setSelectOrCustom('grinderName','grinderCustom', g.grinderName || '');
+  // Restore a custom grinder's range/unit BEFORE onGrinderChange so its unit label and the grind bar position
+  // on the same scale the setup was saved on (older profiles without these fields just clear them — harmless).
+  document.getElementById('grindCustomUnit').value = g.grindCustomUnit || '';
+  document.getElementById('grindCustomMin').value = g.grindCustomMin || '';
+  document.getElementById('grindCustomMax').value = g.grindCustomMax || '';
   onGrinderChange();
   document.getElementById('grindSize').value = g.grindSize || '';
   document.getElementById('grindCoarseness').value = g.grindCoarseness || '0';
@@ -6255,6 +6260,11 @@ function confirmSaveGear() {
     grinderName: getSelectOrCustom('grinderName','grinderCustom'),
     grindSize: document.getElementById('grindSize').value,
     grindCoarseness: document.getElementById('grindCoarseness').value,
+    // A custom grinder has no GRINDER_DATA range, so capture its scale too — otherwise re-applying the setup
+    // loses the range and the grind bar/steppers go blank.
+    grindCustomUnit: (document.getElementById('grindCustomUnit') || {}).value || '',
+    grindCustomMin: (document.getElementById('grindCustomMin') || {}).value || '',
+    grindCustomMax: (document.getElementById('grindCustomMax') || {}).value || '',
     filterType: document.getElementById('filterType').value
   };
   gearProfiles.unshift(g);
