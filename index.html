@@ -2155,7 +2155,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.189.0';
+const APP_VERSION = '2.190.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
@@ -3468,7 +3468,17 @@ function setRating(v, silent) {
       const prevBest = ancestorBestRating();
       if (prevBest > 0 && v > prevBest) {
         _bestFired = true; _ratingToast = true;
-        showToast('New best for this recipe — ' + v + '★ beats your ' + prevBest + '★', 'success');
+        const _cur = recipes.find(function(x) { return x.id === currentRecipeId; });
+        const _ver = (_cur && _cur.version) || 0;
+        let _root = _cur, _g = 0;
+        while (_root && _root.parentId && _g++ < 50) { const _p = recipes.find(function(x) { return x.id === _root.parentId; }); if (!_p) break; _root = _p; }
+        const _start = (_root && _root !== _cur) ? (_root.rating || 0) : 0;
+        // Name the journey: reaching your best after dialing in over several versions is the payoff this whole
+        // loop is built around. Say how far the recipe climbed, not just that it won; fall back when no arc.
+        const _msg = (_ver >= 2 && _start > 0 && _start < v)
+          ? 'v' + _ver + ' is your best yet — ' + v + '★, up from ' + _start + '★ where it began.'
+          : 'New best for this recipe — ' + v + '★ beats your ' + prevBest + '★';
+        showToast(_msg, 'success');
         if (v < 5) { vibrate(45); celebrate(); }
       }
     }
