@@ -1526,3 +1526,9 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] nudgeGrind now announceAI('Grind <value>' + posLabel) after stepping — e.g. "Grind 23, in range" or "Grind 21, aim 18-22 clicks", reading grindPosLabel (the same in-range/aim hint the caret shows). Only on the discrete step; typing the field stays self-evident and silent. Reuses the always-present sr-only #aiStatusSr (the v2.203 pattern)
 - [ ] npm run check green (2.206.0 synced); verified via preview: after nudgeGrind(-1)/(+1) #aiStatusSr reads "Grind <new value>" (+ position hint when a grinder band is set); typing #grindSize does NOT announce; value still steps + clamps as before
 - [ ] Update toast after deploy (cache v2.206.0)
+
+## Sprint 219 (v2.207.0) — journal Timeline shows the dial-in climb step by step
+- [ ] Emotional Design: the Timeline already has a "Your best so far" peak highlight + a "where it began" bottom bookend, but the climb BETWEEN was invisible — versions appeared as flat dated entries with only a "vN" label, so the "thread of versions as you dial it in" (empty-state promise) went partly unmet
+- [ ] renderJournal now marks a step-up: when an entry out-scores the version it grew from (byId[r.parentId] rated AND r.rating > parent.rating), it shows a quiet success-colored "↑ from N★" (.journal-climb) under the meta, and appends "up from N at the previous version" to the entry's SR aria-label. Only on improved versions (calm, conditional); regressions are left unmarked (the journal stays a positive keepsake)
+- [ ] npm run check green (2.207.0 synced); verified via preview: an entry whose parent is rated lower gets the "↑ from N★" cue + aria-label addition; a v1/root (no parent) and a non-improving version get nothing; byId map built once
+- [ ] Update toast after deploy (cache v2.207.0)
