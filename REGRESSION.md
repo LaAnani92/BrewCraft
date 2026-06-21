@@ -1237,3 +1237,9 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] Both Insights charts now store each plotted point's recipe ref + screen coords (b.c._hitPoints) during draw and wire a once-per-canvas click handler (chartTapHit/wireChartTap). A tap finds the nearest point within 22px → showActionToast identifies it ("<name> · 21.3% EY · 5★" for scatter; "<name> · <date> · N★" for timeline) with a one-tap "Open" (loadRecipe + switchTab recipe). Empty-state paths clear _hitPoints. Canvases are aria-hidden, so this is a sighted-touch nicety (SR users have the journal)
 - [ ] npm run check green (2.158.0 synced); verified via preview: scatter/timeline _hitPoints populated with correct labels after draw; a synthetic click at a point's coords fires the action toast naming that brew; tap in empty space → no toast; canvases wired once (_tapWired)
 - [ ] Update toast after deploy (cache v2.158.0)
+
+## Sprint 171 (v2.159.0) — tapping your best Insights dot carries a flicker of pride
+- [ ] Emotional Design lens: v2.158's chart-tap gives every dot a flat informational label. The user's single best cup — the peak of their scatter — deserved a small warm beat rather than the same dry "<name> · EY · ★"
+- [ ] Added bestCupId() (highest rating, ties → most recent createdAt, only when >=4★ so a mediocre "best" isn't celebrated). Both charts prefix that one dot's tap label with "Your best so far — " (mirrors the v2.80 journal best-so-far concept). One dot, on-tap only — no clutter; reuses the v2.158 action toast
+- [ ] npm run check green (2.159.0 synced); verified via preview: the 5★ cup's hitPoint label is prefixed "Your best so far —", other dots plain; ties → most recent prefixed; all-3★ journal → no prefix (gated ≥4★); a tap on the best dot surfaces the proud label
+- [ ] Update toast after deploy (cache v2.159.0)

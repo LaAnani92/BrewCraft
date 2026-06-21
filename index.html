@@ -2136,7 +2136,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.158.0';
+const APP_VERSION = '2.159.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
@@ -5090,6 +5090,16 @@ function bestRatioCluster() {
   if (sorted[sorted.length - 1] - sorted[0] > Math.max(0.4, median * 0.2)) return null;
   return { method: pick.method, median: median, n: sorted.length };
 }
+/* The single highest-rated cup (ties → most recent) — only when it's genuinely good (>=4*), so the
+   chart-tap can give that one dot a flicker of pride. Mirrors the journal "best so far" (v2.80). */
+function bestCupId() {
+  let best = null;
+  recipes.forEach(function(r) {
+    if (!(r.rating > 0)) return;
+    if (!best || r.rating > best.rating || (r.rating === best.rating && (r.createdAt || '') > (best.createdAt || ''))) best = r;
+  });
+  return (best && best.rating >= 4) ? best.id : null;
+}
 function drawScatterEY() {
   const b = chartBase('statsCanvas1');
   const pts = recipes.map(function(r) { return { x: computeEY(r), y: r.rating || 0, id: r.id, name: r.name }; })
@@ -5134,7 +5144,8 @@ function drawScatterEY() {
     b.ctx.fill();
     b.ctx.restore();
   });
-  b.c._hitPoints = pts.map(function(p) { return { sx: mx(p.x), sy: my(p.y), id: p.id, label: (p.name || 'Untitled') + ' · ' + p.x.toFixed(1) + '% EY · ' + p.y + '★' }; });
+  const _bestId = bestCupId();
+  b.c._hitPoints = pts.map(function(p) { return { sx: mx(p.x), sy: my(p.y), id: p.id, label: (p.id === _bestId ? 'Your best so far — ' : '') + (p.name || 'Untitled') + ' · ' + p.x.toFixed(1) + '% EY · ' + p.y + '★' }; });
   wireChartTap(b.c);
   return pts.length;
 }
@@ -5188,7 +5199,8 @@ function drawRatingTimeline() {
     b.ctx.fillStyle = last ? b.col.bright : b.col.accent;
     b.ctx.fill();
   });
-  b.c._hitPoints = rated.map(function(r, i) { return { sx: mx(i), sy: my(r.rating), id: r.id, label: (r.name || 'Untitled') + (r.createdAt ? ' · ' + r.createdAt.slice(0, 10) : '') + ' · ' + r.rating + '★' }; });
+  const _bestId = bestCupId();
+  b.c._hitPoints = rated.map(function(r, i) { return { sx: mx(i), sy: my(r.rating), id: r.id, label: (r.id === _bestId ? 'Your best so far — ' : '') + (r.name || 'Untitled') + (r.createdAt ? ' · ' + r.createdAt.slice(0, 10) : '') + ' · ' + r.rating + '★' }; });
   wireChartTap(b.c);
   return rated.length;
 }
