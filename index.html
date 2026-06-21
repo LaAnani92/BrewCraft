@@ -2142,7 +2142,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.175.0';
+const APP_VERSION = '2.176.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
@@ -3972,7 +3972,14 @@ const GRIND_ORDER = ['extra fine', 'espresso-fine', 'fine', 'medium-fine', 'medi
 function coarserStep(g) { const i = GRIND_ORDER.indexOf((g || 'medium').toLowerCase()); return (i >= 0 && i < GRIND_ORDER.length - 1) ? GRIND_ORDER[i + 1] : (g || 'medium'); }
 function finerStep(g) { const i = GRIND_ORDER.indexOf((g || 'medium').toLowerCase()); return i > 0 ? GRIND_ORDER[i - 1] : (g || 'medium'); }
 function ruleSuggest(method, goal, roastLevel) {
-  const base = (QUICK_RECIPES[method] && QUICK_RECIPES[method][0]) || { doseG: 15, ratio: 16.5, tempC: 93, grind: 'medium-fine' };
+  const _base = (QUICK_RECIPES[method] && QUICK_RECIPES[method][0]) || { doseG: 15, ratio: 16.5, tempC: 93, grind: 'medium-fine' };
+  // Anchor the starting ratio to the user's OWN proven cluster for this method when they have one — the
+  // app's signature personalization belongs most in the feature about WHERE to start. Goal tweaks below then
+  // apply from their number, not a textbook default. Copy first so the shared QUICK_RECIPES preset is never
+  // mutated. Self-gating: ratioClusterForMethod needs >=3 top-rated same-method cups.
+  const _rc = ratioClusterForMethod(method);
+  const base = Object.assign({}, _base);
+  if (_rc) base.ratio = _rc.median;
   const isEsp = method === 'Espresso';
   const isCold = method === 'Cold Brew' || method === 'Cold Drip';
   const s = { doseG: base.doseG, ratio: base.ratio, tempC: base.tempC, grind: base.grind, espYield: base.espYield, espShot: base.espShot, rationale: '' };
@@ -4005,6 +4012,7 @@ function ruleSuggest(method, goal, roastLevel) {
   const rl = (roastLevel || '').toLowerCase();
   if (!isCold && rl.indexOf('dark') !== -1) { s.tempC = Math.max(80, s.tempC - 2); s.rationale += ' Cooler water suits the darker roast.'; }
   else if (!isCold && rl.indexOf('light') !== -1) { s.tempC = Math.min(100, s.tempC + 2); s.rationale += ' Hotter water helps extract the lighter roast.'; }
+  if (_rc) s.rationale += ' Anchored to your proven 1:' + _rc.median.toFixed(1) + ' for ' + method + '.';
   if (isEsp) { s.espYield = Math.round((parseFloat(s.doseG) || 18) * s.ratio); s.espShot = base.espShot || 28; }
   return s;
 }
@@ -4055,10 +4063,16 @@ async function runSuggest(goal) {
   }
   panel.innerHTML = aiThinking('Starting point \u00b7 ' + escapeHtml(goal), 'Thinking about your ' + escapeHtml(method));
   try {
-    const sys = 'You are a specialty coffee expert. Given a bean (including its freshness / days off roast), brew method, the user skill level, and a taste goal, propose ONE realistic starting recipe. Account for freshness when given: very fresh coffee still degassing brews unevenly, while coffee well past roast has faded aromatics. Reply ONLY with minified JSON (no prose, no markdown, no code fence). Keys: doseG (number, grams), ratio (number, water:coffee e.g. 16.5; for espresso the brew ratio e.g. 2.0), tempC (number, Celsius), grind (one of EXACTLY: "extra fine","espresso-fine","fine","medium-fine","medium","medium-coarse","coarse","extra coarse"), rationale (one short plain-text sentence). For espresso ALSO include espYield (grams out) and espShot (seconds). Keep values realistic for the method and bean.';
+    const sys = 'You are a specialty coffee expert. Given a bean (including its freshness / days off roast), brew method, the user skill level, and a taste goal, propose ONE realistic starting recipe. Account for freshness when given: very fresh coffee still degassing brews unevenly, while coffee well past roast has faded aromatics. Reply ONLY with minified JSON (no prose, no markdown, no code fence). Keys: doseG (number, grams), ratio (number, water:coffee e.g. 16.5; for espresso the brew ratio e.g. 2.0), tempC (number, Celsius), grind (one of EXACTLY: "extra fine","espresso-fine","fine","medium-fine","medium","medium-coarse","coarse","extra coarse"), rationale (one short plain-text sentence). For espresso ALSO include espYield (grams out) and espShot (seconds). Keep values realistic for the method and bean. If a USER TRACK RECORD is provided (their best-rated ratio cluster and the extraction band of their best cups for this method), prefer it as the starting point over generic defaults; it reflects what THIS drinker actually likes.';
     const fresh = freshnessInfo(d.roastDate);
     const beanBits = { origin: d.beanOrigin, roaster: d.roaster, process: d.beanProcess, roastLevel: d.roastLevel, freshness: fresh ? fresh.label : 'roast date not logged' };
-    const userMsg = 'METHOD: ' + method + '\nBEAN: ' + JSON.stringify(beanBits) + '\nSKILL: ' + (settings.skill || 'beginner') + '\nTASTE GOAL: ' + goal;
+    const _rcS = ratioClusterForMethod(method);
+    const _ssS = sweetSpot();
+    const trackBits = [];
+    if (_rcS) trackBits.push('their best-rated ' + method + 's cluster around 1:' + _rcS.median.toFixed(1));
+    if (_ssS) trackBits.push('their best cups extract ' + _ssS.lo.toFixed(1) + '-' + _ssS.hi.toFixed(1) + '%');
+    const trackLine = trackBits.length ? '\nUSER TRACK RECORD (prefer over generic defaults): ' + trackBits.join('; ') : '';
+    const userMsg = 'METHOD: ' + method + '\nBEAN: ' + JSON.stringify(beanBits) + '\nSKILL: ' + (settings.skill || 'beginner') + '\nTASTE GOAL: ' + goal + trackLine;
     const text = await aiComplete(sys, userMsg, 350);
     let s = null;
     try { s = parseJSONLoose(text); } catch(_) { s = null; }
@@ -4066,7 +4080,7 @@ async function runSuggest(goal) {
     s.doseG = parseFloat(s.doseG); s.ratio = parseFloat(s.ratio); s.tempC = parseFloat(s.tempC) || 93;
     if (s.espYield) s.espYield = parseFloat(s.espYield);
     if (s.espShot) s.espShot = parseFloat(s.espShot);
-    renderResult(s, 'AI \u00b7 ' + escapeHtml(settings.model || 'claude-sonnet-4-6') + ' \u00b7 tuned to your bean & goal');
+    renderResult(s, 'AI \u00b7 ' + escapeHtml(settings.model || 'claude-sonnet-4-6') + ' \u00b7 tuned to your bean & goal' + (trackBits.length ? ' & track record' : ''));
   } catch(e) {
     renderResult(ruleSuggest(method, goal, d.roastLevel), 'AI unavailable (' + escapeHtml(aiErrorHint(e)) + ') \u2014 showing a trusted built-in starting point instead.');
   }
