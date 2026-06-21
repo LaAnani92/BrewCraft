@@ -1631,3 +1631,10 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] Rationale: Enthusiast minimises harm across skippers — simple mode keeps it uncluttered for a beginner, and it doesn't hide precision gear or show patronising beginner coaching to a pro. obChoose path unchanged
 - [ ] npm run check green (2.223.0 synced); verified via preview: applyMode with skill='enthusiast'/mode='simple' yields body.simple + body.skill-enthusiast (no pro full-UI, coherent tier)
 - [ ] Update toast after deploy (cache v2.223.0)
+
+## Sprint 236 (v2.224.0) — AI dial-in advice now scannable like the free coach
+- [ ] AI Product: dialinHtml bolds the action markers "PRIMARY →" / "Secondary →" so the one move to make pops for a one-handed mid-brew glance. The keyless coach (ruleDialIn) emits those markers, but the AI prompt asked for "(1)/(2)/(3)" plain text — so the premium AI path rendered as a same-weight wall (the comment even admitted "AI prose without the markers is just left as escaped text"). The free path had stronger visual hierarchy than the paid one
+- [ ] Fix: the dial-in AI prompt now asks for three lines beginning with the verbatim markers "PRIMARY → ", "Secondary → ", "Watch → " (matching the keyless coach's format). dialinHtml's bold regex extended from (PRIMARY|Secondary) to (PRIMARY|Secondary|Watch) so all three pop. .dialin-out is white-space:pre-wrap so the line breaks already survive
+- [ ] Graceful degradation unchanged: if the model ignores the markers, the text is still escaped + pre-wrap readable (just unbolded), exactly as before. Keyless coach output unaffected (it never emits "Watch →")
+- [ ] npm run check green (2.224.0 synced); verified via preview: dialinHtml bolds PRIMARY/Secondary/Watch markers and leaves marker-less prose intact
+- [ ] Update toast after deploy (cache v2.224.0)
