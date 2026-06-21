@@ -429,6 +429,9 @@
   .compare-table td:first-child { color:var(--text-muted); font-size:12px; white-space:nowrap; }
   .compare-table tr.diff td:not(:first-child) { color:var(--accent-bright); font-weight:600; }
   .compare-table th.cmp-win { color:var(--success); }
+  /* The takeaway, not just the table: reads the diff against the outcome so a comparison becomes a lesson. */
+  .compare-lesson { font-size:13px; line-height:1.5; color:var(--text-secondary); background:linear-gradient(135deg, var(--accent-glow), transparent), var(--bg-input); border:1px solid var(--border); border-radius:var(--radius-sm); padding:10px 13px; margin-bottom:14px; }
+  .compare-lesson strong { color:var(--accent-bright); }
 
   .ba-overlay {
     position:fixed; inset:0; background:var(--bg-deep); z-index:800;
@@ -2012,6 +2015,7 @@
 <div class="modal-overlay" id="compareModal">
   <div class="modal" style="max-width:640px">
     <h3>Recipe Comparison</h3>
+    <div class="compare-lesson" id="compareLesson" hidden></div>
     <div style="overflow-x:auto"><table class="compare-table" id="compareTable"><thead id="compareHead"></thead><tbody id="compareBody"></tbody></table></div>
     <div class="field-hint" id="compareCaveat" hidden style="margin:-4px 0 12px">Different brew methods — ratings aren't directly comparable, so no winner is marked.</div>
     <div class="modal-actions">
@@ -2170,7 +2174,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.207.0';
+const APP_VERSION = '2.208.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
@@ -4968,6 +4972,31 @@ function openCompare(idA, idB) {
   // Explain the missing winner mark when methods differ (and a winner would otherwise have shown).
   const caveat = document.getElementById('compareCaveat');
   if (caveat) caveat.hidden = !(!sameMethod && rA && rB && rA !== rB);
+  // Turn the diff into a lesson. With a same-method winner, read the number of changed PARAMETERS against
+  // the outcome: one change = clean cause-and-effect; several = ambiguous (the dial-in's one-variable rule);
+  // none = the recipe wasn't the difference (bean / water / freshness / technique on the day).
+  const lesson = document.getElementById('compareLesson');
+  if (lesson) {
+    const hasWinner = sameMethod && rA && rB && rA !== rB;
+    if (hasWinner) {
+      const changed = DIFF_FIELDS.filter(function(f) { return fmtDiffVal(f[0], a[f[0]]) !== fmtDiffVal(f[0], b[f[0]]); });
+      const winner = (rA > rB) ? a : b;
+      const wname = escapeHtml(winner.name || 'the higher-rated cup');
+      const hi = Math.max(rA, rB), lo = Math.min(rA, rB), score = hi + '★ vs ' + lo + '★';
+      let msg;
+      if (changed.length === 0) {
+        msg = 'Same parameters, yet ' + wname + ' scored higher (' + score + ') — the difference was the bean, water, grind freshness, or your technique on the day, not the recipe.';
+      } else if (changed.length === 1) {
+        msg = 'One change — <strong>' + escapeHtml(changed[0][1]) + '</strong> — separates these, and ' + wname + ' won (' + score + '). Clean cause and effect: that move worked.';
+      } else {
+        msg = '<strong>' + changed.length + ' parameters</strong> changed between these. ' + wname + ' won (' + score + '), but with several moves at once you can’t credit just one — change a single variable next time to learn what matters.';
+      }
+      lesson.innerHTML = msg;
+      lesson.hidden = false;
+    } else {
+      lesson.hidden = true;
+    }
+  }
   document.getElementById('compareModal').classList.add('show');
 }
 function closeCompare() {
