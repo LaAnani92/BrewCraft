@@ -1871,7 +1871,7 @@
         <div class="field">
           <label>Anthropic API Key <span class="unit">(enables AI dial-in)</span> <button type="button" class="link-btn" id="apiKeyToggle" onclick="toggleApiKeyVisible()" aria-pressed="false" style="margin-left:auto;text-transform:none;letter-spacing:0;font-size:12px">Show</button></label>
           <input type="password" id="labApiKey" placeholder="sk-ant-…" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" oninput="persistSettings()">
-          <div class="field-hint">Stored only in this browser. Get one at console.anthropic.com — tap Show to check it pasted correctly. Without a key, the assistant uses built-in expert rules.</div>
+          <div class="field-hint">Stored only in this browser. Get one at <a href="https://console.anthropic.com/settings/keys" target="_blank" rel="noopener noreferrer" style="color:var(--accent-bright)">console.anthropic.com</a> — tap Show to check it pasted correctly. Without a key, the assistant uses built-in expert rules.</div>
         </div>
         <div class="field">
           <label>AI Model</label>
@@ -2155,7 +2155,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.185.0';
+const APP_VERSION = '2.186.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;

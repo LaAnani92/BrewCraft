@@ -1400,3 +1400,9 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] Added .link-btn:focus-visible { outline:2px solid var(--accent-bright); outline-offset:2px; border-radius:3px; }. Clear keyboard-only focus ring (outline doesn't shift layout); kept the existing color change. Mouse hover unaffected (no outline)
 - [ ] npm run check green (2.185.0 synced); verified via preview: the .link-btn:focus-visible CSS rule is present in the CSSOM with the outline; bridge button is a focusable <button> with accessible name "Log these targets as this recipe's water"
 - [ ] Update toast after deploy (cache v2.185.0)
+
+## Sprint 198 (v2.186.0) — make the "get an API key" URL tappable
+- [ ] Beginner User lens: the keyless "Add an API key" link-btns (dial-in/suggest/explain/scan) are the gateway to AI, and they correctly land a beginner on the Settings key field, whose hint says "Get one at console.anthropic.com". But that URL was PLAIN TEXT — a beginner who wants AI had to manually type the URL into a browser to actually get a key. (Keeping the CTA itself a quiet link is right — don't push the technical setup; the keyless rules are complete.)
+- [ ] Made "console.anthropic.com" a real link → <a href="https://console.anthropic.com/settings/keys" target="_blank" rel="noopener noreferrer" style="color:var(--accent-bright)">. One tap to the Anthropic keys page (user-initiated external nav; new tab; noopener). Visible text unchanged; the rest of the hint (browser-only storage, Show toggle, works-without-key) unchanged
+- [ ] npm run check green (2.186.0 synced); verified via preview: the settings key-field hint contains an <a> with href console.anthropic.com/settings/keys, target=_blank, rel includes noopener, visible text "console.anthropic.com"
+- [ ] Update toast after deploy (cache v2.186.0)
