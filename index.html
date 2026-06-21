@@ -2136,7 +2136,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.159.0';
+const APP_VERSION = '2.160.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
@@ -3724,6 +3724,15 @@ async function getDialinAdvice() {
     let txt = (!issues.length && notes)
       ? 'The built-in coach reads the taste chips, not written notes — tap the one closest to your cup above. Adding an API key brings in AI that can read your description.'
       : ruleDialIn(issues);
+    // Ground the advice in the user's OWN proven numbers: if they have a tight ratio cluster for this
+    // method, cite it as a target anchor (more trustworthy + distinctive than a generic textbook ratio).
+    if (issues.length) {
+      const _rc = ratioClusterForMethod(data.method);
+      const _cr = parseFloat(data.brewRatio);
+      if (_rc && _cr > 0 && Math.abs(_cr - _rc.median) > 0.3) {
+        txt += '\n\nFrom your own log: your best ' + data.method + 's cluster around 1:' + _rc.median.toFixed(1) + ' (' + _rc.n + ' cups at 4★+), and you’re at 1:' + _cr.toFixed(1) + ' now — worth aiming back toward what’s worked.';
+      }
+    }
     _carryAdvice = issues.length ? txt : '';
     if (hist.length && hist[0].indexOf('worse') !== -1) {
       // Don't imply a single cause when the last version changed several things \u2014 count the diffs so the
@@ -5089,6 +5098,16 @@ function bestRatioCluster() {
   // tenths, filter (~1:16) within a few whole points. A flat ±3 would wrongly call 1:2 and 1:5 a cluster.
   if (sorted[sorted.length - 1] - sorted[0] > Math.max(0.4, median * 0.2)) return null;
   return { method: pick.method, median: median, n: sorted.length };
+}
+/* The user's proven ratio cluster for ONE specific method (same tightness test as bestRatioCluster) —
+   lets the dial-in ground its ratio advice in the brewer's own track record, not a textbook target. */
+function ratioClusterForMethod(method) {
+  const ratios = recipes.filter(function(r) { return r.method === method && (r.rating || 0) >= 4 && parseFloat(r.brewRatio) > 0; }).map(function(r) { return parseFloat(r.brewRatio); });
+  if (ratios.length < 3) return null;
+  const sorted = ratios.slice().sort(function(a, b) { return a - b; });
+  const median = sorted[Math.floor(sorted.length / 2)];
+  if (sorted[sorted.length - 1] - sorted[0] > Math.max(0.4, median * 0.2)) return null;
+  return { median: median, n: sorted.length };
 }
 /* The single highest-rated cup (ties → most recent) — only when it's genuinely good (>=4*), so the
    chart-tap can give that one dot a flicker of pride. Mirrors the journal "best so far" (v2.80). */

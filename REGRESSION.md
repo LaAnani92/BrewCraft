@@ -1243,3 +1243,9 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] Added bestCupId() (highest rating, ties → most recent createdAt, only when >=4★ so a mediocre "best" isn't celebrated). Both charts prefix that one dot's tap label with "Your best so far — " (mirrors the v2.80 journal best-so-far concept). One dot, on-tap only — no clutter; reuses the v2.158 action toast
 - [ ] npm run check green (2.159.0 synced); verified via preview: the 5★ cup's hitPoint label is prefixed "Your best so far —", other dots plain; ties → most recent prefixed; all-3★ journal → no prefix (gated ≥4★); a tap on the best dot surfaces the proud label
 - [ ] Update toast after deploy (cache v2.159.0)
+
+## Sprint 172 (v2.160.0) — keyless dial-in cites the user's own proven ratio
+- [ ] AI Product lens: the app computes the user's best ratio cluster per method (bestRatioCluster) for Insights, but the keyless dial-in advised with generic textbook ratios — the coach and the user's own track record were in separate silos. A serious brewer trusts "your best V60s land around 1:15.5" far more than a generic target
+- [ ] Added ratioClusterForMethod(method) (method-scoped, same tightness test). getDialinAdvice keyless now appends, when the current method has a proven cluster (>=3 cups at 4★+, tight spread) and the current ratio differs by >0.3: "From your own log: your best <method>s cluster around 1:X (N cups at 4★+), and you're at 1:Y now — worth aiming back toward what's worked." Appended before the _carryAdvice capture so it travels to the editing surface (v2.138); shown only with real data
+- [ ] npm run check green (2.160.0 synced); verified via preview: V60 with 4 cups at 1:15.5±, current 1:17 + a taste chip → advice includes the personal anchor naming 1:15.5; current ratio at the cluster (1:15.5) → no anchor; <3 cluster cups → no anchor; espresso method-scoped (doesn't cite V60 cluster)
+- [ ] Update toast after deploy (cache v2.160.0)
