@@ -2155,7 +2155,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.190.0';
+const APP_VERSION = '2.191.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
@@ -3593,7 +3593,10 @@ function calcCupping() {
   const cups = 2 * ((uni===null?5:uni) + (cln===null?5:cln) + (swt===null?5:swt));
   const taints = v('cupTaints') || 0, faults = v('cupFaults') || 0;
   const total = sum7 + cups - taints*2 - faults*4;
-  document.getElementById('cupTotal').innerHTML = total.toFixed(2) + '<small>Total / 100 \u00b7 80+ = specialty grade</small>';
+  // Name the SCA specialty band for the live score \u2014 cuppers read scores as grades (Very good / Excellent /
+  // Outstanding), so the band is more useful here than a static "80+ = specialty" note.
+  const band = total >= 90 ? 'Outstanding' : total >= 85 ? 'Excellent' : total >= 80 ? 'Very good' : 'Below specialty';
+  document.getElementById('cupTotal').innerHTML = total.toFixed(2) + '<small>' + band + ' \u00b7 Total / 100</small>';
   markDirty();
 }
 function gatherCupping() {

@@ -1430,3 +1430,9 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] When a new best fires AND there's a real lineage (version >= 2, the root is rated, and the root rating < the new rating), the toast now reads "v<N> is your best yet — <v>★, up from <start>★ where it began." Walks parentId to the root for the start rating; falls back to the original "beats your <prevBest>★" when there's no arc (v1, unrated root, or start already >= new). Only fires on a genuine new best (v > ancestorBestRating, which needs an ancestor)
 - [ ] npm run check green (2.190.0 synced); verified via preview: lineage v1=3→v2=4→v3 rated 5 → "v3 is your best yet — 5★, up from 3★ where it began"; v1=4→v2 rated 5 → "v2 is your best yet — 5★, up from 4★…"; root unrated → fallback "New best… beats your 4★"; single recipe (no ancestor) → no new-best toast
 - [ ] Update toast after deploy (cache v2.190.0)
+
+## Sprint 203 (v2.191.0) — cupping total names the SCA grade band
+- [ ] Advanced Coffee User lens: audited the SCA cupping tool (sec-cupping, expert-only). Math is CORRECT + standards-faithful: sum of 7 quality attrs (6–10, 0.25 step, max 70) + 2×(uniformity+clean+sweet, null→5 default, max 30) − taints×2 − faults×4, capped at 100. The only gap: the total showed a static "80+ = specialty grade" note, but cuppers read scores as grade bands
+- [ ] calcCupping now names the live SCA band next to the score: total >= 90 Outstanding / >= 85 Excellent / >= 80 Very good / else Below specialty. cupTotal shows "<total><small><band> · Total / 100</small>". Empty state keeps the explanatory "80+ = specialty grade" note. Math unchanged
+- [ ] npm run check green (2.191.0 synced); verified via preview: scores summing to 92 → "Outstanding"; 86.5 → "Excellent"; 82 → "Very good"; 78 → "Below specialty"; no scores → "—" + "80+ = specialty grade"; the toFixed(2) total is unchanged
+- [ ] Update toast after deploy (cache v2.191.0)
