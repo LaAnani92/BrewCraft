@@ -1635,7 +1635,7 @@
       <option value="name">Name A–Z</option>
     </select>
   </div>
-  <div class="field-hint" style="margin-bottom:12px">Tap to open · swipe left to delete · ⚖ compare (pick two)</div>
+  <div class="field-hint" style="margin-bottom:12px">Tap to open · swipe left to delete · <svg class="ico" aria-hidden="true"><use href="#i-compare"/></svg> compare (pick two)</div>
   <div id="libraryList"></div>
   <div class="library-empty" id="libraryEmpty">
     <div class="empty-icon"><svg class="ico" style="width:40px;height:40px"><use href="#i-book"/></svg></div>
@@ -2134,7 +2134,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.167.0';
+const APP_VERSION = '2.168.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
