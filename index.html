@@ -1173,7 +1173,7 @@
             <button class="preset-chip" onclick="setRatioChip(17)">1:17</button>
           </div>
           <div class="scrub">
-            <input type="number" inputmode="decimal" enterkeyhint="done" id="brewRatio" class="scrub-num" data-default="16" placeholder="16" step="0.1" min="1" oninput="recalcFromRatio()" aria-label="Brew ratio (1 to x)">
+            <input type="number" inputmode="decimal" enterkeyhint="done" id="brewRatio" class="scrub-num" data-default="16" placeholder="16" step="0.1" min="1" oninput="recalcFromRatio()" aria-label="Brew ratio (1 to x)" aria-describedby="provenRatioHint">
             <div class="ruler" data-field="brewRatio" role="slider" tabindex="0" aria-label="Ratio — drag or arrow keys to adjust" style="--gap:40px"><div class="ruler-ticks"></div><div class="ruler-caret"></div></div>
           </div>
         </div>
@@ -2136,7 +2136,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.171.0';
+const APP_VERSION = '2.172.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
