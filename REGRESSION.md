@@ -1249,3 +1249,9 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] Added ratioClusterForMethod(method) (method-scoped, same tightness test). getDialinAdvice keyless now appends, when the current method has a proven cluster (>=3 cups at 4★+, tight spread) and the current ratio differs by >0.3: "From your own log: your best <method>s cluster around 1:X (N cups at 4★+), and you're at 1:Y now — worth aiming back toward what's worked." Appended before the _carryAdvice capture so it travels to the editing surface (v2.138); shown only with real data
 - [ ] npm run check green (2.160.0 synced); verified via preview: V60 with 4 cups at 1:15.5±, current 1:17 + a taste chip → advice includes the personal anchor naming 1:15.5; current ratio at the cluster (1:15.5) → no anchor; <3 cluster cups → no anchor; espresso method-scoped (doesn't cite V60 cluster)
 - [ ] Update toast after deploy (cache v2.160.0)
+
+## Sprint 173 (v2.161.0) — warmer voice on the dial-in's personal-history anchor
+- [ ] Emotional Design lens: v2.160's anchor led with a clinical data framing ("From your own log: your best V60s cluster around 1:15.5…") at an emotionally significant moment — the app reflecting the brewer's own mastery back mid-struggle — and slightly clashed with v2.137's beginner warm-lead
+- [ ] Reworded to encouraging continuity: "You're nailed this before: your best <method>s land around 1:X (N cups at 4★+). You're at 1:Y now — worth finding your way back." (frames it as your achievement to return to, not a data readout). Same gating/method-scoping; copy-only
+- [ ] npm run check green (2.161.0 synced); verified via preview: off-cluster dial-in now includes "You've nailed this before: …land around 1:15.5"; on-cluster + non-cluster + espresso still suppressed/method-scoped
+- [ ] Update toast after deploy (cache v2.161.0)

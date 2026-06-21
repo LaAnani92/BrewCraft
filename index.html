@@ -2136,7 +2136,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.160.0';
+const APP_VERSION = '2.161.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
@@ -3730,7 +3730,7 @@ async function getDialinAdvice() {
       const _rc = ratioClusterForMethod(data.method);
       const _cr = parseFloat(data.brewRatio);
       if (_rc && _cr > 0 && Math.abs(_cr - _rc.median) > 0.3) {
-        txt += '\n\nFrom your own log: your best ' + data.method + 's cluster around 1:' + _rc.median.toFixed(1) + ' (' + _rc.n + ' cups at 4★+), and you’re at 1:' + _cr.toFixed(1) + ' now — worth aiming back toward what’s worked.';
+        txt += '\n\nYou’ve nailed this before: your best ' + data.method + 's land around 1:' + _rc.median.toFixed(1) + ' (' + _rc.n + ' cups at 4★+). You’re at 1:' + _cr.toFixed(1) + ' now — worth finding your way back.';
       }
     }
     _carryAdvice = issues.length ? txt : '';
