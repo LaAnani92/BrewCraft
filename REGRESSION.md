@@ -1267,3 +1267,9 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] Merged them: build a _histBits array (ratio bit if off-cluster, EY bit if off-sweet-spot), then ONE line "You've nailed this before — <bits joined ', and '>. Worth getting back to what's worked." One paragraph instead of two when both fire; reads as a single coherent history note. Same fire conditions/method-scoping; per-bit cup counts dropped for compactness ("your best" implies it)
 - [ ] npm run check green (2.163.0 synced); verified via preview: both off → one consolidated line with both clauses joined ", and "; ratio-only → just the ratio clause; EY-only → just the EY clause; neither → no line; espresso → no EY clause
 - [ ] Update toast after deploy (cache v2.163.0)
+
+## Sprint 176 (v2.164.0) — bold the dial-in action markers (scannability mid-brew)
+- [ ] Mobile Kitchen UX lens: the content-rich keyless dial-in result is plain text — PRIMARY (the one move to make) is the same weight as the verdict/secondary/history/golden-rule, so a one-handed glancing brewer must read to find it. scrollDialinIntoView lands PRIMARY in-viewport, but it doesn't pop
+- [ ] Added dialinHtml(txt) = escapeHtml(txt).replace(/(PRIMARY|Secondary) →/g, '<strong>$1 →</strong>'). All 3 render points (keyless, AI success, AI catch) now use outEl.innerHTML = dialinHtml(...) instead of textContent. .dialin-out is white-space:pre-wrap so breaks survive; text escaped first (app-generated, XSS-safe); AI prose without the markers is just escaped (no bold). Warm-lead prepend + .src append layering unchanged
+- [ ] npm run check green (2.164.0 synced); verified via preview: keyless result innerHTML contains <strong>PRIMARY →</strong> + <strong>Secondary →</strong>, advice text intact + escaped, .src span still appended, beginner warm-lead still prepends; a recipe name with <script> in the advice context stays escaped (no raw HTML)
+- [ ] Update toast after deploy (cache v2.164.0)

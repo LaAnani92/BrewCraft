@@ -2136,7 +2136,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.163.0';
+const APP_VERSION = '2.164.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
@@ -3692,6 +3692,13 @@ function scrollDialinIntoView() {
   const el = document.getElementById('dialinOut');
   if (el && typeof el.scrollIntoView === 'function') { try { el.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); } catch(e) { el.scrollIntoView(); } }
 }
+/* Render dial-in advice as HTML so the action markers ("PRIMARY →"/"Secondary →") can be bolded — in a
+   content-rich result, the one move to make then pops for a one-handed glance instead of hiding in a
+   wall of same-weight text. App-generated text, escaped first; .dialin-out is white-space:pre-wrap so
+   the line breaks survive, and AI prose without the markers is just left as escaped text. */
+function dialinHtml(txt) {
+  return escapeHtml(txt).replace(/(PRIMARY|Secondary) →/g, '<strong>$1 →</strong>');
+}
 /* The last dial-in advice, stashed so "Start the next version" can carry a read-only reminder to the
    Brew Parameters surface (the grinder). One-shot: consumed when shown so a later manual Brew Again
    won't resurface stale advice. */
@@ -3756,7 +3763,7 @@ async function getDialinAdvice() {
         : 'Heads-up: your last change scored lower \u2014 consider reverting it before stacking new changes.') + '\n\n' + txt;
     }
     if (hist.length) txt += '\n\nIteration memory: ' + hist[0];
-    outEl.textContent = txt;
+    outEl.innerHTML = dialinHtml(txt);
     if (settings.skill === 'beginner') outEl.insertAdjacentHTML('afterbegin', '<span class="dialin-warmlead">Dialing in is normal — nobody nails it first try. Make one small change, taste again, and the difference starts to show.</span>');
     outEl.innerHTML += '<span class="src">Built-in expert rules (extraction compass). <button type="button" class="link-btn" onclick="openSettingsToKey()">Add an API key</button> (gear icon, top right) for AI analysis of your exact recipe.</span>';
     outEl.classList.add('show');
@@ -3797,12 +3804,12 @@ async function getDialinAdvice() {
     const text = (dataResp.content || []).filter(function(b2) { return b2.type === 'text'; }).map(function(b2) { return b2.text; }).join('\n').trim();
     if (!text) throw new Error('empty response');
     _carryAdvice = text;
-    outEl.textContent = text;
+    outEl.innerHTML = dialinHtml(text);
     outEl.innerHTML += '<span class="src">AI analysis \u00b7 ' + escapeHtml(settings.model) + (hist.length ? ' \u00b7 informed by ' + hist.length + ' past iteration' + (hist.length > 1 ? 's' : '') : '') + '</span>';
   } catch(e) {
     let txt = ruleDialIn(issues);
     if (hist.length) txt += '\n\nIteration memory: ' + hist[0];
-    outEl.textContent = txt;
+    outEl.innerHTML = dialinHtml(txt);
     outEl.innerHTML += '<span class="src">AI call failed (' + escapeHtml(aiErrorHint(e)) + ') \u2014 showing built-in expert rules instead. Check your key, model name, and internet connection.</span>';
   }
   outEl.classList.add('show');
