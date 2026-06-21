@@ -2119,7 +2119,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.146.0';
+const APP_VERSION = '2.147.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
@@ -2309,6 +2309,7 @@ function autosaveNow() {
 /* A toast that carries an interactive button (Undo / confirm) must not time out while a keyboard or
    screen-reader user is reaching for it \u2014 pause the dismiss countdown on hover/focus, resume on leave
    (WCAG 2.2.1). Wired once on #toast; both toast paths arm their dismiss through here. */
+let _toastQueue = [];
 function armToastTimer() {
   const t = document.getElementById('toast');
   if (!t._pauseWired) {
@@ -2321,11 +2322,26 @@ function armToastTimer() {
     t.addEventListener('focusout', resume);
   }
   clearTimeout(t._timer);
-  t._timer = setTimeout(function() { t.classList.remove('show'); }, t._dur || 2600);
+  t._timer = setTimeout(function() {
+    t.classList.remove('show');
+    // Show the next queued status toast after a short gap (lets the aria-live region reset so a screen
+    // reader re-announces it rather than dropping it the way a same-tick clobber would).
+    if (_toastQueue.length) { const n = _toastQueue.shift(); setTimeout(function() { showToast(n.msg, n.type); }, 280); }
+  }, t._dur || 2600);
 }
 function showToast(msg, type) {
   type = type || '';
   const t = document.getElementById('toast');
+  // Two distinct status moments can fire near-simultaneously (e.g. a new-best on the brew that also
+  // empties a bag). Don't clobber a toast still on screen \u2014 the prior one may not have finished
+  // announcing. Queue this one (deduped, capped) to show when the current one dismisses.
+  if (t.classList.contains('show')) {
+    if (msg !== t._curMsg && !_toastQueue.some(function(q) { return q.msg === msg; }) && _toastQueue.length < 3) {
+      _toastQueue.push({ msg: msg, type: type });
+    }
+    return;
+  }
+  t._curMsg = msg;
   t.className = 'toast ' + type + ' show';
   t.textContent = (type==='success'?'\u2713 ':type==='warning'?'\u26a0 ':'\u2139 ') + msg;
   t._dur = 2600;
@@ -5732,6 +5748,10 @@ function todayBrew() {
 }
 function showActionToast(msg, btnLabel, fn, type, duration) {
   const t = document.getElementById('toast');
+  // An action toast (Undo/confirm) is interactive and time-sensitive — it takes priority: show now and
+  // drop any queued status toasts (they'd pop up after and steal the user's pending action).
+  _toastQueue = [];
+  t._curMsg = msg;
   t.className = 'toast ' + (type || '') + ' show';
   t.innerHTML = '';
   const span = document.createElement('span');
