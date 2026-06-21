@@ -1670,3 +1670,9 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] Fix: filename is now brewcraft_backup_YYYY-MM-DD.json (date slice of the same _now used for exportedAt). Distinct, sortable, dated at a glance. Import reads contents not filename, so the round-trip is unaffected
 - [ ] npm run check green (2.229.0 synced); verified via preview: exportAllRecipes composes the dated filename ('brewcraft_backup_' + ISO date slice + '.json')
 - [ ] Update toast after deploy (cache v2.229.0)
+
+## Sprint 242 (v2.230.0) — beginner nudge on the blank new-recipe (no method picked)
+- [ ] Beginner: first-recipe creation is well-built (categorized methods, credited per-method quick recipes one tap from brewable, beginner disclosure). But a fresh "New Recipe" loads empty with no method selected, so renderQuickRecipes hides the quick-recipes rail entirely — a beginner doesn't know that picking a method is what reveals the expert starter recipes that take "I don't know the numbers" off their shoulders
+- [ ] Fix: when no method is selected AND body.skill-beginner, renderQuickRecipes now shows a .qrec-hint in the rail — "Pick a brew method and I'll show you expert recipes to start from — no need to know the numbers yet." Nudges the action + reassures. Non-beginners keep the quiet hidden state; a method with no quick recipes still hides (the !method guard distinguishes them)
+- [ ] npm run check green (2.230.0 synced); verified via preview: with skill-beginner + no method, the rail shows the qrec-hint; selecting a method replaces it with quick-recipe cards; non-beginner with no method stays hidden
+- [ ] Update toast after deploy (cache v2.230.0)

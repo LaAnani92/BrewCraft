@@ -505,6 +505,7 @@
   .qrec-name { font-size:13px; font-weight:600; color:var(--text-primary); }
   .qrec-author { font-size:11px; color:var(--accent-bright); }
   .qrec-stats { font-size:10px; color:var(--text-muted); font-family:'JetBrains Mono',monospace; line-height:1.4; }
+  .qrec-hint { flex:1 1 auto; font-size:12.5px; color:var(--text-secondary); line-height:1.55; padding:6px 2px; }
   .dial-presets { display:flex; flex-wrap:wrap; gap:5px; margin:0 0 8px; }
   .dial-presets .preset-chip { padding:6px 10px; font-size:11px; }
   .scrub { display:flex; flex-direction:column; gap:8px; }
@@ -2182,7 +2183,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.229.0';
+const APP_VERSION = '2.230.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
@@ -2800,7 +2801,16 @@ function renderQuickRecipes() {
   if (!wrap || !rail) return;
   const method = getSelectedMethod();
   const list = QUICK_RECIPES[method] || [];
-  if (!list.length) { wrap.hidden = true; rail.innerHTML = ''; return; }
+  if (!list.length) {
+    // A beginner on a blank new recipe doesn't know that picking a method reveals expert starter recipes —
+    // and "fill the dials yourself" is the intimidating part. When no method is chosen yet, nudge the action
+    // and take the numbers off their shoulders. Beginners only; experts get the quiet hidden state.
+    if (!method && document.body.classList.contains('skill-beginner')) {
+      wrap.hidden = false;
+      rail.innerHTML = '<div class="qrec-hint">Pick a brew method and I’ll show you expert recipes to start from — no need to know the numbers yet.</div>';
+    } else { wrap.hidden = true; rail.innerHTML = ''; }
+    return;
+  }
   wrap.hidden = false;
   rail.innerHTML = list.map(function(r, i) {
     const t = settings.tempUnit === 'F' ? Math.round(cToF(r.tempC)) + '°F' : r.tempC + '°';
