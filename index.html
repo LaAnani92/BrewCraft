@@ -2134,7 +2134,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.168.0';
+const APP_VERSION = '2.169.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
@@ -4711,19 +4711,27 @@ function renderLibrary() {
 }
 
 /* ======= COMPARE ======= */
+/* One-handed: after the first pick you scroll off looking for the second, the prompt toast fades, and the
+   only cancel is the first card's icon — now off-screen. Carry a reachable (bottom, thumb-zone) Cancel in
+   an action toast, and make every exit path clear it so a stale "pick another" can't resurface. */
+function cancelCompare() {
+  compareA = null;
+  const t = document.getElementById('toast'); if (t) t.classList.remove('show');
+  renderLibrary();
+}
 function toggleCompare(id) {
   if (!compareA) {
     compareA = id;
-    showToast('Now pick the second recipe to compare','');
+    showActionToast('Pick another recipe to compare', 'Cancel', cancelCompare, '', 10000);
     renderLibrary();
   } else if (compareA === id) {
-    compareA = null;
-    renderLibrary();
+    cancelCompare();
   } else {
     openCompare(compareA, id);
   }
 }
 function openCompare(idA, idB) {
+  const _t = document.getElementById('toast'); if (_t) _t.classList.remove('show');
   const a = recipes.find(function(r) { return r.id === idA; });
   const b = recipes.find(function(r) { return r.id === idB; });
   if (!a || !b) { compareA = null; renderLibrary(); return; }
