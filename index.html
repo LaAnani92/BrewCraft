@@ -1533,6 +1533,44 @@
     </div>
   </div>
 
+  <div class="section" id="sec-extract">
+    <div class="section-header" onclick="toggleSection('sec-extract')">
+      <div class="section-icon"><svg class="ico"><use href="#i-chart"/></svg></div>
+      <div><div class="section-title">Extraction & Results</div><div class="section-subtitle">Measure extraction quality</div></div>
+      <div class="section-toggle"><svg class="ico"><use href="#i-chev-down"/></svg></div>
+    </div>
+    <div class="section-body">
+      <div class="field-grid">
+        <div class="field" id="espExtractField" style="display:none">
+          <label>Brew ratio <span class="unit">— yield &divide; dose</span></label>
+          <div class="computed" id="espExtractOut">—</div>
+        </div>
+        <div class="field"><label>Total Brew Time <span class="unit">(mm:ss)</span></label><input type="text" id="totalBrewTime" placeholder="e.g., 3:30" oninput="markDirty()"></div>
+        <div class="field"><label>Beverage Weight <span class="unit">(g)</span></label><input type="number" inputmode="decimal" enterkeyhint="done" id="beverageWeight" placeholder="e.g., 225" step="0.1" oninput="calcExtraction()"></div>
+        <div class="field pro-only"><label>TDS of Brew <span class="unit">(%) refractometer</span></label><input type="number" inputmode="decimal" enterkeyhint="done" id="brewTDS" placeholder="e.g., 1.35" step="0.01" min="0" max="5" oninput="calcExtraction()"></div>
+        <div class="field pro-only">
+          <label>Extraction Yield <span class="unit">(%) — auto</span></label>
+          <div class="computed" id="extractionYield">—</div>
+          <div class="field-hint" id="eyPersonalNote" hidden style="margin:6px 0 2px"></div>
+          <div class="extraction-bar-container" id="extractionBarContainer" style="display:none">
+            <div class="extraction-bar">
+              <div class="extraction-ideal" style="left:33.3%;width:33.3%"></div>
+              <div class="extraction-marker" id="extractionMarker" style="left:0%"></div>
+            </div>
+            <div class="extraction-labels"><span>14%</span><span>18%</span><span>22%</span><span>26%</span></div>
+            <div class="extraction-label-ideal">Ideal: 18–22%</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:20px">
+    <button class="btn btn-primary" onclick="brewAgain()"><svg class="ico"><use href="#i-reset"/></svg> Brew Again (new version)</button>
+    <button class="btn btn-secondary" onclick="duplicateRecipe()"><svg class="ico"><use href="#i-copy"/></svg> Duplicate</button>
+    <button class="btn btn-danger" id="deleteBtn" onclick="confirmDelete()" style="display:none"><svg class="ico"><use href="#i-trash"/></svg> Delete</button>
+  </div>
+
   <div class="section" id="sec-dialin">
     <div class="section-header" onclick="toggleSection('sec-dialin')">
       <div class="section-icon"><svg class="ico"><use href="#i-spark"/></svg></div>
@@ -1577,44 +1615,6 @@
       <div class="dialin-out" id="dialinOut" role="status" aria-live="polite"></div>
       <div id="dialinNext" style="display:none;margin-top:10px"><button class="btn btn-secondary" onclick="brewAgain()"><svg class="ico"><use href="#i-reset"/></svg> Start the next version to try this</button></div>
     </div>
-  </div>
-
-  <div class="section" id="sec-extract">
-    <div class="section-header" onclick="toggleSection('sec-extract')">
-      <div class="section-icon"><svg class="ico"><use href="#i-chart"/></svg></div>
-      <div><div class="section-title">Extraction & Results</div><div class="section-subtitle">Measure extraction quality</div></div>
-      <div class="section-toggle"><svg class="ico"><use href="#i-chev-down"/></svg></div>
-    </div>
-    <div class="section-body">
-      <div class="field-grid">
-        <div class="field" id="espExtractField" style="display:none">
-          <label>Brew ratio <span class="unit">— yield &divide; dose</span></label>
-          <div class="computed" id="espExtractOut">—</div>
-        </div>
-        <div class="field"><label>Total Brew Time <span class="unit">(mm:ss)</span></label><input type="text" id="totalBrewTime" placeholder="e.g., 3:30" oninput="markDirty()"></div>
-        <div class="field"><label>Beverage Weight <span class="unit">(g)</span></label><input type="number" inputmode="decimal" enterkeyhint="done" id="beverageWeight" placeholder="e.g., 225" step="0.1" oninput="calcExtraction()"></div>
-        <div class="field pro-only"><label>TDS of Brew <span class="unit">(%) refractometer</span></label><input type="number" inputmode="decimal" enterkeyhint="done" id="brewTDS" placeholder="e.g., 1.35" step="0.01" min="0" max="5" oninput="calcExtraction()"></div>
-        <div class="field pro-only">
-          <label>Extraction Yield <span class="unit">(%) — auto</span></label>
-          <div class="computed" id="extractionYield">—</div>
-          <div class="field-hint" id="eyPersonalNote" hidden style="margin:6px 0 2px"></div>
-          <div class="extraction-bar-container" id="extractionBarContainer" style="display:none">
-            <div class="extraction-bar">
-              <div class="extraction-ideal" style="left:33.3%;width:33.3%"></div>
-              <div class="extraction-marker" id="extractionMarker" style="left:0%"></div>
-            </div>
-            <div class="extraction-labels"><span>14%</span><span>18%</span><span>22%</span><span>26%</span></div>
-            <div class="extraction-label-ideal">Ideal: 18–22%</div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:20px">
-    <button class="btn btn-primary" onclick="brewAgain()"><svg class="ico"><use href="#i-reset"/></svg> Brew Again (new version)</button>
-    <button class="btn btn-secondary" onclick="duplicateRecipe()"><svg class="ico"><use href="#i-copy"/></svg> Duplicate</button>
-    <button class="btn btn-danger" id="deleteBtn" onclick="confirmDelete()" style="display:none"><svg class="ico"><use href="#i-trash"/></svg> Delete</button>
   </div>
 
 </div>
@@ -2155,7 +2155,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.203.0';
+const APP_VERSION = '2.204.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
