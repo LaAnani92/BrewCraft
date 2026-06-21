@@ -1683,3 +1683,9 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] No behavior change to the keyless path (already honest) or the espresso/bean-aware handling; rating still passed in userMsg
 - [ ] npm run check green (2.231.0 synced); verified via preview: the explainDiff prompt now contains the reconciliation instruction
 - [ ] Update toast after deploy (cache v2.231.0)
+
+## Sprint 244 (v2.232.0) — espresso drinkers also get the proven-ratio recognition
+- [ ] Emotional: the proven-ratio hint (updateProvenRatioHint) surfaces the user's own earned data — "Your best V60s land at 1:16.2 — a tested place to start a fresh bag" — gated to >=3 top-rated same-method cups. But it excluded Espresso (method !== 'Espresso'), so the most ratio-deliberate, data-driven brewers were the one group denied the "the app has learned my style" recognition
+- [ ] Fix: updateProvenRatioHint now includes espresso with shot framing — "Your best shots pull around 1:2.1 — a tested ratio to dial in a fresh bag" (pull/yield, never pour-over language; respects espresso-specificity). ratioClusterForMethod already clusters the espresso brewRatio (the yield ratio that names ristretto/normale/lungo). Pour-over/immersion wording unchanged; same >=3-cup self-gating
+- [ ] npm run check green (2.232.0 synced); verified via preview: updateProvenRatioHint source includes the espresso branch with shot framing and no pour-over terms; non-espresso wording intact
+- [ ] Update toast after deploy (cache v2.232.0)
