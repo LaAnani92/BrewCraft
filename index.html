@@ -1690,7 +1690,7 @@
     <div class="share-howto">
       <strong>Option 1 — Send the file:</strong> forward this HTML file to friends (WhatsApp, email). They open it in any browser — no account, no install.<br><br>
       <strong>Option 2 — Host it (best):</strong> free static hosting (e.g., GitHub Pages) gives everyone the same link, makes recipe links one-tap, and lets phones "Add to Home Screen" so it behaves like a real app.<br><br>
-      <strong>Backups:</strong> Journal → Export All saves your recipes, beans &amp; gear to a JSON file you own forever.
+      <strong>Backups:</strong> Journal → Export All saves your recipes, beans &amp; gear to a JSON file you own forever. Importing one only adds — it never overwrites or deletes anything already there, so restoring onto a new phone is safe.
     </div>
   </div>
     </div>
@@ -2150,7 +2150,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.178.0';
+const APP_VERSION = '2.179.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
@@ -4659,16 +4659,24 @@ function renderMethodFilterOptions() {
 function renderBackupNudge() {
   const el = document.getElementById('backupNudge');
   if (!el) return;
-  let lastExport = null;
-  try { lastExport = store.get('brewcraft_exported'); } catch(e) {}
+  let lastExport = null, expNRaw = null;
+  try { lastExport = store.get('brewcraft_exported'); expNRaw = store.get('brewcraft_exported_n'); } catch(e) {}
   let stale = !lastExport;
   if (lastExport) {
     const days = (Date.now() - new Date(lastExport).getTime()) / 86400000;
     stale = !(days >= 0) || days > 30;
   }
+  // Elapsed time alone misses the daily logger who exported last week and has brewed many cups since; a
+  // backup is only as fresh as the work in it. Also nudge when a meaningful chunk of NEW brews has piled up
+  // since the last backup. Gated on the count key existing, so anyone who exported before this version never
+  // gets a false "unbacked-up work" nudge right after backing up.
+  const haveExpN = expNRaw !== null && expNRaw !== undefined && expNRaw !== '';
+  const newSince = haveExpN ? Math.max(0, recipes.length - (parseInt(expNRaw, 10) || 0)) : 0;
+  if (newSince >= 10) stale = true;
   if (recipes.length >= 5 && stale) {
     el.innerHTML = '<strong>' + recipes.length + ' brews</strong> of your calibration live only on this device' +
-      (lastExport ? ' · last backup over a month ago' : '') + '. Tap <strong>Export All</strong> above to keep a copy you own.';
+      (newSince >= 10 ? ' · ' + newSince + ' new since your last backup' : (lastExport ? ' · last backup over a month ago' : '')) +
+      '. Tap <strong>Export All</strong> above to keep a copy you own.';
     el.classList.add('show');
   } else {
     el.classList.remove('show');
@@ -4861,7 +4869,7 @@ function exportAllRecipes() {
   /* Full, restorable backup — recipes + bean profiles + gear setups (everything the user built). */
   const bundle = { app: 'BrewCraft', type: 'brewcraft-backup', version: 3, exportedAt: new Date().toISOString(), recipes: recipes, beans: beanProfiles, gear: gearProfiles, tags: customTags };
   downloadJSON(bundle, 'brewcraft_backup.json');
-  try { store.set('brewcraft_exported', new Date().toISOString()); } catch(e) {}
+  try { store.set('brewcraft_exported', new Date().toISOString()); store.set('brewcraft_exported_n', String(recipes.length)); } catch(e) {}
   renderBackupNudge();
   showToast('Backed up ' + recipes.length + ' recipe' + (recipes.length !== 1 ? 's' : '') + ' + beans & gear','success');
 }
