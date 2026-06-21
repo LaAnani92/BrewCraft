@@ -1255,3 +1255,9 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] Reworded to encouraging continuity: "You're nailed this before: your best <method>s land around 1:X (N cups at 4★+). You're at 1:Y now — worth finding your way back." (frames it as your achievement to return to, not a data readout). Same gating/method-scoping; copy-only
 - [ ] npm run check green (2.161.0 synced); verified via preview: off-cluster dial-in now includes "You've nailed this before: …land around 1:15.5"; on-cluster + non-cluster + espresso still suppressed/method-scoped
 - [ ] Update toast after deploy (cache v2.161.0)
+
+## Sprint 174 (v2.162.0) — keyless dial-in cites the user's own EY sweet-spot
+- [ ] Advanced Coffee User lens (extending v2.160 personal-history): the dial-in cited the user's proven ratio but not their measured-extraction band. sweetSpot() (EY range of their ≥4★ cups) was Insights-only. The textbook 18–22% is generic; a refractometer user's own best cups often land tighter (e.g. 20–21%)
+- [ ] getDialinAdvice keyless now appends, when computeEY(current) is non-null AND sweetSpot() exists AND current EY is outside the personal band (±0.3 margin): "Your sweet spot: your best cups extract at 20.0–21.3% (N at 4★+). You measured 18.5% this time — under/over your own range." Alongside the ratio anchor (travels to editing surface). Only fires for refractometer users; espresso excluded (computeEY null without beverageWeight)
+- [ ] npm run check green (2.162.0 synced); verified via preview: 4★ cups at ~20–21% EY + current 18.5% + chip → anchor cites the personal band + "under your own range"; current inside band → no anchor; no 4★-EY history (sweetSpot null) → no anchor; espresso → no anchor
+- [ ] Update toast after deploy (cache v2.162.0)
