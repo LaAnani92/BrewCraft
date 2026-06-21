@@ -1388,3 +1388,9 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] calcWater output now builds the target header + stock lines conditionally — only GH and/or KH lines that are >0 show; the distilled top-up line always shows. Math (ghStock/khStock/distilled/overflow) untouched
 - [ ] npm run check green (2.183.0 synced); verified via preview: GH70+KH40 1L → "GH 70 / KH 40 ppm" + both stock lines (7.0 g / 4.0 g) + distilled 989 g; GH70 only → "GH 70 ppm" + GH 7.0 g + distilled, NO KH line; KH40 only → "KH 40 ppm" + KH 4.0 g + distilled, no GH line; overflow case still warns
 - [ ] Update toast after deploy (cache v2.183.0)
+
+## Sprint 196 (v2.184.0) — bridge the water mixer to the saved recipe
+- [ ] Product Strategist lens: the MEASURE water fields (waterGH/waterKH/waterTDS/waterRecipe) already save onto the recipe (markDirty). But the MIX calculator targets (wcGH/wcKH) were transient — a user who mixed their own water to GH 70/KH 40 had to RE-TYPE those into the measure fields to record them, so water (a core reproducibility variable) often went unlogged. Friction that loses the compounding "remember your water" moat
+- [ ] calcWater output now ends with a "Log these targets as this recipe's water" link-btn → useWaterMix() copies wcGH→waterGH, wcKH→waterKH (only the targets actually entered, non-destructive), fills waterRecipe="Custom mix" only when blank, markDirty (normal save-consent preserved), success toast. One tap closes mix→record→reproduce
+- [ ] npm run check green (2.184.0 synced); verified via preview: GH70+KH40 mix → button present; useWaterMix → waterGH=70, waterKH=40, waterRecipe="Custom mix", recipe dirty; GH-only mix → sets waterGH only, leaves waterKH untouched; pre-existing waterRecipe brand not overwritten
+- [ ] Update toast after deploy (cache v2.184.0)

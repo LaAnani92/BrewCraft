@@ -2154,7 +2154,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.183.0';
+const APP_VERSION = '2.184.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
@@ -5153,8 +5153,23 @@ function calcWater() {
   out.innerHTML =
     'For <strong>' + L + ' L</strong> at ' + _tgt.join(' / ') + ' ppm:<br>' +
     _lines +
-    '\u2022 Distilled water: top up to <strong>' + (L*1000).toFixed(0) + ' g</strong> total (\u2248 ' + distilled.toFixed(0) + ' g of distilled)';
+    '\u2022 Distilled water: top up to <strong>' + (L*1000).toFixed(0) + ' g</strong> total (\u2248 ' + distilled.toFixed(0) + ' g of distilled)' +
+    '<br><button type="button" class="link-btn" onclick="useWaterMix()" style="margin-top:8px">Log these targets as this recipe\u2019s water</button>';
   out.classList.add('show');
+}
+/* Bridge the mix calculator to the saved recipe: the GH/KH you just dialed becomes the water this brew
+   records, so a great cup is reproducible without re-typing the numbers. Non-destructive (sets only the
+   targets actually entered; fills the brand as "Custom mix" only when blank). markDirty keeps the normal
+   save-consent flow. */
+function useWaterMix() {
+  const gh = document.getElementById('wcGH').value;
+  const kh = document.getElementById('wcKH').value;
+  if (gh) document.getElementById('waterGH').value = gh;
+  if (kh) document.getElementById('waterKH').value = kh;
+  const wr = document.getElementById('waterRecipe');
+  if (wr && !wr.value.trim()) wr.value = 'Custom mix';
+  markDirty();
+  showToast('Logged as this recipe\u2019s water \u2713', 'success');
 }
 
 /* ======= STATS DASHBOARD ======= */
