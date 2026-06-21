@@ -1664,3 +1664,9 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] Fix: baDone block now reads beanOrigin and personalizes the close — baTarget shows "Your <origin> is ready" (falls back to "That's brewed" when no origin), and the SR announce matches. Espresso doesn't Brew-Along (no pour schedule), so the pour-over/immersion "let it settle" framing stays correct; the savor line ("Take the first sip before you judge it"), success-ring fill, and rate hand-off are unchanged
 - [ ] npm run check green (2.228.0 synced); verified via preview: with an origin set, the baDone path yields "Your <origin> is ready" in baTarget + baSr; blank origin falls back to "That's brewed"
 - [ ] Update toast after deploy (cache v2.228.0)
+
+## Sprint 241 (v2.229.0) — dated backup filename for data ownership
+- [ ] Product Strategist: BrewCraft is a no-backend PWA — the journal is the moat, and export/backup is the only safety net. The round-trip is solid (exportAllRecipes bundles recipes+beans+gear+tags v3 with exportedAt; importRecipesFile restores all four additively, dedupe-by-id, never overwriting; settings excluded so the API key never lands in a backup). But the file was a fixed "brewcraft_backup.json" — periodic backups collide into "(1)/(2)" and hide when each was made
+- [ ] Fix: filename is now brewcraft_backup_YYYY-MM-DD.json (date slice of the same _now used for exportedAt). Distinct, sortable, dated at a glance. Import reads contents not filename, so the round-trip is unaffected
+- [ ] npm run check green (2.229.0 synced); verified via preview: exportAllRecipes composes the dated filename ('brewcraft_backup_' + ISO date slice + '.json')
+- [ ] Update toast after deploy (cache v2.229.0)

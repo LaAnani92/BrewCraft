@@ -2182,7 +2182,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.228.0';
+const APP_VERSION = '2.229.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
@@ -5045,8 +5045,11 @@ function closeCompare() {
 function exportAllRecipes() {
   if (!recipes.length && !beanProfiles.length && !gearProfiles.length) { showToast('Nothing to export yet','warning'); return; }
   /* Full, restorable backup — recipes + bean profiles + gear setups (everything the user built). */
-  const bundle = { app: 'BrewCraft', type: 'brewcraft-backup', version: 3, exportedAt: new Date().toISOString(), recipes: recipes, beans: beanProfiles, gear: gearProfiles, tags: customTags };
-  downloadJSON(bundle, 'brewcraft_backup.json');
+  const _now = new Date();
+  const bundle = { app: 'BrewCraft', type: 'brewcraft-backup', version: 3, exportedAt: _now.toISOString(), recipes: recipes, beans: beanProfiles, gear: gearProfiles, tags: customTags };
+  // Date-stamp the filename so periodic backups stay distinct, sortable, and obviously dated at a glance
+  // (a fixed name collides into "(1)/(2)" and hides when each was made). Import reads contents, not name.
+  downloadJSON(bundle, 'brewcraft_backup_' + _now.toISOString().slice(0, 10) + '.json');
   try { store.set('brewcraft_exported', new Date().toISOString()); store.set('brewcraft_exported_n', String(recipes.length)); } catch(e) {}
   renderBackupNudge();
   showToast('Backed up ' + recipes.length + ' recipe' + (recipes.length !== 1 ? 's' : '') + ' + beans & gear','success');
