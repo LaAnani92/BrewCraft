@@ -1638,3 +1638,10 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] Graceful degradation unchanged: if the model ignores the markers, the text is still escaped + pre-wrap readable (just unbolded), exactly as before. Keyless coach output unaffected (it never emits "Watch →")
 - [ ] npm run check green (2.224.0 synced); verified via preview: dialinHtml bolds PRIMARY/Secondary/Watch markers and leaves marker-less prose intact
 - [ ] Update toast after deploy (cache v2.224.0)
+
+## Sprint 237 (v2.225.0) — viral share-link arrival lands in a coherent tier
+- [ ] Product Strategist: a friend's share link (#r=...) is the main viral on-ramp. init deliberately skips onboarding for a share-link visitor (so the import modal is the clean first moment, no double-modal) — but that left a brand-new arrival with skill:''/mode:'' = the full pro UI, no coaching, Settings lying "Beginner" (same incoherent state v2.223 fixed for the Skip button, reached via a different route that bypasses obSkip)
+- [ ] Fix: after the onboarding decision, if (hasShareLink && !settings.skill) default to the balanced middle — skill='enthusiast', mode=skillToMode('enthusiast')='simple' — persist + applyMode(), so the recipe the visitor came for opens in a calm, coherent app. Guarded on !settings.skill so a returning user with a real choice is never touched
+- [ ] Share flow otherwise verified solid: renderQRNow falls back to Copy Code when payload>2300, lazy-loads the QR lib with crossOrigin so the SW caches it (offline after one load), graceful load/draw errors; addImportedRecipe strips the sender's results (rating/TDS/scores/roastDate/cupping/flavorTags/beanId) so the recipient's Journal stays honest
+- [ ] npm run check green (2.225.0 synced); verified via preview: init source contains the share-link tier-default branch; applyMode('enthusiast'/'simple') yields body.simple + skill-enthusiast (coherent), matching the v2.223 proof
+- [ ] Update toast after deploy (cache v2.225.0)

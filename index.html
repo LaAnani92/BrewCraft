@@ -2180,7 +2180,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.224.0';
+const APP_VERSION = '2.225.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
@@ -7282,6 +7282,18 @@ function init() {
     showOnboarding();
   } else if (!hasShareLink) {
     try { store.set('brewcraft_onboarded','1'); } catch(e) {}
+  }
+  // A share-link visitor skips onboarding (above) so the recipe is the clean first moment — but that
+  // left a brand-new arrival with no tier set (skill:''/mode:'' renders as the full pro UI with no
+  // coaching, and Settings lies "Beginner"). The shared link is the main viral on-ramp, so hand that
+  // first-timer the same balanced default a skipped onboarding gets (Enthusiast -> simple): the recipe
+  // they came for opens in a calm, coherent app, not the most complex one. Only when truly unset, so a
+  // returning user's real choice is never touched.
+  if (hasShareLink && !settings.skill) {
+    settings.skill = 'enthusiast';
+    settings.mode = skillToMode('enthusiast');
+    try { store.set('brewcraft_settings', JSON.stringify(settings)); } catch(e) {}
+    applyMode();
   }
   registerSW();
   checkHashImport();
