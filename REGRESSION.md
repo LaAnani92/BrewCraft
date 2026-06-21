@@ -1195,3 +1195,9 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] Added isLongSteep(method) (Cold Brew/Cold Drip) + longSteepBlurb(). renderToday now, for long-steep methods, shows a calm #brewSteepNote ("Cold brew is a long steep… stir, refrigerate 12–24h, rate it later. No live timer needed.") and HIDES the Brew-Along button (#brewAlongBtn) + the live timer (#timerSection); hot/pour-over methods unchanged. enterBrewAlong also guards the long-steep case with an info toast instead of "add pour weights"
 - [ ] npm run check green (2.151.0 synced); verified via preview: method Cold Brew → steep note shown, Brew-Along btn + timer hidden; Cold Drip → cold-drip-specific note; switching back to V60 → note hidden, btn + timer restored; enterBrewAlong on cold brew → info toast (not "add pour weights")
 - [ ] Update toast after deploy (cache v2.151.0)
+
+## Sprint 164 (v2.152.0) — cold-brew steep note becomes time-aware ("should be ready")
+- [ ] Emotional Design lens: v2.151's steep note was static — a cold-brew user brews today and returns 12–24h later (recipe resumed via v2.68), but the note still said "steep it" rather than acknowledging the steep is done. The long gap between brewing and tasting was emotionally dropped
+- [ ] renderToday's long-steep branch is now time-aware: uses the current recipe's updatedAt as a steep-start proxy (no new key/state). When unrated AND hours-since-update ≥ readyHrs (10 cold brew / 5 cold drip) AND ≤ 7 days → "Your cold brew should be ready by now — strain it, pour over ice, and rate the first sip."; otherwise the setup blurb. The rating check stops it once tasted
+- [ ] npm run check green (2.152.0 synced); verified via preview: Cold Brew updatedAt 18h ago + unrated → "should be ready by now"; updatedAt 2h ago → setup blurb; rated → setup blurb (no ready nudge); Cold Drip 7h ago unrated → cold-drip ready msg; >7 days → setup blurb
+- [ ] Update toast after deploy (cache v2.152.0)

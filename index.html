@@ -2136,7 +2136,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.151.0';
+const APP_VERSION = '2.152.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
@@ -5684,7 +5684,22 @@ function renderToday() {
   // calm steep note so the brew screen matches an overnight steep instead of dead-ending at a stopwatch.
   const _longSteep = isLongSteep(m);
   const _steepEl = document.getElementById('brewSteepNote');
-  if (_steepEl) { _steepEl.textContent = _longSteep ? longSteepBlurb(m) : ''; _steepEl.style.display = _longSteep ? 'block' : 'none'; }
+  if (_steepEl) {
+    if (_longSteep) {
+      // Time-aware: a fresh setup gets steep guidance; returning after the steep window with no rating
+      // yet gets a warm "should be ready" — closing the long gap between brewing cold brew and tasting
+      // it. updatedAt is the steep-start proxy (no extra state); the rating check stops it once tasted.
+      const _r = recipes.find(function(x) { return x.id === currentRecipeId; });
+      const _hrs = (_r && _r.updatedAt) ? (Date.now() - new Date(_r.updatedAt).getTime()) / 3600000 : 0;
+      const _ready = _r && !(parseInt(_r.rating, 10) > 0) && _hrs >= (m === 'Cold Drip' ? 5 : 10) && _hrs <= 24 * 7;
+      _steepEl.textContent = _ready
+        ? 'Your ' + (m === 'Cold Drip' ? 'cold drip' : 'cold brew') + ' should be ready by now — strain it, pour over ice, and rate the first sip.'
+        : longSteepBlurb(m);
+      _steepEl.style.display = 'block';
+    } else {
+      _steepEl.textContent = ''; _steepEl.style.display = 'none';
+    }
+  }
   const _baBtn = document.getElementById('brewAlongBtn'); if (_baBtn) _baBtn.style.display = _longSteep ? 'none' : '';
   const _tSec = document.getElementById('timerSection'); if (_tSec) _tSec.style.display = _longSteep ? 'none' : '';
   // Welcoming "starter" framing for new users: the seeded samples are named "Sample \u2014 \u2026".
