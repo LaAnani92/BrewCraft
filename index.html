@@ -2116,7 +2116,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.140.0';
+const APP_VERSION = '2.141.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
@@ -3296,7 +3296,12 @@ function renderBAStep() {
   // Brew-Along is aria-modal, so the Brew-tab live region can't reach a SR user here. Announce each
   // step (discrete, not per-tick — no spam) in this overlay's own live region: position + scale target.
   const baSr = document.getElementById('baSr');
-  if (baSr) baSr.textContent = 'Step ' + (baIdx+1) + ' of ' + baSteps.length + ', ' + st.label + '. Pour to ' + st.targetCum + ' grams.' + (st.technique ? ' ' + st.technique + '.' : '');
+  if (baSr) {
+    // The visual #baPrep setup checklist is invisible to a screen-reader beginner; fold it into the
+    // step announcement (renderBAStep is discrete, so no per-tick spam) so "zero the scale" is heard.
+    const prep = baPrepShowing() ? baPrepText() + ' ' : '';
+    baSr.textContent = prep + 'Step ' + (baIdx+1) + ' of ' + baSteps.length + ', ' + st.label + '. Pour to ' + st.targetCum + ' grams.' + (st.technique ? ' ' + st.technique + '.' : '');
+  }
   updateBATheater(currentElapsedMs() / 1000);
 }
 
@@ -3305,16 +3310,21 @@ function secToStr(sec) {
 }
 /* Beginner setup orientation for Brew-Along: shown only at step 1, before the timer starts. A first
    pour-over is meaningless without "dripper on a zeroed scale"; experts/enthusiasts never see it. */
+function baPrepText() {
+  const dose = document.getElementById('coffeeDose').value;
+  const doseStr = dose ? dose + ' g of' : 'your';
+  return isImmersion(getSelectedMethod())
+    ? 'Before you tap Start: add ' + doseStr + ' grounds to the brewer, set it on your scale and zero (tare) it, water just off the boil.'
+    : 'Before you tap Start: rinse the paper filter with hot water, add ' + doseStr + ' grounds, then set the dripper on your scale and zero (tare) it. Water just off the boil.';
+}
+function baPrepShowing() {
+  return settings.skill === 'beginner' && baActive && baIdx === 0 && (currentElapsedMs() || 0) < 100 && !baDoneFired;
+}
 function updateBAPrep() {
   const el = document.getElementById('baPrep');
   if (!el) return;
-  const show = settings.skill === 'beginner' && baActive && baIdx === 0 && (currentElapsedMs() || 0) < 100 && !baDoneFired;
-  if (!show) { el.hidden = true; return; }
-  const dose = document.getElementById('coffeeDose').value;
-  const doseStr = dose ? dose + ' g of' : 'your';
-  el.textContent = isImmersion(getSelectedMethod())
-    ? 'Before you tap Start: add ' + doseStr + ' grounds to the brewer, set it on your scale and zero (tare) it, water just off the boil.'
-    : 'Before you tap Start: rinse the paper filter with hot water, add ' + doseStr + ' grounds, then set the dripper on your scale and zero (tare) it. Water just off the boil.';
+  if (!baPrepShowing()) { el.hidden = true; return; }
+  el.textContent = baPrepText();
   el.hidden = false;
 }
 function baNext() { dismissBAHint(true); if (baIdx < baSteps.length-1) { baIdx++; renderBAStep(); beep(660,0.15); vibrate(40); } }
