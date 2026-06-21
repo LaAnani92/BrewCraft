@@ -1574,3 +1574,9 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] confirmSaveGear now captures grindCustomUnit/Min/Max; applyGearProfile restores them BEFORE onGrinderChange (so its unit label + updateGrindVisual position on the saved scale). Known grinders save empty custom fields (harmless — range comes from GRINDER_DATA); older profiles without the fields clear them (no worse than before)
 - [ ] npm run check green (2.214.0 synced); verified via preview: a custom grinder (unit "clicks", 0-40) saved via confirmSaveGear includes grindCustomMin/Max/Unit; clearing the fields then applyGearProfile restores them and grindRange() returns {min:0,max:40}; a known GRINDER_DATA grinder still applies fine (custom row hidden, range from data)
 - [ ] Update toast after deploy (cache v2.214.0)
+
+## Sprint 227 (v2.215.0) — muted text clears WCAG AA on every surface
+- [ ] Accessibility (contrast): computed real WCAG ratios for all key dark-theme text/bg pairs. All passed except --text-muted (#9a8a76) on --bg-surface (#2e261d) = 4.44:1, a hair under AA (4.5) for normal text. text-muted is the lowest-emphasis, highest-frequency text (field-hints, .unit labels)
+- [ ] Bumped --text-muted #9a8a76 → #a1917c (the :root override at ~842, dark theme). Now clears AA on every background: bg-surface 4.86, bg-card 5.55, bg-deep 6.07, bg-input 6.17. Still subtly muted (tiny lightening). Light-theme muted (#6a5945) was checked and already passes on all light surfaces. All other tokens (primary 15.1, secondary 6.6, accent 8.0, accentBright 11.4, success 7.9, danger 5.0, warning 7.9) already passed
+- [ ] npm run check green (2.215.0 synced); verified via preview: dark --text-muted now resolves to #a1917c and every text/bg pair >= 4.5; light theme muted >= 4.5 on all light bgs
+- [ ] Update toast after deploy (cache v2.215.0)

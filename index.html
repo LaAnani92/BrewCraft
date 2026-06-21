@@ -839,7 +839,10 @@
   .insight-chip strong { color:var(--accent-bright); font-family:'JetBrains Mono',monospace; font-weight:600; }
 
   /* ===== v12 TRUST & ACCESS ===== */
-  :root { --text-muted:#9a8a76; }
+  /* Muted text must clear WCAG AA (4.5:1) on every surface — at #9a8a76 it was 4.44:1 on the lightest
+     background (--bg-surface #2e261d). #a1917c keeps it subtly muted while clearing AA everywhere (4.86:1
+     on bg-surface, higher on the rest). */
+  :root { --text-muted:#a1917c; }
   html.theme-light { --text-muted:#6a5945; }
   html.theme-light .btn-primary { background:linear-gradient(135deg,#9c5f35,#aa6e42); color:#fffdf8; }
   .rating-star { padding:9px 7px; margin:-6px -1px; }
@@ -2174,7 +2177,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.214.0';
+const APP_VERSION = '2.215.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
