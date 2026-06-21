@@ -1627,8 +1627,6 @@
     <input type="text" id="librarySearch" aria-label="Search recipes by name, bean, process, varietal or tasting note" placeholder="Search name, bean, process, notes…" oninput="renderLibrary()">
     <select id="libraryMethodFilter" aria-label="Filter by brew method" onchange="renderLibrary()">
       <option value="">All methods</option>
-      <option>V60</option><option>Chemex</option><option>Kalita Wave</option><option>AeroPress</option>
-      <option>French Press</option><option>Clever</option><option>Siphon</option><option>Espresso</option>
     </select>
     <select id="librarySort" aria-label="Sort recipes" onchange="renderLibrary()">
       <option value="new">Newest first</option>
@@ -2136,7 +2134,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.165.0';
+const APP_VERSION = '2.166.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
@@ -4575,6 +4573,21 @@ function getFilteredRecipes() {
   if (sort === 'name') list.sort(function(a,b) { return (a.name||'').localeCompare(b.name||''); });
   return list;
 }
+/* Populate the method filter from the methods the user actually brews — the app supports ~20 methods,
+   but a fixed 8-option list left Cold Brew / Origami / Turkish brewers unable to filter to their own.
+   Dynamic keeps it short + complete. Cached by method-set so it doesn't rebuild on every keystroke. */
+function renderMethodFilterOptions() {
+  const sel = document.getElementById('libraryMethodFilter');
+  if (!sel) return;
+  const methods = Array.from(new Set(recipes.map(function(r) { return r.method; }).filter(Boolean))).sort();
+  const key = methods.join('|');
+  if (sel._methodKey === key) return;
+  sel._methodKey = key;
+  const cur = sel.value;
+  sel.innerHTML = '<option value="">All methods</option>' + methods.map(function(m) {
+    return '<option value="' + escapeHtml(m) + '"' + (m === cur ? ' selected' : '') + '>' + escapeHtml(m) + '</option>';
+  }).join('');
+}
 /* The user's calibration lives only on this device — make that felt, and nudge a backup, once data
    is worth protecting and the last backup is missing or stale. Calm: a passive line, no toast/nag. */
 function renderBackupNudge() {
@@ -4597,6 +4610,7 @@ function renderBackupNudge() {
 }
 function renderLibrary() {
   renderBackupNudge();
+  renderMethodFilterOptions();
   if (libraryView === 'journal') { renderJournal(); return; }
   const listEl = document.getElementById('libraryList');
   const empty = document.getElementById('libraryEmpty');

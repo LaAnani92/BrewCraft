@@ -1279,3 +1279,9 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] Extended the search-match string to also include beanProcess, beanVarietal, and flavorTags.join(' '). Placeholder updated "Search name, origin, roaster…" → "Search name, bean, process, notes…" + a fuller aria-label. Method filter + sort unchanged
 - [ ] npm run check green (2.165.0 synced); verified via preview: getFilteredRecipes search "anaerobic" → matches an Anaerobic Natural recipe; "geisha" → matches varietal Geisha; "blueberry" → matches a flavorTags blueberry recipe; "konga" → still matches origin; non-matching term excludes
 - [ ] Update toast after deploy (cache v2.165.0)
+
+## Sprint 178 (v2.166.0) — library method filter is dynamic (covers every method brewed)
+- [ ] Advanced Coffee User lens (cont. v2.165): libraryMethodFilter hardcoded 8 methods (V60/Chemex/Kalita/AeroPress/FrenchPress/Clever/Siphon/Espresso) but the app supports ~20 — a Cold Brew / Origami / Moka / Turkish brewer couldn't filter to their own method
+- [ ] renderMethodFilterOptions() now builds the dropdown from the distinct methods actually in recipes (sorted, escaped), so it's short AND complete. Cached by method-set key (sel._methodKey) to skip rebuilds when the set is unchanged (e.g. every search keystroke); preserves the current selection. Markup options reduced to just "All methods"; called at top of renderLibrary
+- [ ] npm run check green (2.166.0 synced); verified via preview: recipes V60+Espresso+Cold Brew → options [All, Cold Brew, Espresso, V60]; selecting Cold Brew filters to it; adding an Origami recipe → it appears; method removed → drops out; current selection preserved across re-render; cache skips rebuild when set unchanged
+- [ ] Update toast after deploy (cache v2.166.0)
