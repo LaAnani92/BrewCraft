@@ -1205,6 +1205,8 @@
       </div>
       <div class="field-hint simple-only" style="margin:6px 0 18px">Ratio = grams of water per gram of coffee. Example: 15g coffee at 1:16 → 240g water.</div>
 
+      <div class="field-hint" id="provenRatioHint" hidden style="margin:0 0 14px"></div>
+
       <div class="field-grid" id="espressoFields" style="display:none;margin-bottom:22px">
         <div class="field"><label>Yield Out <span class="unit">(g)</span></label><input type="number" inputmode="decimal" enterkeyhint="done" id="espYield" placeholder="e.g., 36" step="0.1" min="0" oninput="markDirty();calcEspExtraction()"></div>
         <div class="field"><label>Shot Time <span class="unit">(s)</span></label><input type="number" inputmode="decimal" enterkeyhint="done" id="espShotTime" placeholder="e.g., 28" step="1" min="0" oninput="markDirty()"><div class="field-hint">Typical: 25-32s</div></div>
@@ -2134,7 +2136,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.170.0';
+const APP_VERSION = '2.171.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
@@ -2790,6 +2792,19 @@ function setMethod(method) {
   renderQuickRecipes();
   updateGrindVisual();
   updateMethodBlurb();
+  updateProvenRatioHint();
+}
+/* Proactive moat: before the first brew of a fresh bag (when the reactive dial-in cannot help yet), surface
+   the user's OWN proven ratio for this method as a quiet starting point. Self-gating: ratioClusterForMethod
+   needs >=3 top-rated same-method cups, so beginners never see it; it appears only once it is earned. */
+function updateProvenRatioHint() {
+  const el = document.getElementById('provenRatioHint');
+  if (!el) return;
+  const method = getSelectedMethod();
+  const rc = (method && method !== 'Espresso') ? ratioClusterForMethod(method) : null;
+  if (!rc) { el.hidden = true; el.innerHTML = ''; return; }
+  el.innerHTML = 'Your best ' + escapeHtml(method) + 's land at <strong>1:' + rc.median.toFixed(1) + '</strong> — a tested place to start a fresh bag.';
+  el.hidden = false;
 }
 function toggleEspressoFields() {
   const isEsp = getSelectedMethod() === 'Espresso';
