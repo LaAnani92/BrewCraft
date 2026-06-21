@@ -2134,7 +2134,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.169.0';
+const APP_VERSION = '2.170.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
@@ -3780,8 +3780,17 @@ async function getDialinAdvice() {
     const freshLine = fresh ? '\nFRESHNESS: ' + fresh.label : '\nFRESHNESS: roast date not logged';
     const ey = computeEY(data);
     const eyLine = ey !== null ? '\nMEASURED EXTRACTION: ' + ey.toFixed(1) + '% (filter target 18–22%; below = under-extracted, above = over-extracted)' : '';
-    const sys = 'You are a world-class specialty coffee dial-in expert combining the extraction science of Scott Rao and Jonathan Gagne with the practical approach of James Hoffmann and Tetsu Kasuya. The user gives their recipe as JSON, taste feedback, bean freshness, and an iteration history of past changes with rating outcomes. Use the history: do not repeat changes that made things worse, and build on changes that helped. Factor in freshness: very fresh coffee that is still degassing can read sour, gassy or uneven; coffee past about five weeks off roast reads flat or hollow and will not be fixed by grind alone. If a measured extraction yield is provided, treat it as objective ground truth: let it anchor the direction (below ~18% means push extraction up, above ~22% means pull it down) and reconcile it with the taste feedback. Reply with: (1) THE single most impactful change, with direction and concrete magnitude (clicks, degrees C, grams, seconds), (2) one or two secondary options, (3) one thing to watch during the next brew. Under 180 words, plain text, no markdown. Respect one-variable-at-a-time.';
-    const userMsg = 'RECIPE JSON:\n' + JSON.stringify(r) + freshLine + eyLine + '\n\nTASTE ISSUES: ' + (issues.join(', ') || 'none selected') + '\nUSER DESCRIPTION: ' + (notes || 'none') + '\nITERATION HISTORY (most recent first): ' + (hist.length ? hist.join(' | ') : 'none') + (r.method === 'Espresso' ? '\nNOTE: This is ESPRESSO. Advise on dose, yield (g out), shot time, temperature and grind ONLY. No pour-over advice (no pours, swirls, blooms, drawdown).' : isImmersion(r.method) ? '\nNOTE: This is an IMMERSION brew (full steep, then press/plunge/drain). Advise on grind, water temperature, steep time, dose/ratio and gentle stirring ONLY. No pour-over technique (no multiple or pulse pours, swirls, blooms, or drawdown).' : '');
+    /* Feed the AI the SAME personal track record the keyless coach uses — the user's proven ratio cluster
+       and the extraction band of their best-rated cups — so the premium path anchors to THIS drinker, not
+       coffee-in-general. Each fires only when there's enough history; absent for a brand-new user. */
+    const _rc = ratioClusterForMethod(r.method);
+    const _ss = sweetSpot();
+    const trackBits = [];
+    if (_rc) trackBits.push('best-rated ' + r.method + 's cluster around a 1:' + _rc.median.toFixed(1) + ' ratio (from ' + _rc.n + ' top cups)');
+    if (_ss) trackBits.push('highest-rated cups measured ' + _ss.lo.toFixed(1) + '–' + _ss.hi.toFixed(1) + '% extraction');
+    const trackLine = trackBits.length ? '\nUSER TRACK RECORD (their own proven numbers — prefer these over generic targets): ' + trackBits.join('; ') : '';
+    const sys = 'You are a world-class specialty coffee dial-in expert combining the extraction science of Scott Rao and Jonathan Gagne with the practical approach of James Hoffmann and Tetsu Kasuya. The user gives their recipe as JSON, taste feedback, bean freshness, and an iteration history of past changes with rating outcomes. Use the history: do not repeat changes that made things worse, and build on changes that helped. Factor in freshness: very fresh coffee that is still degassing can read sour, gassy or uneven; coffee past about five weeks off roast reads flat or hollow and will not be fixed by grind alone. If a measured extraction yield is provided, treat it as objective ground truth: let it anchor the direction (below ~18% means push extraction up, above ~22% means pull it down) and reconcile it with the taste feedback. If a USER TRACK RECORD is provided (the proven ratio cluster and the extraction band of their best-rated cups), treat it as the personal target for this drinker and prefer it over generic ranges; steer them back toward what has already earned high ratings. Reply with: (1) THE single most impactful change, with direction and concrete magnitude (clicks, degrees C, grams, seconds), (2) one or two secondary options, (3) one thing to watch during the next brew. Under 180 words, plain text, no markdown. Respect one-variable-at-a-time.';
+    const userMsg = 'RECIPE JSON:\n' + JSON.stringify(r) + freshLine + eyLine + trackLine + '\n\nTASTE ISSUES: ' + (issues.join(', ') || 'none selected') + '\nUSER DESCRIPTION: ' + (notes || 'none') + '\nITERATION HISTORY (most recent first): ' + (hist.length ? hist.join(' | ') : 'none') + (r.method === 'Espresso' ? '\nNOTE: This is ESPRESSO. Advise on dose, yield (g out), shot time, temperature and grind ONLY. No pour-over advice (no pours, swirls, blooms, drawdown).' : isImmersion(r.method) ? '\nNOTE: This is an IMMERSION brew (full steep, then press/plunge/drain). Advise on grind, water temperature, steep time, dose/ratio and gentle stirring ONLY. No pour-over technique (no multiple or pulse pours, swirls, blooms, or drawdown).' : '');
     const resp = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: {
@@ -3803,7 +3812,10 @@ async function getDialinAdvice() {
     if (!text) throw new Error('empty response');
     _carryAdvice = text;
     outEl.innerHTML = dialinHtml(text);
-    outEl.innerHTML += '<span class="src">AI analysis \u00b7 ' + escapeHtml(settings.model) + (hist.length ? ' \u00b7 informed by ' + hist.length + ' past iteration' + (hist.length > 1 ? 's' : '') : '') + '</span>';
+    const _infoBits = [];
+    if (hist.length) _infoBits.push(hist.length + ' past iteration' + (hist.length > 1 ? 's' : ''));
+    if (trackBits.length) _infoBits.push('your track record');
+    outEl.innerHTML += '<span class="src">AI analysis \u00b7 ' + escapeHtml(settings.model) + (_infoBits.length ? ' \u00b7 informed by ' + _infoBits.join(' + ') : '') + '</span>';
   } catch(e) {
     let txt = ruleDialIn(issues);
     if (hist.length) txt += '\n\nIteration memory: ' + hist[0];
