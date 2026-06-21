@@ -1201,3 +1201,9 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] renderToday's long-steep branch is now time-aware: uses the current recipe's updatedAt as a steep-start proxy (no new key/state). When unrated AND hours-since-update ≥ readyHrs (10 cold brew / 5 cold drip) AND ≤ 7 days → "Your cold brew should be ready by now — strain it, pour over ice, and rate the first sip."; otherwise the setup blurb. The rating check stops it once tasted
 - [ ] npm run check green (2.152.0 synced); verified via preview: Cold Brew updatedAt 18h ago + unrated → "should be ready by now"; updatedAt 2h ago → setup blurb; rated → setup blurb (no ready nudge); Cold Drip 7h ago unrated → cold-drip ready msg; >7 days → setup blurb
 - [ ] Update toast after deploy (cache v2.152.0)
+
+## Sprint 165 (v2.153.0) — refresh time-aware UI when the PWA resumes from background
+- [ ] Mobile Kitchen UX lens (chasing v2.152's returning-user case): the visibilitychange handler only re-synced the wake lock. iOS often resumes a backgrounded PWA WITHOUT a reload, so the cold-brew "should be ready" note (v2.152), the freshness day-count, welcome-back, and bag status stayed frozen at their pre-background values until a manual tab/recipe switch. The "left the app, came back" moment showed stale time-aware info
+- [ ] visibilitychange→visible now also calls renderToday() + updateFreshness() (read-only, no data mutation, safe to re-run). The cold-brew note recomputes against the now-current time, freshness badges advance their day-count, bag status refreshes
+- [ ] npm run check green (2.153.0 synced); verified via preview: a stale cold-brew note (manually set wrong) is corrected to "should be ready" after a dispatched visibilitychange; non-cold recipe unaffected; no errors firing the event repeatedly
+- [ ] Update toast after deploy (cache v2.153.0)

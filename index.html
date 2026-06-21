@@ -2136,7 +2136,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.152.0';
+const APP_VERSION = '2.153.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
@@ -3384,8 +3384,14 @@ function baAutoAdvance(elapsedSec) {
   }
 }
 document.addEventListener('visibilitychange', function() {
+  if (document.visibilityState !== 'visible') return;
   /* Wake locks auto-release when the tab hides; re-sync on return if a brew is still live. */
-  if (document.visibilityState === 'visible') syncWakeLock();
+  syncWakeLock();
+  /* Time-aware UI (the cold-brew "should be ready" note, the freshness day-count, bag status) goes
+     stale while the PWA is backgrounded — iOS often resumes without a reload, so refresh it on return
+     instead of only on a manual tab/recipe switch. Read-only renders; safe to re-run. */
+  if (typeof renderToday === 'function') renderToday();
+  if (typeof updateFreshness === 'function') updateFreshness();
 });
 
 /* ======= RATING & TAGS ======= */
