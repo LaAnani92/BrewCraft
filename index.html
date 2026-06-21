@@ -482,6 +482,13 @@
   .dial-reset { margin-left:auto; width:44px; height:44px; display:inline-flex; align-items:center; justify-content:center; background:transparent; border:1px solid var(--border); border-radius:var(--radius-xs); color:var(--text-muted); cursor:pointer; transition:all 0.15s; flex-shrink:0; }
   .dial-reset:active, .dial-reset:hover { color:var(--accent-bright); border-color:var(--accent); background:var(--accent-glow); }
   .dial-reset .ico { width:15px; height:15px; }
+  /* Grind finer/coarser steppers — one-tap adjustment for the most-dialed parameter; 44px tap targets
+     matching .dial-reset, so a wet thumb can nudge grind without summoning the keyboard. */
+  .grind-step { display:flex; align-items:center; gap:8px; }
+  .grind-step input { flex:1; min-width:0; }
+  .grind-step-btn { width:44px; height:44px; display:inline-flex; align-items:center; justify-content:center; background:transparent; border:1px solid var(--border); border-radius:var(--radius-xs); color:var(--text-muted); cursor:pointer; transition:all 0.15s; flex-shrink:0; }
+  .grind-step-btn:active, .grind-step-btn:hover { color:var(--accent-bright); border-color:var(--accent); background:var(--accent-glow); }
+  .grind-step-btn .ico { width:15px; height:15px; }
   /* per-method quick recipes rail (qrec- prefix avoids the QR-code .qr-* widget) */
   .qrec-wrap { margin-bottom:16px; }
   .qrec-label { font-size:11px; font-weight:600; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.8px; margin-bottom:8px; }
@@ -932,6 +939,7 @@
 <symbol id="i-chev-right" viewBox="0 0 24 24"><path d="M9.5 5.5l7 6.5-7 6.5"/></symbol>
 <symbol id="i-chev-down" viewBox="0 0 24 24"><path d="M5.5 9l6.5 6 6.5-6"/></symbol>
 <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14"/><path d="M5 12h14"/></symbol>
+<symbol id="i-minus" viewBox="0 0 24 24"><path d="M5 12h14"/></symbol>
 </defs></svg>
 
 <header class="header">
@@ -1335,7 +1343,11 @@
 
       <div class="field beginner-hide" style="margin-top:4px">
         <label>Grind Setting <span class="unit" id="grindSettingUnit">(clicks / numbers)</span></label>
-        <input type="text" id="grindSize" inputmode="decimal" placeholder="e.g., 24" oninput="updateGrindVisual(); markDirty()">
+        <div class="grind-step">
+          <button type="button" class="grind-step-btn" id="grindFiner" aria-label="Grind one step finer" title="Finer" onclick="nudgeGrind(-1)"><svg class="ico"><use href="#i-minus"/></svg></button>
+          <input type="text" id="grindSize" inputmode="decimal" placeholder="e.g., 24" oninput="updateGrindVisual(); markDirty()">
+          <button type="button" class="grind-step-btn" id="grindCoarser" aria-label="Grind one step coarser" title="Coarser" onclick="nudgeGrind(1)"><svg class="ico"><use href="#i-plus"/></svg></button>
+        </div>
         <div class="grind-custom-row" id="grindCustomRange" hidden>
           <input type="text" id="grindCustomUnit" placeholder="unit (e.g. clicks)" oninput="onGrinderChange(); markDirty()" aria-label="Your grinder's unit">
           <input type="number" inputmode="decimal" id="grindCustomMin" placeholder="min" oninput="updateGrindVisual(); markDirty()" aria-label="Grinder finest setting">
@@ -2155,7 +2167,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.204.0';
+const APP_VERSION = '2.205.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
@@ -2972,6 +2984,24 @@ function updateGrindReadout() {
     el.innerHTML = '<svg class="ico"><use href="#i-sliders"/></svg> Pick a recipe and the grind comes with it';
   }
 }
+/* One-tap finer/coarser for the grind — the most-adjusted parameter when dialing in. A numeric setting
+   steps by one native click (toward range.min = finer, range.max = coarser), clamped to the grinder's range;
+   letter or empty settings stay type-only (the buttons hide via updateGrindVisual). The text input remains
+   the source of truth and stays editable for exact entry. */
+function nudgeGrind(delta) {
+  const input = document.getElementById('grindSize');
+  if (!input) return;
+  const v = parseFloat(input.value);
+  if (!isFinite(v)) return;
+  const range = grindRange();
+  const lo = range ? range.min : 0;
+  const hi = range ? range.max : Infinity;
+  const nv = Math.max(lo, Math.min(hi, v + delta));
+  input.value = String(Number(nv.toFixed(2)));
+  updateGrindVisual();
+  markDirty();
+  vibrate(6);
+}
 function updateGrindVisual() {
   updateGrindReadout();
   const bar = document.getElementById('grindBar');
@@ -2981,6 +3011,9 @@ function updateGrindVisual() {
   const posLabel = document.getElementById('grindPosLabel');
   const range = grindRange();
   const v = parseFloat(document.getElementById('grindSize').value);
+  // Show the finer/coarser steppers only for a numeric setting; letter-based or empty grinds stay type-only.
+  const _gf = document.getElementById('grindFiner'), _gc = document.getElementById('grindCoarser');
+  if (_gf && _gc) { _gf.hidden = _gc.hidden = !isFinite(v); }
   const haveSetting = !!range && isFinite(v);
   let pos = null;
   if (haveSetting) {
