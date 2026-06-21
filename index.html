@@ -2183,7 +2183,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.232.0';
+const APP_VERSION = '2.233.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
@@ -3007,7 +3007,10 @@ function grindDescriptorToLevel(d) {
   if (d.indexOf('medium-coarse') >= 0 || d.indexOf('medium coarse') >= 0) return 5;
   if (d.indexOf('coarse') >= 0) return 6;
   if (d.indexOf('medium-fine') >= 0 || d.indexOf('medium fine') >= 0) return 3;
-  if (d.indexOf('espresso') >= 0 || d.indexOf('extra fine') >= 0) return 2;
+  // 'extra fine' (Turkish-fine powder) is the finest grind = level 1; espresso sits one coarser at ~Fine.
+  // Grouping both at 2 made level 1 (Extra Fine) unreachable and rendered Turkish/extra-fine recipes as "Fine".
+  if (d.indexOf('extra fine') >= 0) return 1;
+  if (d.indexOf('espresso') >= 0) return 2;
   if (d.indexOf('fine') >= 0) return 2;
   if (d.indexOf('medium') >= 0) return 4;
   return 0;

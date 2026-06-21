@@ -1689,3 +1689,9 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] Fix: updateProvenRatioHint now includes espresso with shot framing — "Your best shots pull around 1:2.1 — a tested ratio to dial in a fresh bag" (pull/yield, never pour-over language; respects espresso-specificity). ratioClusterForMethod already clusters the espresso brewRatio (the yield ratio that names ristretto/normale/lungo). Pour-over/immersion wording unchanged; same >=3-cup self-gating
 - [ ] npm run check green (2.232.0 synced); verified via preview: updateProvenRatioHint source includes the espresso branch with shot framing and no pour-over terms; non-espresso wording intact
 - [ ] Update toast after deploy (cache v2.232.0)
+
+## Sprint 245 (v2.233.0) — grind "extra fine" no longer renders one step too coarse
+- [ ] Advanced: grindDescriptorToLevel grouped 'espresso' || 'extra fine' → level 2, but COARSE_LABELS[2] is "Fine" (COARSE_LABELS[1] is "Extra Fine"). So 'extra fine' (Turkish-fine powder) displayed as "Fine" — one step too coarse — and level 1 (Extra Fine, "like powdered sugar") was UNREACHABLE from any descriptor. A real grind-accuracy bug for the finest methods (Turkish, ultra-fine espresso)
+- [ ] Fix: split the condition — 'extra fine' → 1 (Extra Fine), 'espresso'/'espresso-fine' → 2 (~Fine, the closest integer on the 7-level scale). 'fine'/'medium-fine'/'medium'/'medium-coarse'/'coarse'/'extra coarse'/'cold brew' unchanged. The descriptor→level→COARSE_LABELS round-trip is now consistent for every label
+- [ ] npm run check green (2.233.0 synced); verified via preview: 'extra fine'→1→"Extra Fine"; level 1 now reachable; espresso/fine still→2; all other descriptors round-trip to their own label
+- [ ] Update toast after deploy (cache v2.233.0)
