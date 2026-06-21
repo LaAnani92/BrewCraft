@@ -1056,15 +1056,18 @@
         </div>
         <div class="field bean-extra">
           <label>Process</label>
-          <select id="beanProcess" onchange="markDirty()">
+          <select id="beanProcess" onchange="handleOtherSelect('beanProcess','beanProcessCustom'); markDirty()">
             <option value="">Select process…</option>
             <option>Washed</option><option>Natural</option><option>Honey — Yellow</option>
             <option>Honey — Red</option><option>Honey — Black</option>
             <option>Anaerobic Natural</option><option>Anaerobic Washed</option>
             <option>Carbonic Maceration</option><option>Wet Hulled (Giling Basah)</option>
             <option>Double Washed</option><option>Lactic Process</option>
-            <option>Thermal Shock</option><option>Experimental</option><option>Other</option>
+            <option>Thermal Shock</option><option>Experimental</option><option value="__other__">Other / type it…</option>
           </select>
+          <div class="custom-input-wrapper" id="beanProcessCustom">
+            <input type="text" placeholder="Enter process name…" aria-label="Custom process name" oninput="markDirty()">
+          </div>
         </div>
         <div class="field bean-extra">
           <label>Varietal</label>
@@ -2116,7 +2119,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.144.0';
+const APP_VERSION = '2.145.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
@@ -4140,7 +4143,7 @@ function gatherRecipeData() {
     method: getSelectedMethod(),
     beanOrigin: document.getElementById('beanOrigin').value,
     roaster: document.getElementById('roaster').value,
-    beanProcess: document.getElementById('beanProcess').value,
+    beanProcess: getSelectOrCustom('beanProcess','beanProcessCustom'),
     beanVarietal: getSelectOrCustom('beanVarietal','beanVarietalCustom'),
     roastDate: document.getElementById('roastDate').value,
     roastLevel: document.getElementById('roastLevel').value,
@@ -4185,7 +4188,7 @@ function loadRecipeData(r) {
   setMethod(r.method || 'V60');
   document.getElementById('beanOrigin').value = r.beanOrigin || '';
   document.getElementById('roaster').value = r.roaster || '';
-  document.getElementById('beanProcess').value = r.beanProcess || '';
+  setSelectOrCustom('beanProcess','beanProcessCustom', r.beanProcess || '');
   setSelectOrCustom('beanVarietal','beanVarietalCustom', r.beanVarietal || '');
   document.getElementById('roastDate').value = r.roastDate || '';
   updateFreshness();
@@ -5338,7 +5341,7 @@ function saveBeanProfile() {
     id: generateId(),
     beanOrigin: document.getElementById('beanOrigin').value,
     roaster: document.getElementById('roaster').value,
-    beanProcess: document.getElementById('beanProcess').value,
+    beanProcess: getSelectOrCustom('beanProcess','beanProcessCustom'),
     beanVarietal: getSelectOrCustom('beanVarietal','beanVarietalCustom'),
     roastDate: document.getElementById('roastDate').value,
     roastLevel: document.getElementById('roastLevel').value,
@@ -5363,7 +5366,7 @@ function applyBeanProfile() {
   currentBeanId = b.id;
   document.getElementById('beanOrigin').value = b.beanOrigin || '';
   document.getElementById('roaster').value = b.roaster || '';
-  document.getElementById('beanProcess').value = b.beanProcess || '';
+  setSelectOrCustom('beanProcess','beanProcessCustom', b.beanProcess || '');
   setSelectOrCustom('beanVarietal','beanVarietalCustom', b.beanVarietal || '');
   document.getElementById('roastDate').value = b.roastDate || '';
   document.getElementById('roastLevel').value = b.roastLevel || '';
@@ -6477,7 +6480,10 @@ function applyScan() {
   const v = function(id) { return document.getElementById(id).value.trim(); };
   if (v('scRoaster')) document.getElementById('roaster').value = v('scRoaster');
   if (v('scOrigin')) document.getElementById('beanOrigin').value = v('scOrigin');
-  setSelectByText('beanProcess', v('scProcess'));
+  // Exact-or-custom (not fuzzy): a compound exotic like "Koji Fermented Natural" must keep its full
+  // name, not get substring-reduced to "Natural". setSelectOrCustom matches a standard process to the
+  // dropdown and routes anything else to the custom field with the exact label text intact.
+  setSelectOrCustom('beanProcess', 'beanProcessCustom', v('scProcess'));
   if (v('scRoastDate')) { document.getElementById('roastDate').value = v('scRoastDate'); if (typeof updateFreshness === 'function') updateFreshness(); }
   setSelectByText('roastLevel', v('scRoastLevel'));
   if (v('scBagSize')) { document.getElementById('bagSizeInput').value = v('scBagSize'); if (typeof updateBagSize === 'function') updateBagSize(); }
