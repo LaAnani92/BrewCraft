@@ -1285,3 +1285,9 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] renderMethodFilterOptions() now builds the dropdown from the distinct methods actually in recipes (sorted, escaped), so it's short AND complete. Cached by method-set key (sel._methodKey) to skip rebuilds when the set is unchanged (e.g. every search keystroke); preserves the current selection. Markup options reduced to just "All methods"; called at top of renderLibrary
 - [ ] npm run check green (2.166.0 synced); verified via preview: recipes V60+Espresso+Cold Brew → options [All, Cold Brew, Espresso, V60]; selecting Cold Brew filters to it; adding an Origami recipe → it appears; method removed → drops out; current selection preserved across re-render; cache skips rebuild when set unchanged
 - [ ] Update toast after deploy (cache v2.166.0)
+
+## Sprint 179 (v2.167.0) — calm the early journal (progressive-disclose the filter bar)
+- [ ] Emotional Design lens: a 1–4-recipe journal showed the full search/method/sort bar over a list visible at a glance — reads as a database tool, not a personal record. The card-gesture hint ("tap/swipe/compare") also showed above the empty state at 0 recipes
+- [ ] renderLibrary now hides .library-filters until recipes.length >= 5 (progressive disclosure), and when hidden resets librarySearch + libraryMethodFilter so no stale/invisible filter hides cards. The .field-hint after the filters hides only at 0 recipes (no cards to gesture on). Pure JS via querySelector — no markup edit (avoided rewriting the line carrying the raw scale glyph). Sort/view-toggle untouched
+- [ ] npm run check green (2.167.0 synced); verified via preview: N=0 → filters hidden + hint hidden + empty state; N=3 → filters hidden, hint shown, all 3 cards; N=5 → filters shown, hint shown; a stale method filter set then count dropped <5 → getFilteredRecipes returns all (reset)
+- [ ] Update toast after deploy (cache v2.167.0)

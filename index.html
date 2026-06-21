@@ -2134,7 +2134,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.166.0';
+const APP_VERSION = '2.167.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
@@ -4611,6 +4611,20 @@ function renderBackupNudge() {
 function renderLibrary() {
   renderBackupNudge();
   renderMethodFilterOptions();
+  /* Progressive disclosure: a fledgling journal shouldn't wear a search/sort rig it can't use yet — that
+     reads as a database tool, not a personal record. Reveal the filter bar only once there's enough to
+     sift through; hide the card-gesture hint while there are no cards at all. */
+  const enoughToFilter = recipes.length >= 5;
+  const filtersEl = document.querySelector('.library-filters');
+  const hintEl = document.querySelector('.library-filters + .field-hint');
+  if (filtersEl) {
+    filtersEl.style.display = enoughToFilter ? '' : 'none';
+    if (!enoughToFilter) {  // never let a hidden filter silently hide cards
+      const s = document.getElementById('librarySearch'); if (s) s.value = '';
+      const m = document.getElementById('libraryMethodFilter'); if (m) m.value = '';
+    }
+  }
+  if (hintEl) hintEl.style.display = recipes.length ? '' : 'none';
   if (libraryView === 'journal') { renderJournal(); return; }
   const listEl = document.getElementById('libraryList');
   const empty = document.getElementById('libraryEmpty');
