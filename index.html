@@ -2179,7 +2179,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.218.0';
+const APP_VERSION = '2.219.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
@@ -5058,10 +5058,11 @@ function importRecipesFile(event) {
       const data = JSON.parse(e.target.result);
       /* Accept three shapes: a full backup bundle {recipes,beans,gear}, a bare recipe array, or a single recipe object. */
       const recipeArr = Array.isArray(data) ? data : (data && Array.isArray(data.recipes) ? data.recipes : [data]);
-      let added = 0;
+      let added = 0, validRecipes = 0;
       recipeArr.forEach(function(raw) {
         const r = normalizeRecipe(raw);
         if (!r) return;
+        validRecipes++;
         if (recipes.find(function(x) { return x.id === r.id; })) return;
         recipes.unshift(r); added++;
       });
@@ -5102,7 +5103,11 @@ function importRecipesFile(event) {
       // — re-importing a backup you already hold — is "already up to date", not a 0-count warning that
       // reads like a failure.
       if (!parts.length) {
-        showToast('Already up to date — everything in that backup is already here.', 'info');
+        // Distinguish a real backup where everything's already here from a file that isn't a BrewCraft
+        // backup at all — the latter shouldn't read as "up to date".
+        const _recognized = validRecipes > 0 || (data && (data.type === 'brewcraft-backup' || Array.isArray(data.recipes) || Array.isArray(data.beans) || Array.isArray(data.gear) || Array.isArray(data.tags)));
+        if (_recognized) showToast('Already up to date — everything in that backup is already here.', 'info');
+        else showToast('That file isn’t a BrewCraft backup — nothing was imported. Your recipes are untouched.', 'warning');
       } else {
         showToast('Restored ' + parts.join(', ') + '.', 'success');
       }
@@ -6302,6 +6307,9 @@ function cancelSaveGear() {
 }
 function normalizeRecipe(r) {
   if (!r || typeof r !== 'object' || Array.isArray(r)) return null;
+  // Every BrewCraft recipe has a method. Reject objects without one (e.g. a foreign JSON file dropped into
+  // Import, or a single non-recipe object) so they don't land in the journal as a blank garbage recipe.
+  if (typeof r.method !== 'string' || !r.method.trim()) return null;
   const out = {};
   const strFields = ['name','method','beanOrigin','roaster','beanProcess','beanVarietal','roastDate','roastLevel','beanElevation','coffeeDose','brewRatio','totalWater','waterTemp','espYield','espShotTime','espPressure','espPreinfusion','grindSize','grinderName','grindCoarseness','filterType','waterTDS','waterGH','waterKH','waterRecipe','totalBrewTime','beverageWeight','brewTDS','scoreAcidity','scoreSweetness','scoreBody','scoreFinish','brewerNotes'];
   strFields.forEach(function(k) { out[k] = (r[k] === undefined || r[k] === null) ? '' : String(r[k]); });
