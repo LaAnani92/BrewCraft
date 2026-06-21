@@ -584,6 +584,11 @@
   /* Quiet "welcome back" on the Brew landing for a returning user (>=3 days away) — a greeting on
      open, never a nag. Gated to users with real recipes (sample-only users get the starter hint). */
   .today-welcome { font-size:13px; color:var(--accent-bright); margin-bottom:9px; line-height:1.5; }
+  /* Beginner-only orientation on a blank "New Recipe" — a newcomer facing an empty dose/ratio/grind form
+     gets pointed at the existing helpers (method pick → Quick recipe / Suggest) instead of a wall of
+     jargon. JS-gated (skill-beginner + new + no dose); auto-hides the moment a dose lands. */
+  .newrecipe-hint { font-size:12.5px; color:var(--text-secondary); line-height:1.5; margin:0 0 14px; padding:10px 13px; background:var(--accent-glow); border-radius:10px; }
+  .newrecipe-hint strong { color:var(--accent-bright); font-weight:600; }
   /* Beginner-only setup checklist in Brew-Along, shown at step 1 before Start — a first-timer doesn't
      know the dripper goes on a zeroed scale. Hides the moment the timer starts (they're brewing now). */
   .ba-prep { max-width:330px; margin:2px auto 10px; padding:10px 13px; font-size:12.5px; line-height:1.5; color:var(--text-secondary); background:rgba(255,255,255,0.06); border:1px solid var(--accent-glow); border-radius:10px; text-align:center; }
@@ -969,6 +974,8 @@
     </div>
     <div class="ai-panel" id="diffExplainPanel" role="region" aria-live="polite" hidden></div>
   </div>
+
+  <div class="newrecipe-hint" id="newRecipeHint" hidden>Blank canvas. Quickest start: load a <strong>Quick recipe</strong> below, or tap <strong>Suggest a starting point</strong> for tested numbers. Want to build your own? Just set the dose and ratio (switch the method above if you like).</div>
 
   <div class="section" id="sec-method">
     <div class="section-header" onclick="toggleSection('sec-method')">
@@ -2119,7 +2126,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.148.0';
+const APP_VERSION = '2.149.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
@@ -2813,7 +2820,7 @@ function recalcFromWater() {
   if (dose > 0 && water > 0) document.getElementById('brewRatio').value = +(water/dose).toFixed(1);
   afterRecalc(); _recalcLock = false;
 }
-function afterRecalc() { updatePourTotals(); calcExtraction(); calcEspExtraction(); markDirty(); renderAllScrubbers(); }
+function afterRecalc() { updatePourTotals(); calcExtraction(); calcEspExtraction(); updateNewRecipeHint(); markDirty(); renderAllScrubbers(); }
 /* Espresso's extraction proxy is its brew ratio (yield ÷ dose), not the filter EY% bar — espresso
    pours into espYield, leaving beverageWeight empty so computeEY is dark. Ratio needs no refractometer
    and names the shot style (ristretto/normale/lungo). Espresso-only; the 18–22% filter band stays
@@ -4196,6 +4203,14 @@ function gatherRecipeData() {
     updatedAt: new Date().toISOString()
   };
 }
+// Beginner-only blank-canvas orientation: show on a genuinely new, dose-less recipe; hide once a dose
+// lands (from a Quick recipe, Suggest, or manual entry) or a saved recipe is loaded.
+function updateNewRecipeHint() {
+  const el = document.getElementById('newRecipeHint');
+  if (!el) return;
+  const dose = (document.getElementById('coffeeDose').value || '').trim();
+  el.hidden = !(settings.skill === 'beginner' && currentRecipeId === null && !dose);
+}
 function loadRecipeData(r) {
   r = r || {};
   dismissDialinCarry();
@@ -4250,6 +4265,7 @@ function loadRecipeData(r) {
   calcExtraction();
   document.getElementById('deleteBtn').style.display = (r.id && recipes.some(function(x) { return x.id === r.id; })) ? 'inline-flex' : 'none';
   renderVersionDiff(r);
+  updateNewRecipeHint();
 }
 
 /* ======= ITERATION TRACKING ======= */

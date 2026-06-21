@@ -1177,3 +1177,9 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] importRecipesFile now builds a parts list of what was actually added (recipes/beans/setups/tags); if nothing new → info toast "Already up to date — everything in that backup is already here."; otherwise success "Restored <parts>." ("Restored" = reclaiming your own calibration, names the full asset incl. beans-only/gear-only restores)
 - [ ] npm run check green (2.148.0 synced); verified via preview: fresh bundle → "Restored 2 recipes, 1 bean."; re-import same → "Already up to date…" (info, not warning); beans-only new → "Restored N beans."
 - [ ] Update toast after deploy (cache v2.148.0)
+
+## Sprint 161 (v2.149.0) — beginner orientation on a blank "New Recipe"
+- [ ] Beginner User lens: tapping "New Recipe" → doNewRecipe → loadRecipeData({}) leaves a beginner on an empty dose/ratio/grind/temp form (method defaults to V60). A newcomer who doesn't know what 1:16 means faces a wall of jargon with no pointer to the existing helpers
+- [ ] Added a beginner-only #newRecipeHint above the method section: "Blank canvas. Quickest start: load a Quick recipe below, or tap 'Suggest a starting point' for tested numbers. Want to build your own? Just set the dose and ratio…". updateNewRecipeHint() shows it only when settings.skill==='beginner' && currentRecipeId===null && dose empty; wired into loadRecipeData end (shows on new {}, hides on real load) + afterRecalc (hides once a dose lands from Quick/Suggest/manual). Experts/enthusiasts never see it
+- [ ] npm run check green (2.149.0 synced); verified via preview: beginner doNewRecipe → hint shown; entering a dose (recalcFromDose) → hidden; loading a saved recipe → hidden; expert doNewRecipe → never shown
+- [ ] Update toast after deploy (cache v2.149.0)
