@@ -2154,7 +2154,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.182.0';
+const APP_VERSION = '2.183.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
@@ -5142,10 +5142,17 @@ function calcWater() {
     out.classList.add('show');
     return;
   }
+  // Single-mineral water (GH-only or KH-only) is a real advanced choice; don't print "0.0 g" / "KH 0 ppm"
+  // noise. Show only the targets and stocks actually in play. The math above is unchanged.
+  const _tgt = [];
+  if (gh > 0) _tgt.push('GH <strong>' + gh + '</strong>');
+  if (kh > 0) _tgt.push('KH <strong>' + kh + '</strong>');
+  let _lines = '';
+  if (gh > 0) _lines += '\u2022 GH stock: <strong>' + ghStock.toFixed(1) + ' g</strong> (\u2248 ' + ghStock.toFixed(1) + ' mL)<br>';
+  if (kh > 0) _lines += '\u2022 KH stock: <strong>' + khStock.toFixed(1) + ' g</strong> (\u2248 ' + khStock.toFixed(1) + ' mL)<br>';
   out.innerHTML =
-    'For <strong>' + L + ' L</strong> at GH <strong>' + gh + '</strong> / KH <strong>' + kh + '</strong> ppm:<br>' +
-    '\u2022 GH stock: <strong>' + ghStock.toFixed(1) + ' g</strong> (\u2248 ' + ghStock.toFixed(1) + ' mL)<br>' +
-    '\u2022 KH stock: <strong>' + khStock.toFixed(1) + ' g</strong> (\u2248 ' + khStock.toFixed(1) + ' mL)<br>' +
+    'For <strong>' + L + ' L</strong> at ' + _tgt.join(' / ') + ' ppm:<br>' +
+    _lines +
     '\u2022 Distilled water: top up to <strong>' + (L*1000).toFixed(0) + ' g</strong> total (\u2248 ' + distilled.toFixed(0) + ' g of distilled)';
   out.classList.add('show');
 }

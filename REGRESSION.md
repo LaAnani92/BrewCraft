@@ -1382,3 +1382,9 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] fillScanReview now appends to scanNote, when a VALID roast date was read: "Roast date reads <freshnessInfo.label, e.g. Day 12 · peak window> — double-check it matches the bag." Surfaces what the date implies (intelligent) + nudges verification of the one field most worth confirming. Only when rdOk (so a dropped future/invalid date adds nothing); no date / nothing-read → unchanged
 - [ ] npm run check green (2.182.0 synced); verified via preview: fillScanReview({roastDate today-11d, ...}) → scanNote "Read N fields… Roast date reads Day 11 · peak window ✓ — double-check it matches the bag."; future date → dropped, no freshness clause; no date → plain "Read N fields"; nothing read → "Nothing clear was found…"
 - [ ] Update toast after deploy (cache v2.182.0)
+
+## Sprint 195 (v2.183.0) — water mixer: clean single-mineral output
+- [ ] Advanced Coffee User lens: audited calcWater — the chemistry is CORRECT and documented (24.65 g Epsom/L = 0.1 mol/L = 10,000 ppm; 16.8 g NaHCO₃/L = 0.2 mol/L ≈ 10,000 ppm as CaCO₃; ghStock=gh·L/10 mL of 10,000 ppm stock hits gh ppm; SCA targets GH 50–175/KH≈40 right; overflow handled). Only nit: GH-only or KH-only water (a real advanced choice) printed "KH 0 ppm" + "KH stock: 0.0 g" noise
+- [ ] calcWater output now builds the target header + stock lines conditionally — only GH and/or KH lines that are >0 show; the distilled top-up line always shows. Math (ghStock/khStock/distilled/overflow) untouched
+- [ ] npm run check green (2.183.0 synced); verified via preview: GH70+KH40 1L → "GH 70 / KH 40 ppm" + both stock lines (7.0 g / 4.0 g) + distilled 989 g; GH70 only → "GH 70 ppm" + GH 7.0 g + distilled, NO KH line; KH40 only → "KH 40 ppm" + KH 4.0 g + distilled, no GH line; overflow case still warns
+- [ ] Update toast after deploy (cache v2.183.0)
