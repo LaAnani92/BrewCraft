@@ -2155,7 +2155,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.202.0';
+const APP_VERSION = '2.203.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
@@ -3848,6 +3848,12 @@ async function getDialinAdvice() {
     if (settings.skill === 'beginner') outEl.insertAdjacentHTML('afterbegin', '<span class="dialin-warmlead">Dialing in is normal — nobody nails it first try. Make one small change, taste again, and the difference starts to show.</span>');
     outEl.innerHTML += '<span class="src">Built-in expert rules (extraction compass). <button type="button" class="link-btn" onclick="openSettingsToKey()">Add an API key</button> (gear icon, top right) for AI analysis of your exact recipe.</span>';
     outEl.classList.add('show');
+    // The keyless coach fills #dialinOut and reveals it in one synchronous step (display:none → block with
+    // content already present). A polite live region often won't announce content that was there when the
+    // region first appeared, so a screen-reader user wouldn't know the advice arrived. The AI path dodges
+    // this by showing a visible "Analyzing…" state first (making the result a later mutation that reads);
+    // the instant keyless path has no pending state, so notify via the always-present sr-only region.
+    announceAI('Your dial-in advice is ready.');
     document.getElementById('dialinNext').style.display = 'block';
     scrollDialinIntoView();
     return;
