@@ -1658,3 +1658,9 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] Fix: @media print now sets #printCard tr { break-inside:avoid } (rows never split across a page) and #printCard h2 { break-after:avoid } (each section heading stays with its table). Both with the page-break-* legacy prefix for older Safari. Tables still flow naturally row-by-row; no forced whitespace
 - [ ] npm run check green (2.227.0 synced); verified via preview: the @media print rule now carries the tr break-inside and h2 break-after declarations
 - [ ] Update toast after deploy (cache v2.227.0)
+
+## Sprint 240 (v2.228.0) — Brew-Along completion names the coffee, like the timer
+- [ ] Emotional: the main-timer brew-complete (updateBrewGuide) names the bean at the peak moment ("Your Ethiopia is ready") — but the Brew-Along (the full-screen immersive guided mode) closed with a generic "That's brewed". The most immersive mode had the least personal finish, contradicting the app's own design note that naming the coffee "lands more personally"
+- [ ] Fix: baDone block now reads beanOrigin and personalizes the close — baTarget shows "Your <origin> is ready" (falls back to "That's brewed" when no origin), and the SR announce matches. Espresso doesn't Brew-Along (no pour schedule), so the pour-over/immersion "let it settle" framing stays correct; the savor line ("Take the first sip before you judge it"), success-ring fill, and rate hand-off are unchanged
+- [ ] npm run check green (2.228.0 synced); verified via preview: with an origin set, the baDone path yields "Your <origin> is ready" in baTarget + baSr; blank origin falls back to "That's brewed"
+- [ ] Update toast after deploy (cache v2.228.0)
