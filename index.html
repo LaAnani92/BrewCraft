@@ -2155,7 +2155,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.188.0';
+const APP_VERSION = '2.189.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
@@ -4400,7 +4400,7 @@ const DIFF_FIELDS = [
   ['totalWater','Water (g)'], ['waterTemp','Temp (C)'], ['grindSize','Grind setting'],
   ['grindCoarseness','Coarseness'], ['grinderName','Grinder'], ['filterType','Filter'],
   ['beanVarietal','Varietal'], ['beanOrigin','Origin'], ['waterTDS','Water TDS'],
-  ['espYield','Esp. yield (g)'], ['espShotTime','Shot time (s)'],
+  ['espYield','Esp. yield (g)'],
   ['espPressure','Pressure (bar)'], ['espPreinfusion','Pre-infusion']
 ];
 function fmtDiffVal(key, val) {
@@ -4465,10 +4465,10 @@ function brewAgain() {
   child.createdAt = new Date().toISOString();
   child.updatedAt = child.createdAt;
   child.totalBrewTime = ''; child.beverageWeight = ''; child.brewTDS = '';
-  // Espresso RESULTS (yield out, shot time) must clear too — they were leaking from the parent, showing the
-  // last shot's numbers on a fresh version and (since espShotTime was non-empty) blocking the timer's
-  // auto-log of the new shot. Pressure / pre-infusion are machine settings (params) and rightly carry over.
-  child.espYield = ''; child.espShotTime = '';
+  // Shot time is a RESULT (timed) — clear it like the other results so a fresh version doesn't show the last
+  // shot's duration, and so it never blocks the timer's auto-log (espShotTime fills only when empty). Yield
+  // is the pull TARGET (≈ dose×ratio), a param that carries over with dose/ratio/grind/pressure/pre-infusion.
+  child.espShotTime = '';
   child.rating = 0; child.flavorTags = [];
   child.scoreAcidity = ''; child.scoreSweetness = ''; child.scoreBody = ''; child.scoreFinish = '';
   child.brewerNotes = ''; child.cupping = null;
