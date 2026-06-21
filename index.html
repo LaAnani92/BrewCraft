@@ -2155,7 +2155,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.193.0';
+const APP_VERSION = '2.194.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
@@ -6393,6 +6393,20 @@ function renderJournal() {
       nt.textContent = r.brewerNotes.slice(0, 80) + (r.brewerNotes.length > 80 ? '\u2026' : '');
       e.appendChild(nt);
     }
+    // Same keyboard fix as the list card (v2.193): open the entry by keyboard, with a spoken-out label so
+    // the meta abbreviations AND the notes read cleanly (a bare aria-label would otherwise hide the notes).
+    e.setAttribute('role', 'button');
+    e.tabIndex = 0;
+    const _jb = [];
+    if (r.method) _jb.push(r.method);
+    if (ey !== null) _jb.push('extraction ' + ey.toFixed(1) + ' percent');
+    if (_cs !== null) _jb.push('cupping score ' + _cs.toFixed(1));
+    if (r.version && r.version > 1) _jb.push('version ' + r.version);
+    let _ja = (r.name || 'Untitled') + (_jb.length ? '. ' + _jb.join(', ') : '');
+    if (r.rating) _ja += '. ' + r.rating + ' of 5 stars';
+    if (r.brewerNotes) _ja += '. Notes: ' + r.brewerNotes.slice(0, 120);
+    e.setAttribute('aria-label', _ja);
+    e.onkeydown = function(ev) { if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); loadRecipe(r.id); switchTab('recipe'); } };
     listEl.appendChild(e);
   });
   // Peak-end bookend: the "best so far" leads at the top; close the loop at the bottom by marking where it
