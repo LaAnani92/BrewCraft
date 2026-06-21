@@ -1617,3 +1617,10 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] Gating: visible only in Beginner skill tier (body.skill-beginner); Enthusiast/Expert never see it. No new gating mechanism — same pattern as the dial-in coach-hint
 - [ ] npm run check green (2.221.0 synced); verified via preview: hint hidden by default, shown when body.skill-beginner; copy renders with Sweet/Fruity bolded
 - [ ] Update toast after deploy (cache v2.221.0)
+
+## Sprint 234 (v2.222.0) — camera OCR error states stop misblaming the photo
+- [ ] AI Product: every AI feature routes failures through aiErrorHint (precise hints for 401/404/429/5xx/network/empty) and falls back to built-in rules with the button always re-enabled — except camera OCR (runScanRead), whose catch special-cased only 'API 401' and lumped everything else (rate limit, server, **network drop mid-scan**) into "Couldn't read that one. Try a clearer, straight-on photo." A user with a fine photo and a flaky connection was sent to retake it — wrong diagnosis, wrong action
+- [ ] Fix: OCR catch now distinguishes 'no data' (model returned no usable label JSON = genuine photo-quality issue → keep the "clearer photo" message) from every other error (infrastructure → "Label scan failed — " + aiErrorHint(e)). Malformed-JSON parse failures are now also routed to 'no data' (wrapped the JSON.parse). The finally still always re-enables the button (no hang)
+- [ ] Consistency: OCR now uses the same aiErrorHint helper as dial-in / Suggest / explain / patterns / diff — one error-diagnosis path across all six AI features
+- [ ] npm run check green (2.222.0 synced); verified via preview: aiErrorHint maps API 401→key, 429→rate limit, 5xx→service hiccup, network→no connection; OCR catch produces the photo message only for 'no data' and aiErrorHint text otherwise
+- [ ] Update toast after deploy (cache v2.222.0)

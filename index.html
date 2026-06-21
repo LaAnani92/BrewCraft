@@ -2180,7 +2180,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.221.0';
+const APP_VERSION = '2.222.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
@@ -7068,11 +7068,18 @@ async function runScanRead() {
     const text = (dataResp.content || []).filter(function(b) { return b.type === 'text'; }).map(function(b) { return b.text; }).join('').trim();
     const jsonMatch = text.match(/\{[\s\S]*\}/);
     if (!jsonMatch) throw new Error('no data');
-    const parsed = JSON.parse(jsonMatch[0]);
+    let parsed;
+    try { parsed = JSON.parse(jsonMatch[0]); } catch(_) { throw new Error('no data'); }
     fillScanReview(parsed);
   } catch(e) {
     st.classList.add('err');
-    st.textContent = e.message === 'API 401' ? 'API key rejected — check it in Settings.' : 'Couldn\u2019t read that one. Try a clearer, straight-on photo of the label.';
+    // 'no data' means the model returned no usable label JSON, a genuine photo-quality issue. Any other
+    // error (bad key, rate limit, server, network drop) is infrastructure: diagnose it with aiErrorHint,
+    // the same helper every other AI feature uses, instead of misblaming the photo.
+    const m = String((e && e.message) || e || '');
+    st.textContent = (m === 'no data')
+      ? 'Couldn\u2019t read that one. Try a clearer, straight-on photo of the label.'
+      : 'Label scan failed — ' + aiErrorHint(e) + '.';
   } finally {
     btn.disabled = false; btn.textContent = 'Read this label';
   }
