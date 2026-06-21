@@ -351,6 +351,7 @@
   .taste-prompt { font-family:var(--font-display); font-size:var(--text-md); line-height:1.55; color:var(--text-secondary); font-style:italic; margin:2px 0 20px; }
   .link-btn { background:none; border:none; padding:0; margin:0; color:var(--accent-bright); font:inherit; cursor:pointer; text-decoration:underline; text-underline-offset:2px; }
   .link-btn:hover, .link-btn:focus-visible { color:var(--accent); }
+  .link-btn:focus-visible { outline:2px solid var(--accent-bright); outline-offset:2px; border-radius:3px; }
   .tier-pill { font-family:var(--font-sans); font-size:var(--text-2xs); font-weight:700; letter-spacing:0.7px; text-transform:uppercase; color:var(--accent-bright); background:var(--accent-glow); border:1px solid rgba(200,149,108,0.28); border-radius:999px; padding:5px 11px; cursor:pointer; white-space:nowrap; transition:all 0.15s; }
   .tier-pill:hover, .tier-pill:focus-visible { border-color:var(--accent); background:var(--bg-card-hover); }
   .tier-pill[hidden] { display:none; }
@@ -2154,7 +2155,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.184.0';
+const APP_VERSION = '2.185.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;

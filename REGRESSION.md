@@ -1394,3 +1394,9 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] calcWater output now ends with a "Log these targets as this recipe's water" link-btn → useWaterMix() copies wcGH→waterGH, wcKH→waterKH (only the targets actually entered, non-destructive), fills waterRecipe="Custom mix" only when blank, markDirty (normal save-consent preserved), success toast. One tap closes mix→record→reproduce
 - [ ] npm run check green (2.184.0 synced); verified via preview: GH70+KH40 mix → button present; useWaterMix → waterGH=70, waterKH=40, waterRecipe="Custom mix", recipe dirty; GH-only mix → sets waterGH only, leaves waterKH untouched; pre-existing waterRecipe brand not overwritten
 - [ ] Update toast after deploy (cache v2.184.0)
+
+## Sprint 197 (v2.185.0) — clear keyboard focus for all link-btns
+- [ ] Accessibility lens (auditing the v2.184 water bridge): the new "Log these targets" control is a proper <button class="link-btn"> (keyboard-reachable, text = accessible name, success toast announces via role=status). But .link-btn's only focus-visible style was a color shift accent-bright→accent, which goes DARKER (lower contrast on the dark bg) — a weak, arguably counterproductive keyboard-focus indicator. link-btn is app-wide (dial-in "Add an API key" CTA, explainParams, scan key-hint, the bridge)
+- [ ] Added .link-btn:focus-visible { outline:2px solid var(--accent-bright); outline-offset:2px; border-radius:3px; }. Clear keyboard-only focus ring (outline doesn't shift layout); kept the existing color change. Mouse hover unaffected (no outline)
+- [ ] npm run check green (2.185.0 synced); verified via preview: the .link-btn:focus-visible CSS rule is present in the CSSOM with the outline; bridge button is a focusable <button> with accessible name "Log these targets as this recipe's water"
+- [ ] Update toast after deploy (cache v2.185.0)
