@@ -1219,3 +1219,9 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] Reframed statsMsg as a calm identity anchor: "Your brewing so far: N recipes across M methods and K beans. N2 rated, N1 with extraction data — keep logging ratings and TDS to sharpen the picture." Methods = distinct recipe.method; beans = distinct lowercased beanOrigin; pluralized; beans clause omitted when 0; extraction clause omitted when 0. Empty state unchanged. One line, no new UI/clutter
 - [ ] npm run check green (2.155.0 synced); verified via preview: multi-method/bean journal → "across M methods and K beans"; single → "1 method"/"1 bean"; no beanOrigin → beans clause omitted; 0 recipes → unchanged empty msg
 - [ ] Update toast after deploy (cache v2.155.0)
+
+## Sprint 168 (v2.156.0) — Insights headline is anticipatory before the first rating (beginner)
+- [ ] Beginner User lens (fixing a v2.155 over-reach): for a fresh/sample-only user the v2.155 identity line read "Your brewing so far: 2 recipes across 1 method and 1 bean. 0 rated…" — it claimed the seeded samples as "your brewing" and spotlighted "0 rated", landing barren/false at the welcoming moment
+- [ ] drawStats now branches on n2 (rated count): n2===0 → an anticipatory teaching line "Rate your brews and your Insights take shape — your strongest methods, the beans you return to, and how each cup extracts, all building here." (no false "your brewing", no "0 rated"); n2>0 → the v2.155 identity breadth line. Empty (0 recipes) state unchanged
+- [ ] npm run check green (2.156.0 synced); verified via preview: 2 unrated samples → anticipatory line (no "0 rated"/"recipes across"); after one rated cup → identity line; 0 recipes → unchanged empty msg
+- [ ] Update toast after deploy (cache v2.156.0)

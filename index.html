@@ -2136,7 +2136,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.155.0';
+const APP_VERSION = '2.156.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
@@ -5197,8 +5197,14 @@ function drawStats() {
   renderInsights();
   const msg = document.getElementById('statsMsg');
   if (recipes.length === 0) { msg.textContent = 'Save some brews and the charts come alive.'; return; }
-  // Reflect the breadth of what they've built \u2014 methods explored, beans tried \u2014 so the journal reads as
-  // an accomplishment ("the brewer I've become"), not a utilitarian count. The data-entry prompt stays.
+  if (n2 === 0) {
+    // Before any rated cup (a fresh / sample-only user): don't claim the seeded samples as "your
+    // brewing" or spotlight "0 rated". Teach what the tab becomes \u2014 anticipatory, like the empty charts.
+    msg.textContent = 'Rate your brews and your Insights take shape \u2014 your strongest methods, the beans you return to, and how each cup extracts, all building here.';
+    return;
+  }
+  // Once there's a rated cup, reflect the breadth of what they've built \u2014 methods explored, beans tried
+  // \u2014 so the journal reads as an accomplishment ("the brewer I've become"), not a utilitarian count.
   const methods = new Set(recipes.map(function(r) { return r.method; }).filter(Boolean)).size;
   const beans = new Set(recipes.map(function(r) { return (r.beanOrigin || '').trim().toLowerCase(); }).filter(Boolean)).size;
   const plural = function(n, w) { return n + ' ' + w + (n === 1 ? '' : 's'); };
