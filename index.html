@@ -2065,14 +2065,19 @@ function updateBrewGuide(sec) {
   if (!guideSteps.length) { el.classList.remove('show'); el.innerHTML = ''; lastGuideAnnounce = ''; return; }
   // Past the expected finish → a one-time "brew complete" moment, then a calm done state.
   if (brewTargetSec > 0 && sec >= brewTargetSec) {
+    // Name the specific coffee at the loop's peak moment - "Your Ethiopia is ready" lands more personally
+    // than a generic "that's brewed". Falls back cleanly when no origin was logged. Pour-over only; espresso
+    // keeps its action-focused "cut the shot" tone.
+    const _bo = document.getElementById('beanOrigin');
+    const _origin = (_bo && _bo.value || '').trim();
     if (!brewCompleteFired) {
       brewCompleteFired = true;
       beep(660, 0.18); setTimeout(function() { beep(880, 0.2); }, 200); vibrate(140);
       const srDone = document.getElementById('brewGuideSr');
-      if (srDone) srDone.textContent = "That's brewed. Let it settle, then rate the cup below.";
+      if (srDone) srDone.textContent = (_origin ? 'Your ' + _origin + ' is ready. ' : "That's brewed. ") + 'Let it settle, then rate the cup below.';
     }
     el.innerHTML = '<strong class="bg-done">✓ That’s brewed</strong>' +
-      '<span class="bg-next">Let it settle. Take the first sip before you judge it.</span>' +
+      '<span class="bg-next">' + (_origin ? 'Your ' + escapeHtml(_origin) + ' is ready. Let it settle. ' : 'Let it settle. ') + 'Take the first sip before you judge it.</span>' +
       '<button class="bg-rate-link" onclick="switchTab(\'evaluate\')">Rate this cup &rarr;</button>';
     el.classList.add('show');
     return;
@@ -2137,7 +2142,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.174.0';
+const APP_VERSION = '2.175.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
