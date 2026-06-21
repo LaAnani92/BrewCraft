@@ -219,6 +219,8 @@
   .diff-card { border-color:rgba(200,149,108,0.35); background:var(--accent-glow); }
   .diff-card .diff-line { font-size:13px; color:var(--text-secondary); font-family:'JetBrains Mono',monospace; padding:2px 0; }
   .diff-card .diff-line strong { color:var(--accent-bright); font-weight:500; }
+  /* Quiet one-variable coaching at the iteration moment: affirm a clean single change, gently flag several. */
+  .diff-card .diff-discipline { font-size:12px; color:var(--text-secondary); font-style:italic; margin-top:7px; line-height:1.45; }
   /* Progressive-disclosure view of the full dial-in lineage (the moat) — collapsed, calm, reuses iterationHistory */
   .diff-card .diff-journey { margin-top:11px; }
   .diff-card .diff-journey summary { cursor:pointer; font-size:12px; font-weight:600; color:var(--text-secondary); padding:5px 0; }
@@ -2177,7 +2179,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.217.0';
+const APP_VERSION = '2.218.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
@@ -4527,6 +4529,11 @@ function renderVersionDiff(r) {
     const b = fmtDiffVal(f[0], r[f[0]]);
     if (a !== b) lines.push('<div class="diff-line">' + escapeHtml(f[1]) + ': ' + escapeHtml(a) + ' \u2192 <strong>' + escapeHtml(b) + '</strong></div>');
   });
+  // Reinforce the app's one-variable discipline at the moment of iteration: one change is a clean test you
+  // can attribute; several at once muddy what worked. (The empty state below already nudges "adjust one".)
+  const _changed = lines.length;
+  if (_changed === 1) lines.push('<div class="diff-discipline">One change this round \u2014 a clean test you can trust.</div>');
+  else if (_changed >= 2) lines.push('<div class="diff-discipline">' + _changed + ' variables changed \u2014 to learn what each does, change just one next time.</div>');
   const rA = parent.rating || 0, rB = r.rating || 0;
   if (rA && rB) {
     const verdict = rB > rA ? '\u2014 improved \u2713' : rB < rA ? '\u2014 worse, consider reverting' : '\u2014 unchanged';
