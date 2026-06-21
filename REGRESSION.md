@@ -1273,3 +1273,9 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] Added dialinHtml(txt) = escapeHtml(txt).replace(/(PRIMARY|Secondary) →/g, '<strong>$1 →</strong>'). All 3 render points (keyless, AI success, AI catch) now use outEl.innerHTML = dialinHtml(...) instead of textContent. .dialin-out is white-space:pre-wrap so breaks survive; text escaped first (app-generated, XSS-safe); AI prose without the markers is just escaped (no bold). Warm-lead prepend + .src append layering unchanged
 - [ ] npm run check green (2.164.0 synced); verified via preview: keyless result innerHTML contains <strong>PRIMARY →</strong> + <strong>Secondary →</strong>, advice text intact + escaped, .src span still appended, beginner warm-lead still prepends; a recipe name with <script> in the advice context stays escaped (no raw HTML)
 - [ ] Update toast after deploy (cache v2.164.0)
+
+## Sprint 177 (v2.165.0) — library search covers process, varietal & tasting notes
+- [ ] Advanced Coffee User lens: getFilteredRecipes search matched only name+origin+roaster. Specialty buyers search by process ("anaerobic"/"washed"), varietal ("geisha"), and tasting note ("blueberry") — all captured, none findable. As the journal grows, finding "my anaerobic naturals" or "the blueberry one" was impossible without scrolling
+- [ ] Extended the search-match string to also include beanProcess, beanVarietal, and flavorTags.join(' '). Placeholder updated "Search name, origin, roaster…" → "Search name, bean, process, notes…" + a fuller aria-label. Method filter + sort unchanged
+- [ ] npm run check green (2.165.0 synced); verified via preview: getFilteredRecipes search "anaerobic" → matches an Anaerobic Natural recipe; "geisha" → matches varietal Geisha; "blueberry" → matches a flavorTags blueberry recipe; "konga" → still matches origin; non-matching term excludes
+- [ ] Update toast after deploy (cache v2.165.0)

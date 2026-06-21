@@ -1624,7 +1624,7 @@
     <button class="preset-chip" id="viewJournalBtn" aria-pressed="false" onclick="setLibraryView('journal')">Timeline</button>
   </div>
   <div class="library-filters">
-    <input type="text" id="librarySearch" aria-label="Search recipes" placeholder="Search name, origin, roaster…" oninput="renderLibrary()">
+    <input type="text" id="librarySearch" aria-label="Search recipes by name, bean, process, varietal or tasting note" placeholder="Search name, bean, process, notes…" oninput="renderLibrary()">
     <select id="libraryMethodFilter" aria-label="Filter by brew method" onchange="renderLibrary()">
       <option value="">All methods</option>
       <option>V60</option><option>Chemex</option><option>Kalita Wave</option><option>AeroPress</option>
@@ -2136,7 +2136,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.164.0';
+const APP_VERSION = '2.165.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
@@ -4564,7 +4564,9 @@ function getFilteredRecipes() {
   const sort = document.getElementById('librarySort').value;
   let list = recipes.slice();
   if (q) list = list.filter(function(r) {
-    return ((r.name||'') + ' ' + (r.beanOrigin||'') + ' ' + (r.roaster||'')).toLowerCase().includes(q);
+    // Specialty buyers search by process ("anaerobic"), varietal ("geisha"), and tasting note
+    // ("blueberry") — all captured, so make them findable, not just name/origin/roaster.
+    return ((r.name||'') + ' ' + (r.beanOrigin||'') + ' ' + (r.roaster||'') + ' ' + (r.beanProcess||'') + ' ' + (r.beanVarietal||'') + ' ' + ((r.flavorTags||[]).join(' '))).toLowerCase().includes(q);
   });
   if (method) list = list.filter(function(r) { return r.method === method; });
   if (sort === 'new') list.sort(function(a,b) { return (b.createdAt||'').localeCompare(a.createdAt||''); });
