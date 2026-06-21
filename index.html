@@ -2136,7 +2136,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.154.0';
+const APP_VERSION = '2.155.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
@@ -5196,8 +5196,16 @@ function drawStats() {
   const n2 = drawRatingTimeline();
   renderInsights();
   const msg = document.getElementById('statsMsg');
-  if (recipes.length === 0) msg.textContent = 'Save some brews and the charts come alive.';
-  else msg.textContent = recipes.length + ' recipes saved \u00b7 ' + n1 + ' with extraction data \u00b7 ' + n2 + ' rated. Rate brews and log TDS to grow the picture.';
+  if (recipes.length === 0) { msg.textContent = 'Save some brews and the charts come alive.'; return; }
+  // Reflect the breadth of what they've built \u2014 methods explored, beans tried \u2014 so the journal reads as
+  // an accomplishment ("the brewer I've become"), not a utilitarian count. The data-entry prompt stays.
+  const methods = new Set(recipes.map(function(r) { return r.method; }).filter(Boolean)).size;
+  const beans = new Set(recipes.map(function(r) { return (r.beanOrigin || '').trim().toLowerCase(); }).filter(Boolean)).size;
+  const plural = function(n, w) { return n + ' ' + w + (n === 1 ? '' : 's'); };
+  let line = 'Your brewing so far: ' + plural(recipes.length, 'recipe') + ' across ' + plural(methods, 'method');
+  if (beans) line += ' and ' + plural(beans, 'bean');
+  line += '. ' + n2 + ' rated' + (n1 ? ', ' + n1 + ' with extraction data' : '') + ' \u2014 keep logging ratings and TDS to sharpen the picture.';
+  msg.textContent = line;
 }
 
 /* ======= PRINT RECIPE CARD ======= */

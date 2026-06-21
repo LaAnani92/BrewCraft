@@ -1213,3 +1213,9 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] renderToday now announces the steep note via the existing sr-only polite region (#aiStatusSr) ONLY when it transitions to the ready message AND the previous text was different and non-empty — so renderToday's many calls don't re-announce, and a first-load read (prev empty) isn't doubled. Targets exactly the setup→ready transition (the resume moment)
 - [ ] npm run check green (2.154.0 synced); verified via preview: setup→ready render writes the ready msg to #aiStatusSr; ready→ready re-render does NOT (no re-announce); first render with empty prev does NOT announce (page-read covers it); rated/non-cold never announce
 - [ ] Update toast after deploy (cache v2.154.0)
+
+## Sprint 167 (v2.155.0) — Insights headline reflects the brewer you've become
+- [ ] Product Strategist lens: the Insights statsMsg was utilitarian ("N recipes saved · N1 with extraction data · N2 rated. Rate brews… to grow the picture") — a prompt to do more, not a reflection of what you've built. The breadth of a user's craft (methods explored, beans tried) was computed nowhere, so the journal/moat never read as an accomplishment
+- [ ] Reframed statsMsg as a calm identity anchor: "Your brewing so far: N recipes across M methods and K beans. N2 rated, N1 with extraction data — keep logging ratings and TDS to sharpen the picture." Methods = distinct recipe.method; beans = distinct lowercased beanOrigin; pluralized; beans clause omitted when 0; extraction clause omitted when 0. Empty state unchanged. One line, no new UI/clutter
+- [ ] npm run check green (2.155.0 synced); verified via preview: multi-method/bean journal → "across M methods and K beans"; single → "1 method"/"1 bean"; no beanOrigin → beans clause omitted; 0 recipes → unchanged empty msg
+- [ ] Update toast after deploy (cache v2.155.0)
