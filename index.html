@@ -2119,7 +2119,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.145.0';
+const APP_VERSION = '2.146.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
@@ -5852,13 +5852,23 @@ function maybeDeductBag(data) {
   if (!b || !b.bagSize) return;
   const dose = parseFloat(data.coffeeDose) || 0;
   if (dose <= 0) return;
-  b.gramsUsed = (parseFloat(b.gramsUsed) || 0) + dose;
+  const size = parseFloat(b.bagSize) || 0;
+  const oldUsed = parseFloat(b.gramsUsed) || 0;
+  b.gramsUsed = oldUsed + dose;
   store.set('brewcraft_beans', JSON.stringify(beanProfiles));
   renderProfileSelects();
   if (currentBeanId) document.getElementById('beanProfileSelect').value = currentBeanId;
   renderBagStatus();
   const info = bagLine(b);
-  if (info && info.low) showToast('\u2248' + info.brews + ' brew' + (info.brews === 1 ? '' : 's') + ' left of ' + (b.beanOrigin || 'this bean'),'warning');
+  const beanName = b.beanOrigin || b.roaster || 'this bean';
+  // The brew that empties the bag closes the bean's arc with you \u2014 mark it warmly, once, only on the
+  // crossing (prev left > 0 and now <= 0), with a brews-from-one-bag count and a gentle nudge onward,
+  // instead of a cold "0g left". Below the crossing, fall back to the running-low heads-up.
+  if (size > 0 && (size - oldUsed) > 0 && (size - b.gramsUsed) <= 0) {
+    showToast('That was the last of your ' + beanName + ' \u2014 about ' + Math.round(size / dose) + ' brews from one bag. Onto the next?', 'success');
+  } else if (info && info.low) {
+    showToast('\u2248' + info.brews + ' brew' + (info.brews === 1 ? '' : 's') + ' left of ' + beanName, 'warning');
+  }
 }
 function bestForBean(beanId, origin, roaster) {
   let pool = recipes.filter(function(r) {
