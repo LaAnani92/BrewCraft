@@ -884,7 +884,9 @@
     #printCard .pc-sub { font-size:13px; color:#555; margin-bottom:16px; }
     #printCard table { width:100%; border-collapse:collapse; margin-bottom:14px; }
     #printCard td, #printCard th { border:1px solid #999; padding:6px 10px; font-size:12px; text-align:left; }
-    #printCard h2 { font-size:15px; margin:14px 0 6px; }
+    /* Paginate cleanly: never split a table row across pages, and keep each section heading with its table. */
+    #printCard tr { break-inside:avoid; page-break-inside:avoid; }
+    #printCard h2 { font-size:15px; margin:14px 0 6px; break-after:avoid; page-break-after:avoid; }
     #printCard .pc-notes { font-size:12px; line-height:1.6; }
   }
 
@@ -2180,7 +2182,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.226.0';
+const APP_VERSION = '2.227.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;

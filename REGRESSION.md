@@ -1652,3 +1652,9 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] Sort intentionally not cleared (it reorders, never hides); progressive-disclosure + force-clear-when-hidden behavior unchanged
 - [ ] npm run check green (2.226.0 synced); verified via preview: clearLibraryFilters empties both inputs and re-renders; both No-matches branches now carry the button
 - [ ] Update toast after deploy (cache v2.226.0)
+
+## Sprint 239 (v2.227.0) — print recipe card paginates cleanly across pages
+- [ ] Advanced: printRecipe builds a comprehensive, espresso-aware card (bean context, all params, pour schedule, water chemistry, results + EY, notes, "Made with BrewCraft") and the @media print CSS hides the app chrome (body > *:not(#printCard)), white bg + black serif. Bar-ready — but it had no break-inside/break-after control, so a longer card (full pour schedule + bean + results + notes past one page) could split a table row mid-cell or orphan a section heading at a page bottom
+- [ ] Fix: @media print now sets #printCard tr { break-inside:avoid } (rows never split across a page) and #printCard h2 { break-after:avoid } (each section heading stays with its table). Both with the page-break-* legacy prefix for older Safari. Tables still flow naturally row-by-row; no forced whitespace
+- [ ] npm run check green (2.227.0 synced); verified via preview: the @media print rule now carries the tr break-inside and h2 break-after declarations
+- [ ] Update toast after deploy (cache v2.227.0)
