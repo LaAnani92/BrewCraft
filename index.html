@@ -2174,7 +2174,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.209.0';
+const APP_VERSION = '2.210.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
@@ -4173,7 +4173,7 @@ async function runSuggest(goal) {
   }
   panel.innerHTML = aiThinking('Starting point \u00b7 ' + escapeHtml(goal), 'Thinking about your ' + escapeHtml(method));
   try {
-    const sys = 'You are a specialty coffee expert. Given a bean (including its freshness / days off roast), brew method, the user skill level, and a taste goal, propose ONE realistic starting recipe. Account for freshness when given: very fresh coffee still degassing brews unevenly, while coffee well past roast has faded aromatics. Reply ONLY with minified JSON (no prose, no markdown, no code fence). Keys: doseG (number, grams), ratio (number, water:coffee e.g. 16.5; for espresso the brew ratio e.g. 2.0), tempC (number, Celsius), grind (one of EXACTLY: "extra fine","espresso-fine","fine","medium-fine","medium","medium-coarse","coarse","extra coarse"), rationale (one short plain-text sentence). For espresso ALSO include espYield (grams out) and espShot (seconds). Keep values realistic for the method and bean. If a USER TRACK RECORD is provided (their best-rated ratio cluster and the extraction band of their best cups for this method), prefer it as the starting point over generic defaults; it reflects what THIS drinker actually likes.';
+    const sys = 'You are a specialty coffee expert. Given a bean (including its freshness / days off roast), brew method, the user skill level, and a taste goal, propose ONE realistic starting recipe. Tailor it to the skill level: for a beginner, favour a forgiving, hard-to-mess-up starting point and keep the rationale plain and jargon-free; for an expert, a more precise or ambitious target is fine. Account for freshness when given: very fresh coffee still degassing brews unevenly, while coffee well past roast has faded aromatics. Reply ONLY with minified JSON (no prose, no markdown, no code fence). Keys: doseG (number, grams), ratio (number, water:coffee e.g. 16.5; for espresso the brew ratio e.g. 2.0), tempC (number, Celsius), grind (one of EXACTLY: "extra fine","espresso-fine","fine","medium-fine","medium","medium-coarse","coarse","extra coarse"), rationale (one short plain-text sentence). For espresso ALSO include espYield (grams out) and espShot (seconds). Keep values realistic for the method and bean. If a USER TRACK RECORD is provided (their best-rated ratio cluster and the extraction band of their best cups for this method), prefer it as the starting point over generic defaults; it reflects what THIS drinker actually likes.';
     const fresh = freshnessInfo(d.roastDate);
     const beanBits = { origin: d.beanOrigin, roaster: d.roaster, process: d.beanProcess, roastLevel: d.roastLevel, freshness: fresh ? fresh.label : 'roast date not logged' };
     const _rcS = ratioClusterForMethod(method);
