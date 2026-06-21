@@ -2126,7 +2126,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.149.0';
+const APP_VERSION = '2.150.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
@@ -3884,8 +3884,17 @@ function finerStep(g) { const i = GRIND_ORDER.indexOf((g || 'medium').toLowerCas
 function ruleSuggest(method, goal, roastLevel) {
   const base = (QUICK_RECIPES[method] && QUICK_RECIPES[method][0]) || { doseG: 15, ratio: 16.5, tempC: 93, grind: 'medium-fine' };
   const isEsp = method === 'Espresso';
+  const isCold = method === 'Cold Brew' || method === 'Cold Drip';
   const s = { doseG: base.doseG, ratio: base.ratio, tempC: base.tempC, grind: base.grind, espYield: base.espYield, espShot: base.espShot, rationale: '' };
-  if (goal === 'Brighter') {
+  if (isCold) {
+    // Cold brew/drip has no water-temperature lever — its dials are ratio, grind and STEEP TIME. Adjust
+    // those and point at steep time; never touch tempC (the Math.max(80,…) floors below would otherwise
+    // jump a 20°C cold brew up to 80°C).
+    if (goal === 'Brighter') { s.ratio = +(base.ratio + 0.5).toFixed(1); s.grind = coarserStep(base.grind); s.rationale = 'A touch more water and a hair coarser grind keep it clean and bright — or pull the steep a little shorter.'; }
+    else if (goal === 'Sweeter') { s.grind = finerStep(base.grind); s.rationale = 'A touch finer, or simply a longer steep, deepens the sweetness.'; }
+    else if (goal === 'Stronger') { s.ratio = Math.max(3, +(base.ratio - 1).toFixed(1)); s.grind = finerStep(base.grind); s.rationale = 'Less water (a lower ratio), or a longer steep, for a bigger, more intense brew.'; }
+    else { s.rationale = 'A balanced, forgiving cold-brew starting point — let it steep long and slow.'; }
+  } else if (goal === 'Brighter') {
     s.tempC = Math.max(80, base.tempC - 2);
     s.ratio = +(base.ratio + (isEsp ? 0.3 : 0.5)).toFixed(1);
     s.grind = coarserStep(base.grind);
@@ -3904,8 +3913,8 @@ function ruleSuggest(method, goal, roastLevel) {
   // Roast level shifts the extraction baseline — the one bean fact the keyless coach can use: dark roasts
   // are more soluble (cooler water avoids bitterness), light roasts are dense (hotter helps extract).
   const rl = (roastLevel || '').toLowerCase();
-  if (rl.indexOf('dark') !== -1) { s.tempC = Math.max(80, s.tempC - 2); s.rationale += ' Cooler water suits the darker roast.'; }
-  else if (rl.indexOf('light') !== -1) { s.tempC = Math.min(100, s.tempC + 2); s.rationale += ' Hotter water helps extract the lighter roast.'; }
+  if (!isCold && rl.indexOf('dark') !== -1) { s.tempC = Math.max(80, s.tempC - 2); s.rationale += ' Cooler water suits the darker roast.'; }
+  else if (!isCold && rl.indexOf('light') !== -1) { s.tempC = Math.min(100, s.tempC + 2); s.rationale += ' Hotter water helps extract the lighter roast.'; }
   if (isEsp) { s.espYield = Math.round((parseFloat(s.doseG) || 18) * s.ratio); s.espShot = base.espShot || 28; }
   return s;
 }

@@ -1183,3 +1183,9 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] Added a beginner-only #newRecipeHint above the method section: "Blank canvas. Quickest start: load a Quick recipe below, or tap 'Suggest a starting point' for tested numbers. Want to build your own? Just set the dose and ratio…". updateNewRecipeHint() shows it only when settings.skill==='beginner' && currentRecipeId===null && dose empty; wired into loadRecipeData end (shows on new {}, hides on real load) + afterRecalc (hides once a dose lands from Quick/Suggest/manual). Experts/enthusiasts never see it
 - [ ] npm run check green (2.149.0 synced); verified via preview: beginner doNewRecipe → hint shown; entering a dose (recalcFromDose) → hidden; loading a saved recipe → hidden; expert doNewRecipe → never shown
 - [ ] Update toast after deploy (cache v2.149.0)
+
+## Sprint 162 (v2.150.0) — keyless Suggest stops suggesting hot water for cold brew
+- [ ] AI Product lens (following the v2.149 beginner funnel to Suggest): ruleSuggest's goal modifiers + roast adjustment all moved water TEMPERATURE, meaningless for cold methods. Worse, a Math.max(80,…) floor meant for hot brews jumped Cold Brew/Cold Drip (base tempC 20) to 80°C on the Brighter goal AND on any dark-roast bean — a hot-water suggestion for cold brew (it's cold-brew season)
+- [ ] Added isCold (Cold Brew/Cold Drip); a cold-specific goal branch adjusts ratio/grind and points at STEEP TIME, never tempC; the dark/light roast temp tweak is guarded with !isCold. Hot methods unchanged
+- [ ] npm run check green (2.150.0 synced); verified via preview: ruleSuggest('Cold Brew','Brighter') keeps tempC 20 (was 80) + coarser grind; ('Cold Brew','Stronger') lowers ratio; dark-roast cold brew stays 20°C; V60 Brighter still 80→ cooler-water path intact (93→91)
+- [ ] Update toast after deploy (cache v2.150.0)
