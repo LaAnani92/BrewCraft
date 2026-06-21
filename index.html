@@ -2092,12 +2092,15 @@ function updateBrewGuide(sec) {
   const inc = st.weight ? ' <span class="bg-add">(+' + Math.round(st.weight) + ' g)</span>' : '';
   let html = '<strong>' + escapeHtml(st.label) + '</strong> — pour to ' + st.targetCum + ' g' + inc;
   const next = guideSteps[cur + 1];
+  let _headsUp = '';
   if (next && next.start !== null) {
     const remain = Math.ceil(next.start - sec);
     // The count-in is the most time-critical glance during a pour. Escalate it to an accent cue in the final
     // seconds and at the pour moment, so a busy-handed brewer catches the timing without squinting.
-    if (remain > 0) html += '<span class="bg-next' + (remain <= 5 ? ' bg-now' : '') + '">next: ' + escapeHtml(next.label) + ' in ' + secToStr(remain) + '</span>';
-    else html += '<span class="bg-next bg-now">tap Lap or wait — ' + escapeHtml(next.label) + ' now</span>';
+    if (remain > 0) {
+      html += '<span class="bg-next' + (remain <= 5 ? ' bg-now' : '') + '">next: ' + escapeHtml(next.label) + ' in ' + secToStr(remain) + '</span>';
+      if (remain <= 5) _headsUp = next.label + ' coming up';
+    } else html += '<span class="bg-next bg-now">tap Lap or wait — ' + escapeHtml(next.label) + ' now</span>';
   } else if (!next) {
     // Immersion (steep-then-press) doesn't "draw down" like pour-over — don't tell a beginner it does.
     const imm = isImmersion(getSelectedMethod());
@@ -2105,7 +2108,9 @@ function updateBrewGuide(sec) {
       ? '<span class="bg-next">' + (imm ? 'steeping — done ~' : 'drawing down — done ~') + secToStr(brewTargetSec) + '</span>'
       : '<span class="bg-next">' + (imm ? 'steeping — let it finish' : 'last pour — let it draw down') + '</span>';
   }
-  const announce = st.label + ', pour to ' + st.targetCum + ' g';
+  // SR parity with the visual count-in escalation: announce the heads-up in the final seconds so a
+  // screen-reader brewer gets the same "get ready" cue, then the step-change announce follows.
+  const announce = _headsUp || (st.label + ', pour to ' + st.targetCum + ' g');
   if (announce !== lastGuideAnnounce) {
     lastGuideAnnounce = announce;
     const sr = document.getElementById('brewGuideSr');
@@ -2145,7 +2150,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.177.0';
+const APP_VERSION = '2.178.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;

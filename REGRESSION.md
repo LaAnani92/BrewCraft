@@ -1352,3 +1352,9 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] .bg-next bumped 11px/text-muted → 12.5px/text-secondary; new .bg-now (accent-bright, 600) applied to the count-in in the final ≤5s and at the pour moment ("…now"), so the cue escalates to a glanceable accent as the pour approaches. Status lines (drawing down / settle) just get the modest legibility bump
 - [ ] npm run check green (2.177.0 synced); verified via preview: guideSteps with next pour at 30s — sec 10 (remain 20) → bg-next only; sec 26 (remain ≤5) → bg-next bg-now; sec 30 (remain 0) → "tap Lap…now" bg-next bg-now; computed .bg-next font-size = 12.5px, bg-now color = accent-bright
 - [ ] Update toast after deploy (cache v2.177.0)
+
+## Sprint 190 (v2.178.0) — screen-reader parity for the pour heads-up
+- [ ] Accessibility lens: audited v2.177's accent count-in escalation. It's WCAG 1.4.1-clean (the timing is TEXT; accent/weight is emphasis) and the app already has a global prefers-reduced-motion reset (css 794: * animation/transition-duration 0.01ms). But v2.177 gave SIGHTED users a 5s anticipatory cue while a SR brewer only hears the step-change AT the pour moment — no "get ready" parity
+- [ ] updateBrewGuide: in the final ≤5s before the next timed pour, the brewGuideSr announce becomes "<label> coming up" (then the step-change announce follows). Reuses the existing lastGuideAnnounce dedup so it fires ONCE per pour, not per tick. No new state, no extra DOM
+- [ ] npm run check green (2.178.0 synced); verified via preview: 2-step guide (Pour 2 at 30s) — sec 10 → SR "Bloom, pour to 40 g"; sec 26 (remain ≤5) → SR "Pour 2 coming up"; sec 30 (step advances) → SR "Pour 2, pour to 150 g"; visual bg-now escalation unchanged
+- [ ] Update toast after deploy (cache v2.178.0)
