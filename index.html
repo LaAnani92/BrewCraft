@@ -2155,7 +2155,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.194.0';
+const APP_VERSION = '2.195.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
@@ -5684,7 +5684,13 @@ function renderProfileSelects() {
   gearProfiles.forEach(function(g) {
     const o = document.createElement('option');
     o.value = g.id;
-    o.textContent = g.label;
+    // Show what the setup IS (grinder + grind), like the bean dropdown shows origin/roaster — so a user
+    // with several setups recognizes each at a glance instead of having to apply it to find out.
+    const gbits = [];
+    if (g.grinderName) gbits.push(g.grinderName);
+    if (g.grindSize) gbits.push(g.grindSize);
+    else if (g.grindCoarseness && g.grindCoarseness !== '0' && COARSE_LABELS[parseInt(g.grindCoarseness, 10)]) gbits.push(COARSE_LABELS[parseInt(g.grindCoarseness, 10)]);
+    o.textContent = g.label + (gbits.length ? ' · ' + gbits.join(' · ') : '');
     gs.appendChild(o);
   });
 }
