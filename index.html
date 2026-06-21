@@ -1814,8 +1814,8 @@
 
 
 <div class="modal-overlay" id="saveChoiceModal">
-  <div class="modal" style="max-width:430px">
-    <h3 style="margin:0 0 6px">Save changes?</h3>
+  <div class="modal" style="max-width:430px" role="dialog" aria-modal="true" aria-labelledby="saveChoiceTitle">
+    <h3 id="saveChoiceTitle" style="margin:0 0 6px">Save changes?</h3>
     <p class="field-hint" style="margin-bottom:16px" id="saveChoiceMsg"></p>
     <div style="display:flex;flex-direction:column;gap:9px">
       <button class="btn btn-primary" onclick="saveChoice('version')">Save as new version (keep both)</button>
@@ -1826,7 +1826,7 @@
 </div>
 
 <div class="modal-overlay" id="scanModal">
-  <div class="modal scan-modal">
+  <div class="modal scan-modal" role="dialog" aria-modal="true" aria-labelledby="scanTitle">
     <div class="scan-head">
       <h3 id="scanTitle">Scan a coffee bag</h3>
       <button class="icon-btn" onclick="closeScan()" aria-label="Close"><svg class="ico"><use href="#i-close"/></svg></button>
@@ -2174,7 +2174,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.211.0';
+const APP_VERSION = '2.212.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
@@ -6863,14 +6863,31 @@ function paramsChanged() {
   });
   return changed;
 }
+/* Shared accessible-modal focus management: move focus into the dialog on open (aria-modal marks the rest
+   inert) and return it to the opener on close. One opener ref suffices — these modals don't stack. */
+let _modalOpener = null;
+function focusModal(id) {
+  const m = document.getElementById(id);
+  if (!m) return;
+  _modalOpener = document.activeElement;
+  m.classList.add('show');
+  const f = m.querySelector('.modal button, .modal input, .modal select, .modal textarea, .modal [tabindex]:not([tabindex="-1"])');
+  if (f) { try { f.focus({ preventScroll: true }); } catch(e) {} }
+}
+function blurModal(id) {
+  const m = document.getElementById(id);
+  if (m) m.classList.remove('show');
+  if (_modalOpener && typeof _modalOpener.focus === 'function') { try { _modalOpener.focus({ preventScroll: true }); } catch(e) {} }
+  _modalOpener = null;
+}
 function openSaveChoice(changed) {
   const orig = recipes.find(function(r) { return r.id === currentRecipeId; });
   document.getElementById('saveChoiceMsg').textContent =
     'You changed ' + changed.slice(0,4).join(', ').toLowerCase() + (changed.length > 4 ? ' and more' : '') +
     ' on \u201c' + ((orig && orig.name) || 'this recipe') + '\u201d. Keep the original brew on record, or update it?';
-  document.getElementById('saveChoiceModal').classList.add('show');
+  focusModal('saveChoiceModal');
 }
-function closeSaveChoice() { document.getElementById('saveChoiceModal').classList.remove('show'); }
+function closeSaveChoice() { blurModal('saveChoiceModal'); }
 function saveChoice(mode) { closeSaveChoice(); saveRecipe(mode); }
 function fmtTempAdvice(deltaC, currentC) {
   if (settings.tempUnit === 'F') return '~' + Math.round(deltaC * 1.8) + '\u00b0F' + (currentC ? ' (currently ' + Math.round(cToF(currentC)) + '\u00b0F)' : '');
@@ -6922,9 +6939,9 @@ let scanImageData = null, scanMime = 'image/jpeg';
 function openScan() {
   scanReset();
   document.getElementById('scanKeyHint').style.display = settings.apiKey ? 'none' : 'block';
-  document.getElementById('scanModal').classList.add('show');
+  focusModal('scanModal');
 }
-function closeScan() { document.getElementById('scanModal').classList.remove('show'); }
+function closeScan() { blurModal('scanModal'); }
 /* Keyless OCR can't read a label, but it shouldn't dead-end: send the user straight to the bean
    fields (the manual path) instead of just telling them to add a key. */
 function scanManualEntry() {
@@ -7098,6 +7115,8 @@ document.addEventListener('keydown', function(e) {
   if ((e.metaKey || e.ctrlKey) && e.key === 'n') { e.preventDefault(); newRecipe(); }
   if (e.key === 'Escape' && baActive) { e.preventDefault(); doExitBrewAlong(); }
   else if (e.key === 'Escape' && document.getElementById('settingsModal').classList.contains('show')) { e.preventDefault(); closeSettings(); }
+  else if (e.key === 'Escape' && document.getElementById('saveChoiceModal').classList.contains('show')) { e.preventDefault(); closeSaveChoice(); }
+  else if (e.key === 'Escape' && document.getElementById('scanModal').classList.contains('show')) { e.preventDefault(); closeScan(); }
 });
 window.addEventListener('beforeunload', function(e) {
   if (isDirty) { e.preventDefault(); e.returnValue = ''; }
