@@ -1412,3 +1412,9 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] Added an else branch: any in-range-but-not-ideal time now gets "Your Xs is workable but on the fast/slow side — let taste decide whether to nudge grind finer/coarser" (direction keyed off time<24). Every shot time now gets a read; clearly-fast/slow keep their stronger guidance; espresso stays espresso (grind/shot only)
 - [ ] npm run check green (2.187.0 synced); verified via preview: time=28→healthy; 22→"workable…fast side…finer"; 34 (std ratio)→"…slow side…coarser"; 18→fast; 40 (std)→slow; 40 (lungo ratio>2.4)→"…slow side" (slowLimit 45, not slow yet); no time→no shot-time line
 - [ ] Update toast after deploy (cache v2.187.0)
+
+## Sprint 200 (v2.188.0) — fix: espresso results leak into a re-brew (BUG)
+- [ ] Mobile Kitchen UX lens: brewAgain() cleared general/pour-over result fields (totalBrewTime, beverageWeight, brewTDS, rating, scores, flavorTags, notes, cupping, pour start/end) but OMITTED the espresso results espShotTime + espYield. So an espresso re-brew (the core dial-in iteration) inherited the parent's shot time + yield — a fresh version showed the LAST shot's numbers, and the stale espShotTime blocked the timer's auto-log (toggleTimer fills espShotTime only when !est.value) so timing the new shot silently did nothing
+- [ ] Added child.espYield = ''; child.espShotTime = ''; to brewAgain's result-clearing block. Pressure / pre-infusion stay (machine params, carry over like dose/ratio/grind). Now a re-brewed espresso starts with empty results → timer auto-fills the new shot time + "Taste ›" toast fires; yield is fresh
+- [ ] npm run check green (2.188.0 synced); verified via preview: espresso parent (espShotTime 28, espYield 36, espPressure 9, dose 18) → brewAgain → child.espShotTime='' + espYield='' (cleared), espPressure='9' + coffeeDose='18' carried; rating/flavorTags also cleared as before
+- [ ] Update toast after deploy (cache v2.188.0)
