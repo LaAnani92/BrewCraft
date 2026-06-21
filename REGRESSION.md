@@ -1346,3 +1346,9 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] AI suggest path: userMsg gains a "USER TRACK RECORD (prefer over generic defaults)" line (ratio cluster + sweet-spot EY); system prompt instructs preferring it over generic defaults; src note appends "& track record" when present
 - [ ] npm run check green (2.176.0 synced); verified via preview: ruleSuggest('V60','Balanced') with seeded cluster → ratio = median + rationale anchored note; no cluster → textbook base; 'Stronger' → median-1; QUICK_RECIPES preset NOT mutated; AI path (stubbed fetch) → userMsg has USER TRACK RECORD, sys has the prefer instruction
 - [ ] Update toast after deploy (cache v2.176.0)
+
+## Sprint 189 (v2.177.0) — make the pour count-in legible at a glance
+- [ ] Mobile Kitchen UX lens: timer controls are fine (44px .btn) and the main clock is large, but the count-in to the next pour — the most time-critical glance mid-brew — rendered as .bg-next at 11px/text-muted, the smallest faintest style in the guide. Reading "next pour in 0:15" / "pour now" across a counter with wet hands meant squinting
+- [ ] .bg-next bumped 11px/text-muted → 12.5px/text-secondary; new .bg-now (accent-bright, 600) applied to the count-in in the final ≤5s and at the pour moment ("…now"), so the cue escalates to a glanceable accent as the pour approaches. Status lines (drawing down / settle) just get the modest legibility bump
+- [ ] npm run check green (2.177.0 synced); verified via preview: guideSteps with next pour at 30s — sec 10 (remain 20) → bg-next only; sec 26 (remain ≤5) → bg-next bg-now; sec 30 (remain 0) → "tap Lap…now" bg-next bg-now; computed .bg-next font-size = 12.5px, bg-now color = accent-bright
+- [ ] Update toast after deploy (cache v2.177.0)
