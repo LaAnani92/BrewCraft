@@ -2001,8 +2001,8 @@
 <div class="sr-only" id="aiStatusSr" role="status" aria-live="polite"></div>
 
 <div class="modal-overlay" id="importModal">
-  <div class="modal">
-    <h3>Recipe received</h3>
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="importTitle">
+    <h3 id="importTitle">Recipe received</h3>
     <p>A friend shared <strong id="importModalName"></strong> with you. Add it to your library?</p>
     <div id="importModalSummary" style="font-size:13px;color:var(--accent-bright);font-family:'JetBrains Mono',monospace;margin:-8px 0 18px"></div>
     <div class="modal-actions">
@@ -2013,8 +2013,8 @@
 </div>
 
 <div class="modal-overlay" id="compareModal">
-  <div class="modal" style="max-width:640px">
-    <h3>Recipe Comparison</h3>
+  <div class="modal" style="max-width:640px" role="dialog" aria-modal="true" aria-labelledby="compareTitle">
+    <h3 id="compareTitle">Recipe Comparison</h3>
     <div class="compare-lesson" id="compareLesson" hidden></div>
     <div style="overflow-x:auto"><table class="compare-table" id="compareTable"><thead id="compareHead"></thead><tbody id="compareBody"></tbody></table></div>
     <div class="field-hint" id="compareCaveat" hidden style="margin:-4px 0 12px">Different brew methods — ratings aren't directly comparable, so no winner is marked.</div>
@@ -2174,7 +2174,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.212.0';
+const APP_VERSION = '2.213.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
@@ -5005,10 +5005,10 @@ function openCompare(idA, idB) {
       lesson.hidden = true;
     }
   }
-  document.getElementById('compareModal').classList.add('show');
+  focusModal('compareModal');
 }
 function closeCompare() {
-  document.getElementById('compareModal').classList.remove('show');
+  blurModal('compareModal');
   compareA = null;
   renderLibrary();
 }
@@ -5264,7 +5264,7 @@ function checkHashImport() {
     const sum = sharedRecipeSummary(pendingImport);
     const sumEl = document.getElementById('importModalSummary');
     sumEl.textContent = sum; sumEl.style.display = sum ? 'block' : 'none';
-    document.getElementById('importModal').classList.add('show');
+    focusModal('importModal');
   } catch(e) {
     pendingImport = null;
     showToast('The shared link is invalid','warning');
@@ -5272,12 +5272,12 @@ function checkHashImport() {
   try { history.replaceState(null, '', location.pathname + location.search); } catch(e) {}
 }
 function acceptHashImport() {
-  document.getElementById('importModal').classList.remove('show');
+  blurModal('importModal');
   if (pendingImport) addImportedRecipe(pendingImport);
   pendingImport = null;
 }
 function declineHashImport() {
-  document.getElementById('importModal').classList.remove('show');
+  blurModal('importModal');
   pendingImport = null;
 }
 
@@ -7117,6 +7117,8 @@ document.addEventListener('keydown', function(e) {
   else if (e.key === 'Escape' && document.getElementById('settingsModal').classList.contains('show')) { e.preventDefault(); closeSettings(); }
   else if (e.key === 'Escape' && document.getElementById('saveChoiceModal').classList.contains('show')) { e.preventDefault(); closeSaveChoice(); }
   else if (e.key === 'Escape' && document.getElementById('scanModal').classList.contains('show')) { e.preventDefault(); closeScan(); }
+  else if (e.key === 'Escape' && document.getElementById('compareModal').classList.contains('show')) { e.preventDefault(); closeCompare(); }
+  else if (e.key === 'Escape' && document.getElementById('importModal').classList.contains('show')) { e.preventDefault(); declineHashImport(); }
 });
 window.addEventListener('beforeunload', function(e) {
   if (isDirty) { e.preventDefault(); e.returnValue = ''; }
