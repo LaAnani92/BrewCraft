@@ -2155,7 +2155,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.192.0';
+const APP_VERSION = '2.193.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
@@ -4777,6 +4777,23 @@ function renderLibrary() {
       stars.setAttribute('aria-label', r.rating + ' of 5 stars');
       meta.appendChild(stars);
     }
+    // The card's primary action (open the recipe) was mouse/touch only. Make it a real button: focusable,
+    // Enter/Space opens. A spoken-out aria-label also fixes the meta reading (1:16, 18g, SCA read as a
+    // run-on otherwise). The action buttons below stay separately focusable.
+    card.setAttribute('role', 'button');
+    card.tabIndex = 0;
+    const _ariaBits = [];
+    if (r.method) _ariaBits.push(r.method);
+    if (r.coffeeDose) _ariaBits.push(r.coffeeDose + ' grams');
+    if (r.brewRatio) _ariaBits.push('ratio 1 to ' + r.brewRatio);
+    if (_cs !== null) _ariaBits.push('cupping score ' + _cs.toFixed(1));
+    if (r.version && r.version > 1) _ariaBits.push('version ' + r.version);
+    let _aria = (r.name || 'Untitled Recipe') + (_ariaBits.length ? '. ' + _ariaBits.join(', ') : '');
+    if (r.rating) _aria += '. ' + r.rating + ' of 5 stars';
+    card.setAttribute('aria-label', _aria);
+    card.onkeydown = function(ev) {
+      if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); if (card.dataset.swiped) { delete card.dataset.swiped; return; } loadRecipe(r.id); switchTab('recipe'); }
+    };
     main.appendChild(nameEl);
     main.appendChild(meta);
     const actions = document.createElement('div');
