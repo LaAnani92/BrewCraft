@@ -2143,8 +2143,19 @@ function updateBrewGuide(sec) {
       : '<span class="bg-next">' + (imm ? 'steeping — let it finish' : 'last pour — let it draw down') + '</span>';
   }
   // SR parity with the visual count-in escalation: announce the heads-up in the final seconds so a
-  // screen-reader brewer gets the same "get ready" cue, then the step-change announce follows.
-  const announce = _headsUp || (st.label + ', pour to ' + st.targetCum + ' g');
+  // screen-reader brewer gets the same "get ready" cue, then the step-change announce follows. On the
+  // final step, also speak the steep/draw-down hand-off the visual shows (phase + rough finish), so an
+  // eyes-free brewer knows to stop pouring and roughly when the brew is done, not just the pour target.
+  let announce = _headsUp;
+  if (!announce) {
+    announce = st.label + ', pour to ' + st.targetCum + ' g';
+    if (!next) {
+      const _imm = isImmersion(getSelectedMethod());
+      announce += brewTargetSec > 0
+        ? (_imm ? '. Then let it steep, done about ' : '. Then let it draw down, done about ') + secToStr(brewTargetSec)
+        : (_imm ? '. Then let it steep' : '. Then let it draw down');
+    }
+  }
   if (announce !== lastGuideAnnounce) {
     lastGuideAnnounce = announce;
     const sr = document.getElementById('brewGuideSr');
@@ -2184,7 +2195,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.237.0';
+const APP_VERSION = '2.238.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
