@@ -638,6 +638,9 @@
   .template-row[hidden] { display:none; }
   /* Brew-landing context: freshness-as-guidance + carry-the-thread */
   .brew-freshtip { font-size:12px; color:var(--text-secondary); line-height:1.55; margin-top:6px; }
+  .brew-setup { display:flex; flex-wrap:wrap; gap:5px 16px; margin-top:9px; font-size:12.5px; color:var(--text-secondary); line-height:1.45; }
+  .brew-setup .bs-item { display:inline-flex; align-items:baseline; gap:5px; }
+  .brew-setup .bs-k { color:var(--text-muted); font-weight:700; text-transform:uppercase; letter-spacing:0.5px; font-size:10px; }
   .brew-thread { font-size:13px; color:var(--accent-bright); background:var(--accent-glow); border:1px solid rgba(200,149,108,0.25); border-radius:var(--radius-sm); padding:9px 11px; line-height:1.5; margin-top:12px; }
   .brew-thread strong { color:var(--accent-bright); }
   /* First-run gesture hints */
@@ -1417,6 +1420,7 @@
     <div class="section-subtitle" id="todaySubtitle">Now brewing</div>
     <div class="today-name" id="todayName">—</div>
     <div class="recipe-card-meta" id="todayMeta"></div>
+    <div class="brew-setup" id="todaySetup" style="display:none"></div>
     <div class="field-hint" id="todayStarterHint" style="margin-top:8px;font-style:italic" hidden></div>
     <div id="todayFresh" style="margin-top:8px"></div>
     <div class="brew-freshtip" id="todayFreshTip" style="display:none"></div>
@@ -1436,10 +1440,10 @@
   </div>
 
   <div class="brewbar brewbar-compact" id="brewBarBrew">
-    <button class="bb-stat" onclick="switchTab('recipe');bbFocus('coffeeDose')"><span class="bb-label">Dose</span><span class="bb-val" id="bb2Dose">—</span></button>
-    <button class="bb-stat" onclick="switchTab('recipe');bbFocus('brewRatio')"><span class="bb-label">Ratio</span><span class="bb-val" id="bb2Ratio">—</span></button>
-    <button class="bb-stat" onclick="switchTab('recipe');bbFocus('totalWater')"><span class="bb-label">Water</span><span class="bb-val" id="bb2Water">—</span></button>
-    <button class="bb-stat" onclick="switchTab('recipe');bbFocus('waterTemp')"><span class="bb-label">Temp</span><span class="bb-val" id="bb2Temp">—</span></button>
+    <button class="bb-stat" id="bb2s0" onclick="bb2Tap(0)"><span class="bb-label" id="bb2l0">Dose</span><span class="bb-val" id="bb2v0">—</span></button>
+    <button class="bb-stat" id="bb2s1" onclick="bb2Tap(1)"><span class="bb-label" id="bb2l1">Ratio</span><span class="bb-val" id="bb2v1">—</span></button>
+    <button class="bb-stat" id="bb2s2" onclick="bb2Tap(2)"><span class="bb-label" id="bb2l2">Water</span><span class="bb-val" id="bb2v2">—</span></button>
+    <button class="bb-stat" id="bb2s3" onclick="bb2Tap(3)"><span class="bb-label" id="bb2l3">Temp</span><span class="bb-val" id="bb2v3">—</span></button>
   </div>
 
   <div class="brew-steep-note" id="brewSteepNote" style="display:none"></div>
@@ -2195,7 +2199,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.245.0';
+const APP_VERSION = '2.246.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
@@ -6183,15 +6187,28 @@ function humanGap(d) {
 function renderToday() {
   const name = document.getElementById('recipeName').value.trim();
   document.getElementById('todayName').textContent = name || 'New recipe';
-  const bits = [];
-  const m = getSelectedMethod(); if (m) bits.push(m);
+  const m = getSelectedMethod();
   const d = document.getElementById('coffeeDose').value;
   const rt = document.getElementById('brewRatio').value;
   const w = document.getElementById('totalWater').value;
-  if (d) bits.push(d + 'g');
-  if (rt) bits.push('1:' + rt);
-  if (w) bits.push('\u2192 ' + w + 'g water');
+  const tempStr = fmtTempUnit(document.getElementById('waterTemp').value);
+  const bits = [];
+  if (m) bits.push(m);
+  if (m === 'Espresso') {
+    // Espresso speaks dose -> yield, shot time, ratio (yield/dose) \u2014 never pour-over water.
+    const yld = document.getElementById('espYield').value;
+    const shot = document.getElementById('espShotTime').value;
+    if (d) bits.push(yld ? d + 'g \u2192 ' + yld + 'g' : d + 'g');
+    if (rt) bits.push('1:' + rt);
+    if (shot) bits.push(shot + 's');
+  } else {
+    if (d) bits.push(d + 'g');
+    if (rt) bits.push('1:' + rt);
+    if (w) bits.push('\u2192 ' + w + 'g water');
+  }
+  if (tempStr) bits.push(tempStr);
   document.getElementById('todayMeta').textContent = bits.join(' \u00b7 ') || 'Pick a Quick Start below or build your own';
+  renderBrewSetup(m);
   // Long-steep methods (cold brew/drip) aren't a live pour \u2014 swap the guided-pour CTA + live timer for a
   // calm steep note so the brew screen matches an overnight steep instead of dead-ending at a stopwatch.
   const _longSteep = isLongSteep(m);
@@ -6774,18 +6791,71 @@ function registerSW() {
 }
 
 /* ======= v9: BREW BAR & SETTINGS SHEET ======= */
+/* Temp shown with its unit label \u2014 the field already holds the display-unit value; settings.tempUnit names it. */
+function fmtTempUnit(raw) {
+  raw = String(raw == null ? '' : raw).trim();
+  return raw ? raw + '\u00b0' + (settings.tempUnit === 'F' ? 'F' : 'C') : '';
+}
+/* Clean grinder-unit word for the Set-up line ("clicks"); "" for the generic placeholder or unitless settings. */
+function grinderUnitLabel() {
+  const t = (document.getElementById('grindSettingUnit') || {}).textContent || '';
+  const mt = t.match(/\(([^)]*)\)/);
+  const u = mt ? mt[1].trim() : '';
+  return (!u || u.indexOf('/') !== -1 || u === 'setting') ? '' : u;
+}
+/* The Brew tab "Set up" line: the two things you prep gear with before Start \u2014 grind (descriptor + exact
+   setting) and filter \u2014 surfaced so the brewer never leaves Brew to learn them. Read-only; Edit changes them. */
+function renderBrewSetup(method) {
+  const el = document.getElementById('todaySetup');
+  if (!el) return;
+  const parts = [];
+  const lvl = parseInt(document.getElementById('grindCoarseness').value, 10);
+  const size = (document.getElementById('grindSize').value || '').trim();
+  let g = (lvl > 0 && COARSE_LABELS[lvl]) ? COARSE_LABELS[lvl] + (GRIND_ANCHORS[lvl] ? ' \u00b7 like ' + GRIND_ANCHORS[lvl] : '') : '';
+  if (size) { const u = grinderUnitLabel(); const s = size + (u ? ' ' + u : ''); g = g ? g + ' \u00b7 ' + s : s; }
+  if (g) parts.push('<span class="bs-item"><span class="bs-k">Grind</span> ' + escapeHtml(g) + '</span>');
+  let filt = (document.getElementById('filterType').value || '').trim();
+  if (!filt && method === 'Espresso') filt = 'Portafilter basket';
+  if (filt) parts.push('<span class="bs-item"><span class="bs-k">Filter</span> ' + escapeHtml(filt) + '</span>');
+  el.innerHTML = parts.join('');
+  el.style.display = parts.length ? '' : 'none';
+}
+/* Brew-tab stat strip: which recipe field each stat edits, set per render so espresso can retarget Yield/Shot. */
+let _bb2Targets = ['coffeeDose', 'brewRatio', 'totalWater', 'waterTemp'];
+function bb2Tap(i) { switchTab('recipe'); bbFocus(_bb2Targets[i]); }
+function bbSetStat(i, label, val, target) {
+  const lab = document.getElementById('bb2l' + i);
+  if (lab && lab.textContent !== label) lab.textContent = label;
+  bbSet('bb2v' + i, val);
+  _bb2Targets[i] = target;
+}
 function renderBrewBar() {
   function v(id) { return document.getElementById(id).value; }
   const dose = v('coffeeDose') ? v('coffeeDose') + 'g' : '\u2014';
   const ratio = v('brewRatio') ? '1:' + v('brewRatio') : '\u2014';
   const water = v('totalWater') ? v('totalWater') + 'g' : '\u2014';
-  const temp = v('waterTemp') ? v('waterTemp') + '\u00b0' : '\u2014';
+  const temp = fmtTempUnit(v('waterTemp')) || '\u2014';
+  // Recipe-tab bar (the editing surface) stays pour-over-shaped; temp now carries its unit.
   bbSet('bbDose', dose); bbSet('bbRatio', ratio); bbSet('bbWater', water); bbSet('bbTemp', temp);
-  bbSet('bb2Dose', dose); bbSet('bb2Ratio', ratio); bbSet('bb2Water', water); bbSet('bb2Temp', temp);
+  // Brew-tab bar mirrors the active recipe, method-adaptive: espresso shows Yield + Shot, not Water.
+  if (getSelectedMethod() === 'Espresso') {
+    const yld = v('espYield') ? v('espYield') + 'g' : '\u2014';
+    const shot = v('espShotTime') ? v('espShotTime') + 's' : '\u2014';
+    bbSetStat(0, 'Dose', dose, 'coffeeDose');
+    bbSetStat(1, 'Yield', yld, 'espYield');
+    bbSetStat(2, 'Shot', shot, 'espShotTime');
+    bbSetStat(3, 'Temp', temp, 'waterTemp');
+  } else {
+    bbSetStat(0, 'Dose', dose, 'coffeeDose');
+    bbSetStat(1, 'Ratio', ratio, 'brewRatio');
+    bbSetStat(2, 'Water', water, 'totalWater');
+    bbSetStat(3, 'Temp', temp, 'waterTemp');
+  }
 }
 
 function bbSet(id, txt) {
   const el = document.getElementById(id);
+  if (!el) return;
   if (el.textContent === txt) return;
   el.textContent = txt;
   el.classList.remove('tick');
