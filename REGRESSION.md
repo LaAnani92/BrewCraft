@@ -1858,3 +1858,8 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] Fix (index.html): Chemex QUICK_RECIPES grind 'medium (coarser than V60)' -> 'medium-coarse' (parses to level 5, consistent with the Chemex TEMPLATE). NOTE: grindDescriptorToLevel substring-matches, so 'coarser' is a latent trap - keep grind strings to clean descriptors.
 - [ ] Verified via preview: new Chemex recipe seeds level 5 (Medium-Coarse), was 6 (Coarse). The other 11 spot-checked methods (V60/Kalita/AeroPress/FrenchPress/Espresso/Moka/Clever/ColdBrew/Turkish/Siphon/Phin) all seed sensibly. npm run check green (2.262.0 synced, boots clean, exit 0).
 - [ ] Update toast after deploy (cache v2.262.0)
+## Sprint 275 (v2.263.0) - REDESIGN Move 18: Hoffmann seed grind fixed (medium-fine, consistent)
+- [ ] Found by a visual check of the Brew setup line: the seeded Hoffmann V60 TEMPLATE showed 'Grind Medium - like coarse sand' (level 4), but Hoffmann Ultimate V60 is medium-fine and the QUICK_RECIPES version of the SAME recipe uses medium-fine (level 3). The template + quick-recipe disagreed on the marquee V60 recipe.
+- [ ] Fix (index.html): TEMPLATES.hoffmann grindCoarseness '4' -> '3' (Medium-Fine), matching Hoffmann recipe + the QUICK_RECIPE. Affects the first-run seed (new users now get the correct medium-fine grind).
+- [ ] Verified via preview: loadTemplate('hoffmann') -> grind level 3 (Medium-Fine, 'like fine sand'), consistent with QUICK_RECIPES V60[0] (also 3). npm run check green (2.263.0 synced, boots clean, exit 0).
+- [ ] Update toast after deploy (cache v2.263.0)
