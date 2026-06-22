@@ -648,6 +648,10 @@
   .brew-plan .bp-seq { font-size:12px; color:var(--text-secondary); font-family:'JetBrains Mono',monospace; line-height:1.45; }
   .brew-plan .bp-sug { font-size:10px; text-transform:uppercase; letter-spacing:0.5px; color:var(--text-muted); font-family:'DM Sans',sans-serif; }
   .brew-plan .bp-done { color:var(--text-muted); }
+  .brew-nudge { display:flex; align-items:flex-start; gap:8px; margin-top:12px; padding:9px 11px; background:var(--accent-glow); border:1px solid rgba(200,149,108,0.25); border-radius:var(--radius-sm); font-size:12.5px; color:var(--text-secondary); line-height:1.5; }
+  .brew-nudge .bn-ico { width:15px; height:15px; color:var(--accent-bright); flex-shrink:0; margin-top:2px; }
+  .brew-nudge .bn-text { flex:1; }
+  .brew-nudge .bn-go { flex-shrink:0; white-space:nowrap; }
   .brew-thread { font-size:13px; color:var(--accent-bright); background:var(--accent-glow); border:1px solid rgba(200,149,108,0.25); border-radius:var(--radius-sm); padding:9px 11px; line-height:1.5; margin-top:12px; }
   .brew-thread strong { color:var(--accent-bright); }
   /* First-run gesture hints */
@@ -1434,6 +1438,7 @@
     <div class="brew-freshtip" id="todayFreshTip" style="display:none"></div>
     <div id="todayBag" class="bag-status" style="margin-top:10px;margin-bottom:0"></div>
     <div class="brew-thread" id="todayThread" style="display:none"></div>
+    <div class="brew-nudge" id="todayNudge" style="display:none"></div>
     <div id="todayBest" style="display:none;margin-top:14px;padding-top:12px;border-top:1px solid var(--border)"></div>
     <div class="today-actions" style="margin-top:14px">
       <button class="btn btn-sm btn-ghost" onclick="switchTab('recipe')"><svg class="ico"><use href="#i-pencil"/></svg> Edit recipe</button>
@@ -2207,7 +2212,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.249.0';
+const APP_VERSION = '2.250.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
@@ -6196,6 +6201,37 @@ function brewPick(key) {
   showToast(t.name + ' \u2014 ready to brew', 'success');
 }
 
+/* Ambient dial-in nudge: the app already computes whether a cup landed off, so surface ONE quiet contextual
+   line (extraction vs the user's sweet spot, a low rating, or a ratio off their proven cluster) with a single
+   tap into the dial-in, instead of waiting to be asked. Read-only; self-gates to silence when there is no
+   signal (and sweetSpot/ratioCluster need history, so a new user never sees a hollow nudge). */
+function renderBrewNudge() {
+  const el = document.getElementById('todayNudge');
+  if (!el) return;
+  const r = recipes.find(function(x) { return x.id === currentRecipeId; });
+  let msg = '';
+  if (r) {
+    const ey = computeEY(r);
+    const ss = sweetSpot();
+    const rating = parseInt(r.rating, 10) || 0;
+    if (ey !== null && ss && ey < ss.lo - 0.3) {
+      msg = 'Extraction ' + ey.toFixed(1) + '% sits under your best cups (' + ss.lo.toFixed(1) + '–' + ss.hi.toFixed(1) + '%) — try a finer grind or a little hotter.';
+    } else if (ey !== null && ss && ey > ss.hi + 0.3) {
+      msg = 'Extraction ' + ey.toFixed(1) + '% is above your best cups (' + ss.lo.toFixed(1) + '–' + ss.hi.toFixed(1) + '%) — try coarser or a touch cooler.';
+    } else if (rating > 0 && rating <= 3) {
+      msg = 'This cup scored ' + rating + '★ — the dial-in can pinpoint the one thing to change.';
+    } else {
+      const rc = ratioClusterForMethod(r.method);
+      const cr = parseFloat(r.brewRatio);
+      if (rc && cr > 0 && Math.abs(cr - rc.median) > 0.3) {
+        msg = 'Your best ' + escapeHtml(r.method) + 's land around 1:' + rc.median.toFixed(1) + ' — this one is at 1:' + cr.toFixed(1) + '.';
+      }
+    }
+  }
+  if (!msg) { el.style.display = 'none'; el.innerHTML = ''; return; }
+  el.innerHTML = '<svg class="ico bn-ico"><use href="#i-bolt"/></svg><span class="bn-text">' + msg + '</span><button type="button" class="link-btn bn-go" onclick="openDialinFromNudge()">Dial in →</button>';
+  el.style.display = '';
+}
 function openDialinFromNudge() {
   switchTab('evaluate');
   const sec = document.getElementById('sec-dialin');
@@ -6407,6 +6443,7 @@ function renderToday() {
     bEl.style.display = 'none';
   }
   renderThread();
+  renderBrewNudge();
 }
 
 /* Freshness as guidance, not a badge: the bean's age changes the advice. */
