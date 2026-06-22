@@ -2183,7 +2183,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.233.0';
+const APP_VERSION = '2.234.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
@@ -3638,6 +3638,16 @@ function addCustomTag() {
   }
   if (typeof refreshTagsA11y === 'function') refreshTagsA11y();
   markDirty();
+  // A custom descriptor otherwise can't be removed once added — a typo would live in the vocabulary (and
+  // every cup's chip cloud, and the export) forever. Offer an immediate Undo at the moment you'd notice it,
+  // clearing both the chip and the saved vocabulary entry. (Consistent with the recipe/bean/gear undo.)
+  showActionToast('Added "' + val + '" to your descriptors', 'Undo', function() {
+    tag.remove();
+    const _ci = customTags.findIndex(function(t) { return String(t).toLowerCase() === val.toLowerCase(); });
+    if (_ci >= 0) { customTags.splice(_ci, 1); try { store.set('brewcraft_tags', JSON.stringify(customTags)); } catch(e) {} }
+    if (typeof refreshTagsA11y === 'function') refreshTagsA11y();
+    markDirty();
+  }, 'success', 6000);
 }
 function getActiveTags() {
   return Array.from(document.querySelectorAll('#flavorTags .tag.active')).map(function(t) { return t.textContent; });

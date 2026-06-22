@@ -1695,3 +1695,10 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] Fix: split the condition — 'extra fine' → 1 (Extra Fine), 'espresso'/'espresso-fine' → 2 (~Fine, the closest integer on the 7-level scale). 'fine'/'medium-fine'/'medium'/'medium-coarse'/'coarse'/'extra coarse'/'cold brew' unchanged. The descriptor→level→COARSE_LABELS round-trip is now consistent for every label
 - [ ] npm run check green (2.233.0 synced); verified via preview: 'extra fine'→1→"Extra Fine"; level 1 now reachable; espresso/fine still→2; all other descriptors round-trip to their own label
 - [ ] Update toast after deploy (cache v2.233.0)
+
+## Sprint 246 (v2.234.0) — custom flavor descriptors are now removable (add-time Undo)
+- [ ] Beginner: a custom flavor descriptor (the "+ Add" input) could be ADDED but never removed — addCustomTag pushed to customTags + persisted, with no delete path anywhere. A typo ("bluebery") lived in the vocabulary, every cup's chip cloud, and the export forever. The one piece of user data you could create but not delete, breaking the app's undo-everything pattern (recipes/beans/gear all undo)
+- [ ] Fix: addCustomTag now shows an action-toast 'Added "X" to your descriptors — Undo' (6s) the moment a new descriptor is added. Undo removes both the chip (tag.remove()) and the saved vocabulary entry (customTags.splice + persist). Catches the typo at the moment you'd notice it; no persistent chip clutter, no hidden gesture, keyboard-accessible via the toast
+- [ ] Scope note: covers the primary case (a just-typed descriptor). The dup-guard / activate-if-exists path is unchanged (no toast when re-activating an existing chip). Past recipes that used a since-removed tag still re-create the chip on load via setActiveTags, so removal never orphans them
+- [ ] npm run check green (2.234.0 synced); verified via preview: adding a new descriptor fires the Undo toast; invoking Undo removes the chip and the customTags entry; re-adding an existing tag does not duplicate
+- [ ] Update toast after deploy (cache v2.234.0)
