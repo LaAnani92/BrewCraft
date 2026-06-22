@@ -1838,3 +1838,8 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] Fix (index.html): new isPourPlanMethod(method) = grindBandKey(method)==='pourOver'. renderPourPlan now hides unless isPourPlanMethod; enterBrewAlong derives a fallback plan only for pour methods and gives non-pour methods a clear "not a timed pour - use the brew timer" message instead of "add pour weights". Cold-brew long-steep handling preserved.
 - [ ] Verified via preview: SHOWN for V60/Chemex/AeroPress (pour-over); hidden for Moka Pot/Turkish/Flair/French Press/Clever/Cupping/Cold Brew/Espresso. npm run check green (2.258.0 synced, boots clean, exit 0).
 - [ ] Update toast after deploy (cache v2.258.0)
+## Sprint 271 (v2.259.0) - REDESIGN Move 14: pour editor hidden for non-pour methods (coherence fix)
+- [ ] Continues Move 13: toggleEspressoFields hid the pour-schedule EDITOR (sec-pours) only for Espresso, so moka/Turkish/lever + French press/Clever/Cupping/cold brew still showed an editable pour schedule for methods that are not poured to a plan (inconsistent with the now-hidden Brew-tab pour card).
+- [ ] Fix (index.html): sec-pours now shows only when isPourPlanMethod(getSelectedMethod()) - pour-over band. Pour data is preserved (getPourData/gatherRecipeData still read the hidden cards) so loading/saving a recipe with pours (e.g. the French Press seed) round-trips losslessly.
+- [ ] Verified via preview: editor SHOWN for V60/Chemex/AeroPress; hidden for Moka/Turkish/Flair/French Press/Clever/Cupping/Cold Brew/Espresso. Round-trip: French Press loads with editor hidden but pour (1x500g) survives in getPourData + gatherRecipeData. npm run check green (2.259.0 synced, boots clean, exit 0).
+- [ ] Update toast after deploy (cache v2.259.0)

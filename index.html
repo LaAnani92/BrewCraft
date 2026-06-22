@@ -2217,7 +2217,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.258.0';
+const APP_VERSION = '2.259.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
@@ -2999,7 +2999,9 @@ function toggleEspressoFields() {
   const isEsp = getSelectedMethod() === 'Espresso';
   document.getElementById('espressoFields').style.display = isEsp ? 'grid' : 'none';
   const pours = document.getElementById('sec-pours');
-  if (pours) pours.style.display = isEsp ? 'none' : '';
+  // A pour schedule only applies to pour-over methods — hide the editor for espresso, moka/Turkish/lever and
+  // immersion/cold brew (consistent with the Brew-tab pour plan). Their pour data is preserved, just not shown.
+  if (pours) pours.style.display = isPourPlanMethod(getSelectedMethod()) ? '' : 'none';
   // Espresso is dose → yield, not a water ratio. Hide the pour-over Ratio (1:x) and Total Water fields so the
   // espresso setup isn't cluttered with concepts that don't apply (the espresso ratio is yield ÷ dose, shown
   // in Extraction & Results). Values stay in the model; they're just not shown — and reappear for pour-over.
