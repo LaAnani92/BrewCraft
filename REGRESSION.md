@@ -1848,3 +1848,8 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] Fix (index.html): maybeDefaultFilter(method, force) - force overwrites the filter; selectMethod passes force = (currentRecipeId===null && _blankNewRecipe), the SAME blank-new gate as the dial seed. A blank new recipe filter reshapes with the method; saved recipes + drafts keep their chosen filter (Move 3 consent model intact).
 - [ ] Verified via preview: blank new V60 -> Espresso now gives 'Espresso Portafilter Basket' (Brew setup shows it); saved recipe (Chemex filter) + method switch -> filter KEPT; draft (Origami filter) + switch -> KEPT. npm run check green (2.260.0 synced, boots clean, exit 0).
 - [ ] Update toast after deploy (cache v2.260.0)
+## Sprint 273 (v2.261.0) - REDESIGN Move 16: brew-timer target fits non-pour methods (coherence)
+- [ ] Found by a timer-target check: computeBrewTarget special-cased Espresso (shot time) but routed moka/Turkish/French press/Clever/cupping through the pour-over branch -> a 3-min (180s) default that is short for a 4-5 min steep/stovetop brew (and could derive a wrong target from a stray pour cue).
+- [ ] Fix (index.html): computeBrewTarget now gives non-pour methods (isPourPlanMethod false) a target from the logged total brew time, default ~4 min (240s), never from pour cues. Also set the French Press seed totalBrewTime to 4:00 so its ring is accurate. Pour-over (cue-based) + espresso (shot) paths unchanged.
+- [ ] Verified via preview: French Press seed -> 240s (4:00); Moka no time -> 240s, Moka logged 5:00 -> 300s; Espresso -> 28s; V60 pour-over -> 180s. npm run check green (2.261.0 synced, boots clean, exit 0).
+- [ ] Update toast after deploy (cache v2.261.0)

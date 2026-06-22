@@ -2202,6 +2202,13 @@ function computeBrewTarget() {
     brewTargetSec = (shot && shot > 0) ? shot : 30;
     return;
   }
+  // Non-pour methods (moka/Turkish stovetop, French press/Clever/cupping immersion): the brew is a steep or run
+  // time, not a pour cadence — use the logged total time, never pour cues; default ~4 min for immersion/stovetop.
+  if (!isPourPlanMethod(getSelectedMethod())) {
+    const tbt = parseTimeStr(document.getElementById('totalBrewTime').value);
+    brewTargetSec = (tbt && tbt > 0) ? tbt : 240;
+    return;
+  }
   // Last pour cue + a drawdown buffer; fall back to a logged total time, else 3 min.
   let target = cueTimes.length ? cueTimes[cueTimes.length - 1].t + 45 : 0;
   if (!target) {
@@ -2217,7 +2224,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.260.0';
+const APP_VERSION = '2.261.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
@@ -6251,7 +6258,7 @@ const TEMPLATES = {
     brewerNotes: 'Press slowly from 1:30, finish by 2:00. Stop at the hiss.'
   },
   frenchpress: {
-    name: 'Hoffmann French Press', method: 'French Press', coffeeDose: '30', brewRatio: '16.7', totalWater: '500',
+    name: 'Hoffmann French Press', method: 'French Press', coffeeDose: '30', brewRatio: '16.7', totalWater: '500', totalBrewTime: '4:00',
     waterTemp: '95', grindCoarseness: '4', filterType: 'French Press Standard Mesh',
     pours: [
       { isBloom: false, weight: 500, start: '0:00', end: '0:30', technique: 'Pour all water at once' }
