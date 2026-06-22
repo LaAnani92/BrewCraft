@@ -2212,7 +2212,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.250.0';
+const APP_VERSION = '2.251.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
@@ -2228,9 +2228,9 @@ const GRIND_ANCHORS = ['', 'powdered sugar', 'table salt', 'fine sand', 'coarse 
    Sources are kept for attribution; "standard" entries are common guidance, not one author's. */
 const QUICK_RECIPES = {
   'V60': [
-    { name:'Ultimate V60 (1 cup)', author:'James Hoffmann', doseG:15, ratio:16.7, tempC:95, grind:'medium-fine', time:'3:00', technique:'Bloom 50g + swirl; pour to 100/150/200/250g; finish with a swirl.', src:'https://www.timer.coffee/recipes/v60/james-hoffmann-v60-one-cup-recipe/' },
-    { name:'4:6 Method', author:'Tetsu Kasuya', doseG:20, ratio:15, tempC:92, grind:'medium-coarse', time:'3:30', technique:'5 pours ~every 45s; first 40% sets sweetness/acidity, last 60% sets strength.', src:'https://www.hario-europe.com/blogs/hario-community/v60-ambassadors-tetsu-kasuya' },
-    { name:'April V60', author:'Patrik Rolf / April', doseG:20, ratio:15, tempC:92, grind:'medium-coarse', time:'3:20', technique:'6 aggressive circular 50g pours, ~every 30s, to agitate the bed.', src:'https://www.aprilcoffeeroasters.com/blogs/news/how-to-brew-coffee-with-a-v60' },
+    { name:'Ultimate V60 (1 cup)', author:'James Hoffmann', doseG:15, ratio:16.7, tempC:95, grind:'medium-fine', time:'3:00', technique:'Bloom 50g + swirl; pour to 100/150/200/250g; finish with a swirl.', src:'https://www.timer.coffee/recipes/v60/james-hoffmann-v60-one-cup-recipe/', pours:[{isBloom:true,weight:50,start:'0:00',end:'0:45',technique:'Bloom + swirl'},{isBloom:false,weight:50,start:'0:45',end:'1:00',technique:'To 100g'},{isBloom:false,weight:50,start:'1:15',end:'1:30',technique:'To 150g'},{isBloom:false,weight:50,start:'1:45',end:'2:00',technique:'To 200g'},{isBloom:false,weight:50,start:'2:15',end:'2:30',technique:'To 250g, swirl'}] },
+    { name:'4:6 Method', author:'Tetsu Kasuya', doseG:20, ratio:15, tempC:92, grind:'medium-coarse', time:'3:30', technique:'5 pours ~every 45s; first 40% sets sweetness/acidity, last 60% sets strength.', src:'https://www.hario-europe.com/blogs/hario-community/v60-ambassadors-tetsu-kasuya', pours:[{isBloom:false,weight:60,start:'0:00',end:'0:20',technique:'Pour 1 - acidity/sweetness'},{isBloom:false,weight:60,start:'0:45',end:'1:05',technique:'Pour 2 - balance'},{isBloom:false,weight:60,start:'1:30',end:'1:50',technique:'Pour 3 - strength'},{isBloom:false,weight:60,start:'2:15',end:'2:35',technique:'Pour 4'},{isBloom:false,weight:60,start:'3:00',end:'3:20',technique:'Pour 5'}] },
+    { name:'April V60', author:'Patrik Rolf / April', doseG:20, ratio:15, tempC:92, grind:'medium-coarse', time:'3:20', technique:'6 aggressive circular 50g pours, ~every 30s, to agitate the bed.', src:'https://www.aprilcoffeeroasters.com/blogs/news/how-to-brew-coffee-with-a-v60', pours:[{isBloom:true,weight:50,start:'0:00',end:'0:30',technique:'Bloom, vigorous swirl'},{isBloom:false,weight:50,start:'0:30',end:'1:00',technique:'Aggressive center pour'},{isBloom:false,weight:50,start:'1:00',end:'1:30',technique:'Aggressive center pour'},{isBloom:false,weight:50,start:'1:30',end:'2:00',technique:'Aggressive center pour'},{isBloom:false,weight:50,start:'2:00',end:'2:30',technique:'Aggressive center pour'},{isBloom:false,weight:50,start:'2:30',end:'2:50',technique:'Final pour'}] },
     { name:'Onyx V60', author:'Onyx Coffee Lab', doseG:15, ratio:16.7, tempC:96, grind:'medium-fine', time:'2:30', technique:'Bloom 50g/45s; half center, half a medium circle, matching pour to drawdown.', src:'https://onyxcoffeelab.com/blogs/library' }
   ],
   'Chemex': [
@@ -2893,6 +2893,15 @@ function applyQuickRecipe(method, idx) {
   if (r.espYield) document.getElementById('espYield').value = r.espYield;
   if (r.espShot) document.getElementById('espShotTime').value = r.espShot;
   recalcFromDose();
+  // Load the method's actual pour cadence when the recipe carries one, so the pour-plan card and Brew-Along
+  // coach the real method (not just the numbers + a tooltip). The pours define the water, so sync it to their sum.
+  if (r.pours && r.pours.length) {
+    setPourData(r.pours);
+    const _sum = r.pours.reduce(function(a, p) { return a + (parseFloat(p.weight) || 0); }, 0);
+    if (_sum > 0) document.getElementById('totalWater').value = _sum;
+    if (r.time) document.getElementById('totalBrewTime').value = r.time;
+    updatePourTotals();
+  }
   renderAllScrubbers();
   renderBrewBar();
   updateGrindVisual();
