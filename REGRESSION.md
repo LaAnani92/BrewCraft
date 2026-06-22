@@ -1708,3 +1708,10 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] Fix: setAutosaveStatus now supports a third tone — 'unsaved' → amber (var(--warning)), distinct from muted "Saving…" and green "Saved ✓". autosaveNow's params-changed branch passes 'unsaved'. Backward-compatible (saved===true still green; the other 4 callers unchanged). No data-loss change — the draft safety net + newRecipe guard are intact; this is purely making the existing state legible
 - [ ] npm run check green (2.235.0 synced); verified via preview: 'unsaved' tone yields .autosave-status.unsaved (amber), 'saved'/true yields .saved (green), 'Saving…' stays muted, and the class clears on the next status change
 - [ ] Update toast after deploy (cache v2.235.0)
+
+## Sprint 248 (v2.236.0) — storage banner names the real cause (private mode), not just preview
+- [ ] Beginner / data-trust: store wrapper tests setItem on init (store.ok), falls back to memStore (app keeps working), shows #storageBanner when !store.ok (wired at boot: if (!store.ok) ...add('show')). But the banner text was preview-specific ("Preview mode — disabled inside this viewer. Download the file…"), misleading for a deployed user hitting !store.ok via private/incognito or blocked site-data (they're in a browser on a hosted URL — "download the file" is nonsense)
+- [ ] Fix: generalized text — names the causes (private/incognito or an in-app preview), gives the universal fix (open in a normal browser tab), adds an export-a-backup escape. Correct for both the owner's preview case and a deployed private-mode user. No logic change (still shown only when !store.ok, hidden in the common working case)
+- [ ] Undetectable case (modern Safari private mode: localStorage works but cleared on close → store.ok true → no banner) stays covered by the periodic backup nudge
+- [ ] npm run check green (2.236.0 synced); verified via preview: text names private/incognito + preview, no "download/viewer" wording, keeps normal-tab fix + export escape, banner hidden when storage works
+- [ ] Update toast after deploy (cache v2.236.0)
