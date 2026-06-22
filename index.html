@@ -1272,7 +1272,7 @@
       <div class="field-grid field-grid-2" style="margin-bottom:18px">
         <div class="field beginner-hide">
           <label>Grinder</label>
-          <select id="grinderName" onchange="handleOtherSelect('grinderName','grinderCustom'); onGrinderChange(); markDirty()">
+          <select id="grinderName" onchange="handleOtherSelect('grinderName','grinderCustom'); onGrinderChange(true); markDirty()">
             <option value="">Select grinder…</option>
             <optgroup label="Hand Grinders — Conical Burr">
               <option>Comandante C40</option><option>Comandante C40 MK4</option>
@@ -2212,7 +2212,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.251.0';
+const APP_VERSION = '2.252.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
@@ -2742,7 +2742,8 @@ function setSelectOrCustom(selectId, wrapperId, value) {
 }
 
 /* ======= GRINDER INFO ======= */
-function onGrinderChange() {
+let _prevGrinder = '';
+function onGrinderChange(fromUser) {
   const grinder = getSelectOrCustom('grinderName','grinderCustom');
   const data = GRINDER_DATA[grinder];
   const infoEl = document.getElementById('grindInfo');
@@ -2757,6 +2758,25 @@ function onGrinderChange() {
     unitEl.textContent = '(' + data.unit + ')';
     sizeInput.placeholder = 'e.g., ' + ((data.pourOver.match(/\d+(\.\d+)?/) || ['?'])[0]);
     if (customRow) customRow.hidden = true;
+    // On a real switch to a different known grinder, translate the existing setting to the new grinder's
+    // scale by its relative range position, so a pour-over grind stays a pour-over grind (a bare click
+    // number is meaningless across grinders). Skipped on load/init (fromUser falsy) so saved recipes never change.
+    if (fromUser && _prevGrinder && _prevGrinder !== grinder && sizeInput.value !== '') {
+      const prev = GRINDER_DATA[_prevGrinder];
+      const cur = parseFloat(sizeInput.value);
+      if (prev && !isNaN(cur)) {
+        const o = prev.range.split('-').map(function(x) { return parseFloat(x); });
+        const n = data.range.split('-').map(function(x) { return parseFloat(x); });
+        if (o.length === 2 && n.length === 2 && o[1] > o[0]) {
+          const pos = Math.max(0, Math.min(1, (cur - o[0]) / (o[1] - o[0])));
+          const mapped = Math.round(n[0] + pos * (n[1] - n[0]));
+          if (mapped !== cur) {
+            sizeInput.value = mapped;
+            showToast('Grind rescaled to ' + mapped + ' for the ' + grinder, 'success');
+          }
+        }
+      }
+    }
   } else {
     infoEl.style.display = 'none';
     const cu = ((document.getElementById('grindCustomUnit') || {}).value || '').trim();
@@ -2764,6 +2784,7 @@ function onGrinderChange() {
     sizeInput.placeholder = 'e.g., 24';
     if (customRow) customRow.hidden = !grinder;
   }
+  _prevGrinder = grinder;
   updateGrindVisual();
 }
 
