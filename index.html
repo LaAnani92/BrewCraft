@@ -2195,7 +2195,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.239.0';
+const APP_VERSION = '2.240.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
@@ -5160,6 +5160,17 @@ function importRecipesFile(event) {
         if (tagsAdded) { store.set('brewcraft_tags', JSON.stringify(customTags)); if (typeof renderCustomTags === 'function') renderCustomTags(); }
       }
       saveToStorage();
+      // A restored backup can carry the user past a cumulative milestone earned on another device. Record the
+      // highest already-crossed threshold so the next rating celebrates the NEXT real milestone, not a stale one
+      // the restore silently crossed (mirrors the first-rated guard: do not congratulate restored history).
+      if (added && store.ok) {
+        try {
+          const _rated = recipes.filter(function(r) { return (r.rating || 0) > 0; }).length;
+          const _crossed = [10, 25, 50, 100, 250].filter(function(m) { return m <= _rated; }).pop();
+          const _prevM = parseInt(store.get('brewcraft_milestone'), 10) || 0;
+          if (_crossed && _crossed > _prevM) store.set('brewcraft_milestone', String(_crossed));
+        } catch(e) {}
+      }
       renderLibrary();
       if ((beansAdded || gearAdded) && typeof renderProfileSelects === 'function') renderProfileSelects();
       const parts = [];
