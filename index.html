@@ -2195,7 +2195,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.240.0';
+const APP_VERSION = '2.241.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
@@ -6473,7 +6473,10 @@ function newBag() {
 }
 function maybeDeductBag(data) {
   if (!data.beanId || data.bagDeducted) return;
-  const brewed = (data.rating > 0) || (data.totalBrewTime && data.totalBrewTime !== '');
+  // "Brewed" = rated, or timed. Espresso logs its time to espShotTime (the field the dial-in reads), not the
+  // pour-over totalBrewTime, so a timed-but-unrated shot must count too; otherwise dialing-in espresso (pull
+  // many, rate few) leaves the bag over-stated. The bagDeducted flag still guarantees one deduction per version.
+  const brewed = (data.rating > 0) || (data.totalBrewTime && data.totalBrewTime !== '') || (data.espShotTime && data.espShotTime !== '');
   if (!brewed) return;
   data.bagDeducted = true;
   const b = beanProfiles.find(function(x) { return x.id === data.beanId; });
