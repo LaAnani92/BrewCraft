@@ -2207,7 +2207,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.248.0';
+const APP_VERSION = '2.249.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
@@ -3225,21 +3225,34 @@ function autoDistributePours() {
   if (totalWater <= 0) { showToast('Set dose and water in the Recipe tab first','warning'); return; }
   const cards = pourEls();
   if (!cards.length) return;
-  const bloomWeight = Math.round(Math.max(dose*2, totalWater*0.1));
+  const wt = function(c) { return parseFloat(c.querySelector('.pour-weight').value) || 0; };
+  const bloomCard = cards.find(function(c) { return c.dataset.isBloom === 'true'; });
   const plain = cards.filter(function(c) { return c.dataset.isBloom !== 'true'; });
-  const hasBloom = plain.length !== cards.length;
-  const remaining = totalWater - (hasBloom ? bloomWeight : 0);
+  // Bloom: keep a deliberate bloom if the user set one; otherwise a sensible default (2x dose or 10% water).
+  let bloom = bloomCard ? wt(bloomCard) : 0;
+  if (bloomCard && bloom <= 0) bloom = Math.round(Math.max(dose * 2, totalWater * 0.1));
+  bloom = Math.min(bloom, totalWater);
+  const remaining = totalWater - (bloomCard ? bloom : 0);
   const n = plain.length;
-  const perPour = n ? Math.round(remaining/n) : 0;
-  let plainIdx = 0;
-  cards.forEach(function(card) {
-    if (card.dataset.isBloom === 'true') { card.querySelector('.pour-weight').value = bloomWeight; return; }
-    // last plain pour absorbs the rounding remainder so the schedule sums EXACTLY to total water
-    card.querySelector('.pour-weight').value = (plainIdx === n - 1) ? (remaining - perPour * (n - 1)) : perPour;
-    plainIdx++;
+  // Preserve recipe INTENT: if the pours already carry a shape (weights), rescale them proportionally to the
+  // water instead of flattening to equal — so a bloom-heavy / tapered / 4:6 recipe keeps its character.
+  // Fall back to an even split only when the pours are blank. The last pour absorbs the rounding remainder so
+  // the schedule still sums EXACTLY to total water.
+  const existing = plain.map(wt);
+  const sumEx = existing.reduce(function(a, b) { return a + b; }, 0);
+  let acc = 0;
+  const weights = plain.map(function(c, i) {
+    let w;
+    if (i === n - 1) w = Math.max(0, remaining - acc);
+    else if (sumEx > 0) w = Math.round(remaining * existing[i] / sumEx);
+    else w = Math.round(remaining / n);
+    acc += w;
+    return w;
   });
+  if (bloomCard) bloomCard.querySelector('.pour-weight').value = bloom;
+  plain.forEach(function(c, i) { c.querySelector('.pour-weight').value = weights[i]; });
   updatePourTotals(); markDirty();
-  showToast('Pours auto-distributed','success');
+  showToast(sumEx > 0 ? 'Pours rescaled to ' + Math.round(totalWater) + 'g — shape kept' : 'Pours auto-distributed', 'success');
 }
 function getPourData() {
   const pours = [];

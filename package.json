@@ -1,6 +1,6 @@
 {
   "name": "brewcraft",
-  "version": "2.248.0",
+  "version": "2.249.0",
   "private": true,
   "description": "BrewCraft — specialty coffee recipes, guided brewing, and AI dial-in. A single-file PWA.",
   "type": "module",
