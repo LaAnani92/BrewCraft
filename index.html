@@ -641,6 +641,13 @@
   .brew-setup { display:flex; flex-wrap:wrap; gap:5px 16px; margin-top:9px; font-size:12.5px; color:var(--text-secondary); line-height:1.45; }
   .brew-setup .bs-item { display:inline-flex; align-items:baseline; gap:5px; }
   .brew-setup .bs-k { color:var(--text-muted); font-weight:700; text-transform:uppercase; letter-spacing:0.5px; font-size:10px; }
+  .brew-plan { margin-top:11px; }
+  .brew-plan .bp-bar { display:flex; gap:2px; height:6px; border-radius:3px; overflow:hidden; margin-bottom:6px; }
+  .brew-plan .bp-seg { background:var(--border-light); border-radius:2px; min-width:3px; }
+  .brew-plan .bp-seg.bloom { background:var(--accent); }
+  .brew-plan .bp-seq { font-size:12px; color:var(--text-secondary); font-family:'JetBrains Mono',monospace; line-height:1.45; }
+  .brew-plan .bp-sug { font-size:10px; text-transform:uppercase; letter-spacing:0.5px; color:var(--text-muted); font-family:'DM Sans',sans-serif; }
+  .brew-plan .bp-done { color:var(--text-muted); }
   .brew-thread { font-size:13px; color:var(--accent-bright); background:var(--accent-glow); border:1px solid rgba(200,149,108,0.25); border-radius:var(--radius-sm); padding:9px 11px; line-height:1.5; margin-top:12px; }
   .brew-thread strong { color:var(--accent-bright); }
   /* First-run gesture hints */
@@ -1421,6 +1428,7 @@
     <div class="today-name" id="todayName">—</div>
     <div class="recipe-card-meta" id="todayMeta"></div>
     <div class="brew-setup" id="todaySetup" style="display:none"></div>
+    <div class="brew-plan" id="todayPourPlan" style="display:none"></div>
     <div class="field-hint" id="todayStarterHint" style="margin-top:8px;font-style:italic" hidden></div>
     <div id="todayFresh" style="margin-top:8px"></div>
     <div class="brew-freshtip" id="todayFreshTip" style="display:none"></div>
@@ -2199,7 +2207,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.246.0';
+const APP_VERSION = '2.247.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
@@ -3179,6 +3187,7 @@ function updatePourTotals() {
     else html += ' <span class="pour-off">' + (diff > 0 ? '+' + diff + 'g over' : Math.abs(diff) + 'g short') + '</span>';
   }
   document.getElementById('pourTotal').innerHTML = html;
+  renderPourPlan(getSelectedMethod());
 }
 function autoDistributePours() {
   const dose = parseFloat(document.getElementById('coffeeDose').value) || 0;
@@ -3410,8 +3419,58 @@ function buildBASteps() {
   });
   return steps;
 }
+/* Read-only default pour plan from dose + water (bloom = max of 2x dose or 10% water, then two even pours).
+   Used by the Brew-tab plan card and by Brew-Along when a recipe has no pour weights yet, so the plan is never
+   blank and Brew-Along never dead-ends. Returns ephemeral steps; it never writes the recipe form. */
+function derivePourPlan() {
+  const dose = parseFloat(document.getElementById('coffeeDose').value) || 0;
+  const water = parseFloat(document.getElementById('totalWater').value) || 0;
+  if (water <= 0) return [];
+  const bloom = Math.min(water, Math.round(Math.max(dose * 2, water * 0.1)) || 1);
+  const steps = [{ label: 'Bloom', weight: bloom, targetCum: bloom, start: null, end: null, technique: '', isBloom: true }];
+  let cum = bloom;
+  const n = 2, per = Math.round((water - bloom) / n);
+  for (let i = 0; i < n; i++) {
+    const wgt = (i === n - 1) ? (water - cum) : per;
+    if (wgt <= 0) continue;
+    cum += wgt;
+    steps.push({ label: 'Pour ' + (i + 2), weight: wgt, targetCum: cum, start: null, end: null, technique: '', isBloom: false });
+  }
+  return steps;
+}
+/* "done ~M:SS" for the plan card: the recipe total brew time if set, else the last pour time plus a drawdown pad. */
+function pourPlanDone(steps) {
+  const tbt = parseTimeStr(document.getElementById('totalBrewTime').value);
+  if (tbt && tbt > 0) return 'done ~' + secToStr(tbt);
+  let last = 0;
+  steps.forEach(function(s) { if (s.end != null) last = Math.max(last, s.end); else if (s.start != null) last = Math.max(last, s.start + 30); });
+  return last > 0 ? 'done ~' + secToStr(last + 30) : '';
+}
+/* Read-only pour-plan card on the Brew tab: the brew structure glanceable before Start — cumulative targets
+   plus a proportional bar so the shape (bloom-heavy / tapered / even) reads at once. Espresso + long-steep
+   have no pour schedule; a waterful recipe with no pours falls back to the derived default. */
+function renderPourPlan(method) {
+  const el = document.getElementById('todayPourPlan');
+  if (!el) return;
+  if (method === 'Espresso' || isLongSteep(method)) { el.style.display = 'none'; el.innerHTML = ''; return; }
+  let steps = buildBASteps(), suggested = false;
+  if (!steps.length) { steps = derivePourPlan(); suggested = steps.length > 0; }
+  if (!steps.length) { el.style.display = 'none'; el.innerHTML = ''; return; }
+  const bar = steps.map(function(s) {
+    return '<span class="bp-seg' + (s.isBloom ? ' bloom' : '') + '" style="flex:' + Math.max(s.weight, 1) + '"></span>';
+  }).join('');
+  const seq = steps.map(function(s, i) {
+    return (i === 0 && s.isBloom ? 'Bloom ' : '') + Math.round(s.targetCum) + 'g';
+  }).join(' → ');
+  const done = pourPlanDone(steps);
+  el.innerHTML = '<div class="bp-bar">' + bar + '</div><div class="bp-seq">' +
+    (suggested ? '<span class="bp-sug">suggested </span>' : '') + escapeHtml(seq) +
+    (done ? ' <span class="bp-done">· ' + escapeHtml(done) + '</span>' : '') + '</div>';
+  el.style.display = '';
+}
 async function enterBrewAlong() {
   baSteps = buildBASteps();
+  if (!baSteps.length && !isLongSteep(getSelectedMethod())) baSteps = derivePourPlan();
   if (!baSteps.length) {
     // Cold brew/drip has no guided pour — don't tell them to "add pour weights"; name the real method.
     if (isLongSteep(getSelectedMethod())) {
@@ -6209,6 +6268,7 @@ function renderToday() {
   if (tempStr) bits.push(tempStr);
   document.getElementById('todayMeta').textContent = bits.join(' \u00b7 ') || 'Pick a Quick Start below or build your own';
   renderBrewSetup(m);
+  renderPourPlan(m);
   // Long-steep methods (cold brew/drip) aren't a live pour \u2014 swap the guided-pour CTA + live timer for a
   // calm steep note so the brew screen matches an overnight steep instead of dead-ending at a stopwatch.
   const _longSteep = isLongSteep(m);
