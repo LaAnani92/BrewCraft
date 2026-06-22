@@ -2213,7 +2213,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.255.0';
+const APP_VERSION = '2.256.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
@@ -2876,7 +2876,12 @@ function seedDialsForMethod(method) {
   set('coffeeDose', base.doseG);
   set('brewRatio', base.ratio);
   if (base.tempC != null) set('waterTemp', settings.tempUnit === 'F' ? Math.round(cToF(base.tempC)) : base.tempC);
-  if (base.grind) set('grindCoarseness', grindDescriptorToLevel(base.grind));
+  if (base.grind) {
+    const lvl = grindDescriptorToLevel(base.grind);
+    set('grindCoarseness', lvl);
+    const clk = clicksForGrind(lvl);
+    if (clk != null) set('grindSize', clk);
+  }
   if (base.espYield) set('espYield', base.espYield);
   if (base.espShot) set('espShotTime', base.espShot);
   recalcFromDose();
@@ -2931,7 +2936,12 @@ function applyQuickRecipe(method, idx) {
   document.getElementById('coffeeDose').value = r.doseG;
   document.getElementById('brewRatio').value = r.ratio;
   document.getElementById('waterTemp').value = settings.tempUnit === 'F' ? Math.round(cToF(r.tempC)) : r.tempC;
-  if (r.grind) document.getElementById('grindCoarseness').value = grindDescriptorToLevel(r.grind);
+  if (r.grind) {
+    const _lvl = grindDescriptorToLevel(r.grind);
+    document.getElementById('grindCoarseness').value = _lvl;
+    const _clk = clicksForGrind(_lvl);
+    if (_clk != null) document.getElementById('grindSize').value = _clk;
+  }
   if (r.espYield) document.getElementById('espYield').value = r.espYield;
   if (r.espShot) document.getElementById('espShotTime').value = r.espShot;
   recalcFromDose();
@@ -3126,6 +3136,22 @@ function grindDescriptorToLevel(d) {
   if (d.indexOf('fine') >= 0) return 2;
   if (d.indexOf('medium') >= 0) return 4;
   return 0;
+}
+/* Translate a grind DESCRIPTOR level (1-7) into an actual click setting on the user's selected grinder, by
+   mapping the coarseness onto that grinder's own per-method band anchors. So loading a recipe gives a real
+   starting number ("22 clicks") and medium-fine vs medium-coarse land at different clicks. Returns null for an
+   unknown/custom grinder (no bands to map) — callers then leave the click field alone rather than guess. */
+function clicksForGrind(level) {
+  const grinder = getSelectOrCustom('grinderName','grinderCustom');
+  const data = GRINDER_DATA[grinder];
+  if (!data) return null;
+  const rng = function(s) { const a = String(s || '').split('-').map(function(x) { return parseFloat(x); }); return (a.length === 2 && !isNaN(a[0]) && !isNaN(a[1])) ? a : null; };
+  const e = rng(data.espresso), p = rng(data.pourOver), fp = rng(data.frenchPress), full = rng(data.range);
+  const mid = function(b) { return b ? (b[0] + b[1]) / 2 : null; };
+  const anchors = { 1: e && e[0], 2: mid(e), 3: p && p[0], 4: mid(p), 5: p && p[1], 6: fp && fp[0], 7: fp && fp[1] };
+  let v = anchors[level];
+  if (v == null) v = mid(full);
+  return v == null ? null : Math.round(v);
 }
 /* Dynamic fine→coarse bar: caret from the setting vs the grinder's range; band = method target. */
 /* Beginner-only grind readout: the descriptor (set by the chosen quick recipe / suggestion), shown plainly. */
@@ -6228,7 +6254,7 @@ const TEMPLATES = {
   },
   espresso: {
     name: 'Modern Espresso', method: 'Espresso', coffeeDose: '18', brewRatio: '2', totalWater: '36',
-    waterTemp: '93', grindCoarseness: '1', filterType: 'Espresso Portafilter Basket',
+    waterTemp: '93', grindCoarseness: '2', filterType: 'Espresso Portafilter Basket',
     espYield: '36', espShotTime: '28', pours: [],
     brewerNotes: 'Specialty standard: 18g in, 36g out (1:2) in about 25-30s. Dial the grind to hit the time window, then taste and adjust.'
   }
