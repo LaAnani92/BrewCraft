@@ -1715,3 +1715,10 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] Undetectable case (modern Safari private mode: localStorage works but cleared on close → store.ok true → no banner) stays covered by the periodic backup nudge
 - [ ] npm run check green (2.236.0 synced); verified via preview: text names private/incognito + preview, no "download/viewer" wording, keeps normal-tab fix + export escape, banner hidden when storage works
 - [ ] Update toast after deploy (cache v2.236.0)
+
+## Sprint 249 (v2.237.0) — mid-compare, a card tap picks the second recipe (not navigate away)
+- [ ] Advanced: the compare-selection flow is otherwise solid (first pick gets .compare-sel green border + a 10s "Pick another recipe to compare" + Cancel toast; tapping the same card cancels; a different card's compare-icon opens the comparison). But the prompt says "Pick another recipe to compare," while tapping a card's BODY during that pending state ran loadRecipe + switchTab('recipe') — navigating away and leaving the comparison dangling, since only the small compare ICON picked the second
+- [ ] Fix: card onclick + onkeydown now check `if (compareA) { toggleCompare(r.id); return; }` first — mid-compare, a full-card tap (or Enter/Space) picks this recipe (toggleCompare: same card → cancel, different → compare), matching the prompt and making the second pick the whole card, not the tiny icon. Normal taps (no pending compare) still open the recipe. Keyboard parity preserved
+- [ ] Tradeoff: during the brief, clearly-signaled compare mode you can't tap to OPEN a recipe (tap = pick); cancel first (the toast Cancel or tapping the selected card). Acceptable — the prompt + green marking signal the mode, and the common intent in that mode is to compare
+- [ ] npm run check green (2.237.0 synced); verified via preview: with compareA set, a card tap routes to toggleCompare (compare/cancel) not loadRecipe; with no compareA, a tap still opens the recipe
+- [ ] Update toast after deploy (cache v2.237.0)

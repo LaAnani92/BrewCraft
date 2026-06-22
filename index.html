@@ -2184,7 +2184,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.236.0';
+const APP_VERSION = '2.237.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
@@ -4876,6 +4876,10 @@ function renderLibrary() {
     card.className = 'recipe-card' + (r.id === currentRecipeId ? ' current' : '') + (r.id === compareA ? ' compare-sel' : '');
     card.onclick = function() {
       if (card.dataset.swiped) { delete card.dataset.swiped; return; }
+      // Mid-compare ("Pick another recipe to compare"), a card tap should PICK this one — toggleCompare
+      // handles same-card → cancel, a different card → compare — rather than navigate away and strand the
+      // pending selection. Normal taps (no pending compare) still open the recipe.
+      if (compareA) { toggleCompare(r.id); return; }
       loadRecipe(r.id);
       switchTab('recipe');
     };
@@ -4923,7 +4927,7 @@ function renderLibrary() {
     if (r.rating) _aria += '. ' + r.rating + ' of 5 stars';
     card.setAttribute('aria-label', _aria);
     card.onkeydown = function(ev) {
-      if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); if (card.dataset.swiped) { delete card.dataset.swiped; return; } loadRecipe(r.id); switchTab('recipe'); }
+      if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); if (card.dataset.swiped) { delete card.dataset.swiped; return; } if (compareA) { toggleCompare(r.id); return; } loadRecipe(r.id); switchTab('recipe'); }
     };
     main.appendChild(nameEl);
     main.appendChild(meta);
