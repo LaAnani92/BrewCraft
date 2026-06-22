@@ -2213,7 +2213,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.256.0';
+const APP_VERSION = '2.257.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
@@ -4931,6 +4931,10 @@ function doNewRecipe() {
   currentRecipeId = null;
   try { store.set('brewcraft_draft', ''); } catch(e) {}
   loadRecipeData({});
+  // Carry the user's grinder forward — it's their hardware, not recipe-specific, so re-picking it on every new
+  // recipe (and losing the grind-click translation) is needless friction. Default to the most recently used one.
+  const _lastGrinder = recipes.slice().sort(function(a, b) { return (b.updatedAt || '').localeCompare(a.updatedAt || ''); }).map(function(r) { return r.grinderName; }).filter(Boolean)[0];
+  if (_lastGrinder) { setSelectOrCustom('grinderName', 'grinderCustom', _lastGrinder); onGrinderChange(); }
   document.querySelectorAll('#dialinChips .tag').forEach(function(t) { t.classList.remove('active'); });
   document.getElementById('dialinNotes').value = '';
   document.getElementById('dialinOut').classList.remove('show');
