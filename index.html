@@ -2195,7 +2195,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.238.0';
+const APP_VERSION = '2.239.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
@@ -3713,6 +3713,15 @@ function calcCupping() {
   const total = sum7 + cups - taints*2 - faults*4;
   // Name the SCA specialty band for the live score \u2014 cuppers read scores as grades (Very good / Excellent /
   // Outstanding), so the band is more useful here than a static "80+ = specialty" note.
+  const filled = sliders.filter(function(x) { return x !== null; }).length;
+  // A grade on a half-filled card is a category error: an unscored attribute is not a 0, so a "Below specialty"
+  // verdict mid-entry is unearned. Show progress until all 7 quality attributes are in, then name the band
+  // (same honest-signal intent as the "nothing filled" dash above).
+  if (filled < 7) {
+    document.getElementById('cupTotal').innerHTML = total.toFixed(2) + '<small>' + filled + ' of 7 scored \u00b7 Total / 100</small>';
+    markDirty();
+    return;
+  }
   const band = total >= 90 ? 'Outstanding' : total >= 85 ? 'Excellent' : total >= 80 ? 'Very good' : 'Below specialty';
   document.getElementById('cupTotal').innerHTML = total.toFixed(2) + '<small>' + band + ' \u00b7 Total / 100</small>';
   markDirty();
