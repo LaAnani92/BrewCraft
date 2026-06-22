@@ -2217,7 +2217,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.259.0';
+const APP_VERSION = '2.260.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
@@ -2863,9 +2863,10 @@ const FILTER_DEFAULTS = {
   'Turkish': 'Cupping / No Filter',
   'Cupping': 'Cupping / No Filter'
 };
-function maybeDefaultFilter(method) {
+function maybeDefaultFilter(method, force) {
   const sel = document.getElementById('filterType');
-  if (!sel || sel.value) return;            // never overwrite a chosen filter
+  if (!sel) return;
+  if (sel.value && !force) return;          // never overwrite a chosen filter (force only on a blank new recipe)
   const def = FILTER_DEFAULTS[method];
   if (!def) return;
   const ok = Array.prototype.some.call(sel.options, function(o) { return o.value === def || o.textContent === def; });
@@ -2896,7 +2897,7 @@ function selectMethod(el) {
   document.querySelectorAll('.method-card').forEach(function(c) { c.classList.remove('active'); c.setAttribute('aria-pressed', 'false'); });
   el.classList.add('active');
   el.setAttribute('aria-pressed', 'true');
-  maybeDefaultFilter(el.dataset.method);
+  maybeDefaultFilter(el.dataset.method, currentRecipeId === null && _blankNewRecipe);
   toggleEspressoFields();
   // Smart starting point: on a brand-new, untouched recipe, picking a method seeds sensible method-appropriate
   // dials so you never start from pour-over defaults on an espresso (or vice-versa). Gated to a blank new recipe
