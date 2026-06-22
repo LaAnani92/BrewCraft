@@ -2207,7 +2207,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.247.0';
+const APP_VERSION = '2.248.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
@@ -2811,10 +2811,40 @@ function updateMethodBlurb() {
   el.textContent = b;
   el.classList.toggle('show', !!b);
 }
+/* The canonical filter per method. Picking a method pre-fills it when none is chosen yet, so the user never
+   hand-picks "the V60 filter for a V60" from a 40-option list. Only fills a BLANK filter (never overwrites a
+   chosen one); methods with no single obvious paper (Moka, Cold Brew, Cold Drip, Clever, Phin) are left blank
+   for the user to choose. */
+const FILTER_DEFAULTS = {
+  'V60': 'Hario V60 02 White (Tabbed)',
+  'Chemex': 'Chemex Bonded White (Square)',
+  'Kalita Wave': 'Kalita Wave 185 White',
+  'Origami': 'Origami Paper S',
+  'Melitta': 'Melitta #2 White',
+  'AeroPress': 'AeroPress Standard Paper',
+  'Hario Switch': 'Hario V60 02 White (Tabbed)',
+  'French Press': 'French Press Standard Mesh',
+  'Siphon': 'Siphon Cloth Filter',
+  'Espresso': 'Espresso Portafilter Basket',
+  'Flair': 'Espresso Portafilter Basket',
+  'Cafelat Robot': 'Espresso Portafilter Basket',
+  'Nanopresso': 'Espresso Portafilter Basket',
+  'Turkish': 'Cupping / No Filter',
+  'Cupping': 'Cupping / No Filter'
+};
+function maybeDefaultFilter(method) {
+  const sel = document.getElementById('filterType');
+  if (!sel || sel.value) return;            // never overwrite a chosen filter
+  const def = FILTER_DEFAULTS[method];
+  if (!def) return;
+  const ok = Array.prototype.some.call(sel.options, function(o) { return o.value === def || o.textContent === def; });
+  if (ok) sel.value = def;
+}
 function selectMethod(el) {
   document.querySelectorAll('.method-card').forEach(function(c) { c.classList.remove('active'); c.setAttribute('aria-pressed', 'false'); });
   el.classList.add('active');
   el.setAttribute('aria-pressed', 'true');
+  maybeDefaultFilter(el.dataset.method);
   toggleEspressoFields();
   renderQuickRecipes();
   updateGrindVisual();
