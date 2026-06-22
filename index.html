@@ -2213,7 +2213,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.254.0';
+const APP_VERSION = '2.255.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
@@ -6215,6 +6215,22 @@ const TEMPLATES = {
       { isBloom: false, weight: 500, start: '0:00', end: '0:30', technique: 'Pour all water at once' }
     ],
     brewerNotes: 'Steep 4 min, stir crust, skim foam, wait 5\u20138 more minutes, pour gently \u2014 do not plunge deep. Medium grind, not coarse.'
+  },
+  chemex: {
+    name: 'Ultimate Chemex', method: 'Chemex', coffeeDose: '30', brewRatio: '16.7', totalWater: '500',
+    waterTemp: '95', grindCoarseness: '5', filterType: 'Chemex Bonded White (Square)',
+    pours: [
+      { isBloom: true, weight: 90, start: '0:00', end: '0:35', technique: 'Bloom 90g, swirl' },
+      { isBloom: false, weight: 210, start: '0:35', end: '1:30', technique: 'Pour to 300g' },
+      { isBloom: false, weight: 200, start: '1:30', end: '2:30', technique: 'To 500g, stir + gentle swirl' }
+    ],
+    brewerNotes: 'James Hoffmann Chemex. Medium grind, a little coarser than V60. Total about 4:10 including drawdown.'
+  },
+  espresso: {
+    name: 'Modern Espresso', method: 'Espresso', coffeeDose: '18', brewRatio: '2', totalWater: '36',
+    waterTemp: '93', grindCoarseness: '1', filterType: 'Espresso Portafilter Basket',
+    espYield: '36', espShotTime: '28', pours: [],
+    brewerNotes: 'Specialty standard: 18g in, 36g out (1:2) in about 25-30s. Dial the grind to hit the time window, then taste and adjust.'
   }
 };
 function loadTemplate(key) {
@@ -7581,7 +7597,7 @@ function init() {
   showDialHint();
   updateGrindVisual();
   if (!recipes.length && !store.get('brewcraft_seeded')) {
-    ['hoffmann','kasuya'].forEach(function(key) {
+    ['hoffmann','kasuya','chemex','aeropress','frenchpress','espresso'].forEach(function(key) {
       const t = JSON.parse(JSON.stringify(TEMPLATES[key]));
       t.id = generateId();
       t.name = 'Sample \u2014 ' + t.name;
