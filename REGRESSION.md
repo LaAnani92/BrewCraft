@@ -1702,3 +1702,9 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] Scope note: covers the primary case (a just-typed descriptor). The dup-guard / activate-if-exists path is unchanged (no toast when re-activating an existing chip). Past recipes that used a since-removed tag still re-create the chip on load via setActiveTags, so removal never orphans them
 - [ ] npm run check green (2.234.0 synced); verified via preview: adding a new descriptor fires the Undo toast; invoking Undo removes the chip and the customTags entry; re-adding an existing tag does not duplicate
 - [ ] Update toast after deploy (cache v2.234.0)
+
+## Sprint 247 (v2.235.0) — "Unsaved changes" status now reads as action-needed (amber)
+- [ ] Mobile Kitchen / trust: the header autosave status resolves to "Saving…" (muted, transient), "Saved ✓"/"Draft ✓" (green), or "Unsaved changes" (a saved recipe's PARAMS changed — consent model parks them in the draft, needs an explicit Save). But "Unsaved changes" shared the muted color with "Saving…", so the action-needed state looked identical to passive auto-saving — a glancing one-handed user could miss that a param change isn't committed
+- [ ] Fix: setAutosaveStatus now supports a third tone — 'unsaved' → amber (var(--warning)), distinct from muted "Saving…" and green "Saved ✓". autosaveNow's params-changed branch passes 'unsaved'. Backward-compatible (saved===true still green; the other 4 callers unchanged). No data-loss change — the draft safety net + newRecipe guard are intact; this is purely making the existing state legible
+- [ ] npm run check green (2.235.0 synced); verified via preview: 'unsaved' tone yields .autosave-status.unsaved (amber), 'saved'/true yields .saved (green), 'Saving…' stays muted, and the class clears on the next status change
+- [ ] Update toast after deploy (cache v2.235.0)

@@ -474,6 +474,7 @@
   .icon-btn { min-width:44px; min-height:44px; font-size:16px; display:inline-flex; align-items:center; justify-content:center; }
   .autosave-status { font-size:11px; color:var(--text-muted); min-width:64px; text-align:right; }
   .autosave-status.saved { color:var(--success); }
+  .autosave-status.unsaved { color:var(--warning); }
   .stepper { display:flex; align-items:stretch; gap:6px; }
   .stepper input { text-align:center; font-family:'JetBrains Mono',monospace; }
   .step-btn { width:44px; min-height:44px; flex-shrink:0; background:var(--bg-surface); border:1px solid var(--border); border-radius:var(--radius-xs); color:var(--accent-bright); font-size:20px; font-weight:600; cursor:pointer; transition:all 0.15s; }
@@ -2183,7 +2184,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.234.0';
+const APP_VERSION = '2.235.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
@@ -2335,7 +2336,9 @@ function vibrate(ms) { try { if (navigator.vibrate) navigator.vibrate(ms); } cat
 function setAutosaveStatus(text, saved) {
   const el = document.getElementById('autosaveStatus');
   el.textContent = text;
-  el.className = 'autosave-status' + (saved ? ' saved' : '');
+  // 'saved'/true -> green done; 'unsaved' -> amber action-needed (distinct from the muted transient "Saving…"
+  // so a param change that needs an explicit Save isn't mistaken for passive auto-saving); else muted.
+  el.className = 'autosave-status' + (saved === true || saved === 'saved' ? ' saved' : saved === 'unsaved' ? ' unsaved' : '');
 }
 function markDirty() {
   isDirty = true;
@@ -2352,7 +2355,7 @@ function autosaveNow() {
   if (idx >= 0 && paramsChanged().length) {
     try { store.set('brewcraft_draft', JSON.stringify(data)); } catch(e) {}
     isDirty = false;
-    setAutosaveStatus('Unsaved changes', false);
+    setAutosaveStatus('Unsaved changes', 'unsaved');
     return;
   }
   if (idx >= 0) {
