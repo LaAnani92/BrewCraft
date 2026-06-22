@@ -2091,6 +2091,10 @@ function isImmersion(method) {
 }
 // Long-steep methods steep for hours, not minutes — a live timer and a guided pour don't apply.
 function isLongSteep(method) { return method === 'Cold Brew' || method === 'Cold Drip'; }
+/* A timed-pour plan only fits pour-over-style methods (a sequence of pours onto a bed). Espresso, moka/Turkish
+   and lever brewers (pressure/stovetop) plus immersion (French press, Clever, cold brew, cupping) do not pour to
+   a schedule; the grind band already partitions methods this way, so reuse it. */
+function isPourPlanMethod(method) { return grindBandKey(method) === 'pourOver'; }
 function longSteepBlurb(method) {
   if (method === 'Cold Drip') return 'Cold drip runs slow — about 6 hours of steady dripping. Set the drip rate, then come back and rate it once the carafe is full. No live timer needed.';
   return 'Cold brew is a long steep, not a live pour. Stir to fully saturate, refrigerate 12–24 hours (overnight is easiest), then come back and rate it. No live timer needed.';
@@ -2213,7 +2217,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.257.0';
+const APP_VERSION = '2.258.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
@@ -3577,7 +3581,7 @@ function pourPlanDone(steps) {
 function renderPourPlan(method) {
   const el = document.getElementById('todayPourPlan');
   if (!el) return;
-  if (method === 'Espresso' || isLongSteep(method)) { el.style.display = 'none'; el.innerHTML = ''; return; }
+  if (!isPourPlanMethod(method)) { el.style.display = 'none'; el.innerHTML = ''; return; }
   let steps = buildBASteps(), suggested = false;
   if (!steps.length) { steps = derivePourPlan(); suggested = steps.length > 0; }
   if (!steps.length) { el.style.display = 'none'; el.innerHTML = ''; return; }
@@ -3595,8 +3599,13 @@ function renderPourPlan(method) {
 }
 async function enterBrewAlong() {
   baSteps = buildBASteps();
-  if (!baSteps.length && !isLongSteep(getSelectedMethod())) baSteps = derivePourPlan();
+  if (!baSteps.length && isPourPlanMethod(getSelectedMethod())) baSteps = derivePourPlan();
   if (!baSteps.length) {
+    const _m = getSelectedMethod();
+    if (!isPourPlanMethod(_m) && !isLongSteep(_m)) {
+      showToast('This method is not a timed pour. Use the brew timer, then rate it once it is ready.', 'info');
+      return;
+    }
     // Cold brew/drip has no guided pour — don't tell them to "add pour weights"; name the real method.
     if (isLongSteep(getSelectedMethod())) {
       showToast('Cold brew is a long steep, not a guided pour — stir to saturate, refrigerate, then rate it once it’s ready.', 'info');
