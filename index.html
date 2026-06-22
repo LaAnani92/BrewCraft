@@ -2078,6 +2078,7 @@ const store = {
 let recipes = [];
 let currentRecipeId = null;
 let isDirty = false;
+let _blankNewRecipe = false;
 let timerInterval = null, timerStartTime = null, timerElapsed = 0, timerRunning = false;
 let brewTargetSec = 180; // expected total brew time; drives the progress ring
 let guideSteps = [];     // cached pour steps for live guidance under the timer
@@ -2212,7 +2213,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.252.0';
+const APP_VERSION = '2.253.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
@@ -2866,12 +2867,32 @@ function maybeDefaultFilter(method) {
   const ok = Array.prototype.some.call(sel.options, function(o) { return o.value === def || o.textContent === def; });
   if (ok) sel.value = def;
 }
+/* Seed the dials from a method's canonical recipe (its top quick recipe) — dose/ratio/temp/grind, plus the
+   espresso yield + shot when relevant. Quiet (no toast); the dials simply become right for the chosen method. */
+function seedDialsForMethod(method) {
+  const base = (QUICK_RECIPES[method] || [])[0];
+  if (!base) return;
+  const set = function(id, v) { const el = document.getElementById(id); if (el && v != null && v !== '') el.value = v; };
+  set('coffeeDose', base.doseG);
+  set('brewRatio', base.ratio);
+  if (base.tempC != null) set('waterTemp', settings.tempUnit === 'F' ? Math.round(cToF(base.tempC)) : base.tempC);
+  if (base.grind) set('grindCoarseness', grindDescriptorToLevel(base.grind));
+  if (base.espYield) set('espYield', base.espYield);
+  if (base.espShot) set('espShotTime', base.espShot);
+  recalcFromDose();
+  renderAllScrubbers();
+  updateGrindVisual();
+}
 function selectMethod(el) {
   document.querySelectorAll('.method-card').forEach(function(c) { c.classList.remove('active'); c.setAttribute('aria-pressed', 'false'); });
   el.classList.add('active');
   el.setAttribute('aria-pressed', 'true');
   maybeDefaultFilter(el.dataset.method);
   toggleEspressoFields();
+  // Smart starting point: on a brand-new, untouched recipe, picking a method seeds sensible method-appropriate
+  // dials so you never start from pour-over defaults on an espresso (or vice-versa). Gated to a blank new recipe
+  // (currentRecipeId null + _blankNewRecipe) so editing a saved recipe or a restored draft is never reshaped.
+  if (currentRecipeId === null && _blankNewRecipe) seedDialsForMethod(el.dataset.method);
   renderQuickRecipes();
   updateGrindVisual();
   updateMethodBlurb();
@@ -4646,6 +4667,9 @@ function updateNewRecipeHint() {
 }
 function loadRecipeData(r) {
   r = r || {};
+  // Track whether this is a truly blank new recipe (empty data) vs a loaded recipe/draft. Gates the smart
+  // starting-point seed in selectMethod so it never overwrites a restored draft or a saved recipe.
+  _blankNewRecipe = Object.keys(r).length === 0;
   dismissDialinCarry();
   document.getElementById('recipeName').value = r.name || '';
   syncHeaderName();
