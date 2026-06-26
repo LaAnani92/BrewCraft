@@ -556,6 +556,8 @@
   .pour-at .pour-start { width:48px; background:var(--bg-deep); border:1px solid var(--border); border-radius:6px; padding:4px 5px; color:var(--text-primary); font-family:'JetBrains Mono',monospace; font-size:12px; text-align:center; outline:none; }
   .pour-at .pour-start:focus, .pour-line-sub .pour-technique:focus { border-color:var(--accent); }
   .pour-line-sub .pour-technique { flex:1; min-width:0; background:transparent; border:none; border-bottom:1px dashed var(--border); padding:4px 2px; color:var(--text-secondary); font-size:12px; outline:none; }
+  .pour-patterns { display:flex; flex-wrap:wrap; align-items:center; gap:6px; margin:14px 0 8px; }
+  .pour-patterns .pp-label { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:0.6px; color:var(--text-muted); margin-right:2px; }
   .profile-row { display:flex; gap:8px; margin-bottom:16px; flex-wrap:wrap; align-items:center; }
   .profile-row select { flex:1; min-width:170px; font-family:'DM Sans',sans-serif; font-size:13px; padding:11px 12px; background:var(--bg-input); border:1px solid var(--border); border-radius:var(--radius-xs); color:var(--text-primary); outline:none; }
   .template-row { display:flex; gap:8px; flex-wrap:wrap; }
@@ -1517,10 +1519,17 @@
       <div class="pour-table-wrapper">
         <div class="pour-bar" id="pourBar" style="margin:2px 12px 14px"></div>
         <div id="pourCards" style="padding:0 12px 4px"></div>
+        <div class="pour-patterns">
+          <span class="pp-label">Shape</span>
+          <button type="button" class="preset-chip" onclick="applyPourPattern('even')">Even</button>
+          <button type="button" class="preset-chip" onclick="applyPourPattern('bloomHeavy')">Bloom-heavy</button>
+          <button type="button" class="preset-chip" onclick="applyPourPattern('tetsu')">Tetsu 4:6</button>
+          <button type="button" class="preset-chip" onclick="applyPourPattern('rao')">Rao</button>
+          <button type="button" class="preset-chip" onclick="autoDistributePours()" title="Keep your shape, fit to water">Rescale</button>
+        </div>
         <div class="pour-controls">
           <div class="pour-controls-left">
             <button class="btn btn-sm btn-secondary" onclick="addPour()">+ Add Pour</button>
-            <button class="btn btn-sm btn-ghost" onclick="autoDistributePours()"><svg class="ico"><use href="#i-reset"/></svg> Auto-Distribute</button>
           </div>
           <div class="pour-total" id="pourTotal">Total: <strong>0g</strong> / 0g</div>
         </div>
@@ -2249,7 +2258,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.265.0';
+const APP_VERSION = '2.266.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
@@ -3401,6 +3410,42 @@ function autoDistributePours() {
   plain.forEach(function(c, i) { c.querySelector('.pour-weight').value = weights[i]; });
   updatePourTotals(); markDirty();
   showToast(sumEx > 0 ? 'Pours rescaled to ' + Math.round(totalWater) + 'g — shape kept' : 'Pours auto-distributed', 'success');
+}
+/* Pattern-aware distribution (req #5): one-tap pour STRUCTURES, not just equal-flatten. Each restructures the
+   pours to a known shape and sums exactly to the water. 'Rescale' (autoDistributePours) keeps the user's shape. */
+function applyPourPattern(pattern) {
+  const dose = parseFloat(document.getElementById('coffeeDose').value) || 0;
+  const W = parseFloat(document.getElementById('totalWater').value) || 0;
+  if (W <= 0) { showToast('Set dose and water first', 'warning'); return; }
+  const R = function(x) { return Math.round(x); };
+  // distribute `total` across `n` even pours; last absorbs the rounding remainder so the sum is exact
+  const even = function(total, n) { const each = R(total / n); const a = []; let acc = 0; for (let i = 0; i < n; i++) { const w = (i === n - 1) ? (total - acc) : each; a.push(w); acc += w; } return a; };
+  let pours, label;
+  if (pattern === 'bloomHeavy') {
+    const b = R(Math.max(dose * 3, W * 0.15));
+    pours = [{ isBloom: true, weight: b }].concat(even(W - b, 3).map(function(w) { return { weight: w }; }));
+    label = 'Bloom-heavy';
+  } else if (pattern === 'tetsu') {
+    // Kasuya 4:6 (balanced): five equal 20% pours — first two are the "4" (sweetness/acidity), last three the "6" (strength).
+    const f = even(W, 5);
+    pours = [{ isBloom: true, weight: f[0], technique: 'sweetness/acidity' }, { weight: f[1], technique: 'balance' }, { weight: f[2], technique: 'strength' }, { weight: f[3] }, { weight: f[4] }];
+    label = 'Tetsu 4:6';
+  } else if (pattern === 'rao') {
+    // Scott Rao: bloom, then bring it up to full in one continuous pour with a gentle swirl.
+    const b = R(Math.max(dose * 2, W * 0.1));
+    pours = [{ isBloom: true, weight: b, technique: 'swirl' }, { weight: W - b, technique: 'one pour to full, swirl' }];
+    label = 'Rao';
+  } else { // 'even'
+    const b = R(Math.max(dose * 2, W * 0.1));
+    pours = [{ isBloom: true, weight: b }].concat(even(W - b, 3).map(function(w) { return { weight: w }; }));
+    label = 'Even';
+  }
+  const times = ['0:00', '0:45', '1:30', '2:15', '3:00', '3:45'];
+  pours.forEach(function(p, i) { p.start = times[i] || ''; });
+  setPourData(pours);
+  markDirty();
+  if (typeof vibrate === 'function') vibrate(10);
+  showToast(label + ' pour shape applied', 'success');
 }
 function getPourData() {
   const pours = [];
