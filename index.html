@@ -2312,7 +2312,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.271.0';
+const APP_VERSION = '2.272.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
@@ -5143,6 +5143,14 @@ function loadRecipe(id) {
   clearDirty();
   resetTimer();
 }
+/* "Brew my usual": re-brew a SAVED recipe WITHOUT spawning a version. loadRecipe loads it verbatim and
+   resets the timer for a fresh brew; we then land on the Brew screen. A new version is ONLY ever created
+   by the explicit "Brew Again (new version)" action — repeating a recipe must never pollute the library. */
+function rebrewVerbatim(id) {
+  if (!id) return;
+  loadRecipe(id);
+  switchTab('brew');
+}
 /* Revert path: when a dialed-in version rated worse than its parent, load the better parent so the
    user can re-brew it or branch a fresh try. Non-destructive — the worse version stays saved. */
 function loadParentVersion() {
@@ -6539,9 +6547,7 @@ function loadTemplate(key) {
 function quickBrew() {
   if (!recipes.length) { showToast('Save a recipe first','warning'); return; }
   const latest = recipes.slice().sort(function(a,b) { return (b.updatedAt||'').localeCompare(a.updatedAt||''); })[0];
-  loadRecipe(latest.id);
-  brewAgain();
-  switchTab('brew');
+  rebrewVerbatim(latest.id);
   showToast('Timer ready \u2014 brewing ' + (latest.name || 'your latest recipe'), 'success');
 }
 /* Brew-tab quick-pick: load a method's known-good recipe and STAY on Brew, ready to go. */
@@ -6841,7 +6847,7 @@ function renderNextAction() {
     label = 'Dial in'; act = 'openDialinFromNudge()';
   } else if (rating >= 4) {
     msg = 'A keeper at ' + rating + '★. Brew it again to log a fresh cup.';
-    label = 'Brew again'; act = 'brewAgain()';
+    label = 'Brew again'; act = "rebrewVerbatim('" + currentRecipeId + "')";
   } else if (brewed) {
     msg = 'How was that cup? A quick rating sharpens every future suggestion.';
     label = 'Rate it'; act = "switchTab('evaluate')";

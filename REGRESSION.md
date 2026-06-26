@@ -1907,3 +1907,9 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] Verified (preview, 390px): 4 bubbles; recalc interlink fires via tap-to-type AND bump (dose*ratio=water, water/dose=ratio self-consistent); ratio/temp chips set 17/96; reset->15; Espresso hides Ratio+Water bubbles (display:none) + shows espresso fields, V60 restores; quick strip collapsed by default, toggles open with 4 cards. npm run check green (2.271.0), boots clean (no #tempUnitLabel/scrubber throw). Screenshot confirms clean 2x2 bubbles.
 - [ ] FOLLOW-UP (not done): the 4 stacked AI-helper buttons (Suggest/Adapt/Explain/Dial-in) are the remaining tall element in the section - candidate to collapse into a disclosure.
 - [ ] Update toast after deploy (cache v2.271.0)
+## Sprint 284 (v2.272.0) - Backend roadmap PR #1: "brew my usual" stops polluting the library
+- [ ] Owner committed to the backend roadmap (Supabase); this is the first PR (correctness fix a): repeating a recipe must LOAD it verbatim, NOT spawn a version.
+- [ ] Found TWO pollution sources (verified in source, not just the one the panel flagged): quickBrew() (~index.html:6539) did loadRecipe(latest)+brewAgain() -> a versioned child on every "brew my latest"; renderNextAction()'s 4-star keeper branch (~6844) set act='brewAgain()'.
+- [ ] Fix: reuse the EXISTING loadRecipe(id) (the clean verbatim loader, 5136) via a new rebrewVerbatim(id) = loadRecipe(id) + switchTab('brew'). quickBrew now calls rebrewVerbatim(latest.id); the 4-star next-action calls rebrewVerbatim('<currentRecipeId>'). The two EXPLICIT "Brew Again (new version)" buttons (1702, 1749) and brewAgain() itself are UNCHANGED.
+- [ ] Verified via preview: rebrewVerbatim + quickBrew add 0 recipe rows and keep the id; explicit brewAgain() still adds 1 versioned child. npm run check green (2.272.0), boots clean.
+- [ ] Update toast after deploy (cache v2.272.0)
