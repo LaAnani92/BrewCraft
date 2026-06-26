@@ -558,6 +558,11 @@
   .pour-line-sub .pour-technique { flex:1; min-width:0; background:transparent; border:none; border-bottom:1px dashed var(--border); padding:4px 2px; color:var(--text-secondary); font-size:12px; outline:none; }
   .pour-patterns { display:flex; flex-wrap:wrap; align-items:center; gap:6px; margin:14px 0 8px; }
   .pour-patterns .pp-label { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:0.6px; color:var(--text-muted); margin-right:2px; }
+  .next-action { display:flex; align-items:center; gap:10px; padding:10px 13px; margin-bottom:16px; background:linear-gradient(135deg, var(--accent-glow), transparent), var(--bg-input); border:1px solid rgba(200,149,108,0.3); border-radius:var(--radius-sm); font-size:13px; color:var(--text-secondary); line-height:1.4; }
+  .next-action .na-ico { width:16px; height:16px; color:var(--accent-bright); flex-shrink:0; }
+  .next-action .na-text { flex:1; }
+  .next-action .na-go { flex-shrink:0; white-space:nowrap; background:transparent; color:var(--accent-bright); border:1px solid var(--accent); border-radius:999px; padding:5px 12px; font-size:12px; font-weight:700; cursor:pointer; }
+  .next-action .na-go:active { transform:scale(0.96); }
   .profile-row { display:flex; gap:8px; margin-bottom:16px; flex-wrap:wrap; align-items:center; }
   .profile-row select { flex:1; min-width:170px; font-family:'DM Sans',sans-serif; font-size:13px; padding:11px 12px; background:var(--bg-input); border:1px solid var(--border); border-radius:var(--radius-xs); color:var(--text-primary); outline:none; }
   .template-row { display:flex; gap:8px; flex-wrap:wrap; }
@@ -1029,6 +1034,7 @@
 
 
 <div class="tab-panel active" id="tab-recipe">
+  <div class="next-action" id="nextAction" style="display:none"></div>
 
   <input type="text" id="recipeName" class="name-hero" aria-label="Recipe name"placeholder="Name this recipe…" oninput="markDirty(); syncHeaderName()">
   <div class="brewbar" id="brewBar">
@@ -2260,7 +2266,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.268.0';
+const APP_VERSION = '2.269.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
@@ -6741,9 +6747,46 @@ function renderToday() {
     });
     _hero.style.display = _any ? '' : 'none';
   })();
+  renderNextAction();
 }
 
 /* Freshness as guidance, not a badge: the bean's age changes the advice. */
+/* Next-best-action (req #6): one quiet, contextual line at the top of the screen that is always one step ahead -
+   set up -> brew -> rate -> dial-in -> brew again - so the user never wonders what to do next. State + method aware. */
+function renderNextAction() {
+  const el = document.getElementById('nextAction');
+  if (!el) return;
+  const m = getSelectedMethod();
+  const dose = parseFloat(document.getElementById('coffeeDose').value) || 0;
+  const rating = currentRating || 0;
+  const brewed = (timerElapsed > 0) || brewCompleteFired;
+  let msg, label, act;
+  if (currentRecipeId === null && !dose) {
+    msg = 'New recipe — pick a method below, or tap Suggest a starting point.';
+    label = 'Choose method'; act = "document.getElementById('sec-method').scrollIntoView({block:'start',behavior:'smooth'})";
+  } else if (rating > 0 && rating <= 3) {
+    msg = 'That cup scored ' + rating + '★ — one change can lift it.';
+    label = 'Dial in'; act = 'openDialinFromNudge()';
+  } else if (rating >= 4) {
+    msg = 'A keeper at ' + rating + '★. Brew it again to log a fresh cup.';
+    label = 'Brew again'; act = 'brewAgain()';
+  } else if (brewed) {
+    msg = 'How was that cup? A quick rating sharpens every future suggestion.';
+    label = 'Rate it'; act = "switchTab('evaluate')";
+  } else if (isLongSteep(m)) {
+    msg = 'A long steep — stir to saturate, refrigerate, then come back to rate it.';
+    label = 'Rate it'; act = "switchTab('evaluate')";
+  } else if (isPourPlanMethod(m)) {
+    msg = 'Set and ready. Start the guided Brew-Along whenever you are.';
+    label = 'Brew-Along'; act = 'enterBrewAlong()';
+  } else {
+    msg = 'Set and ready. Scroll to the timer and start when you begin.';
+    label = 'To timer'; act = "document.getElementById('timerSection').scrollIntoView({block:'center',behavior:'smooth'})";
+  }
+  el.innerHTML = '<svg class="ico na-ico"><use href="#i-spark"/></svg><span class="na-text">' + escapeHtml(msg) + '</span>' +
+    '<button type="button" class="na-go" onclick="' + act + '">' + escapeHtml(label) + ' →</button>';
+  el.style.display = '';
+}
 function freshnessGuidance(f, method) {
   if (!f) return '';
   const esp = method === 'Espresso';
