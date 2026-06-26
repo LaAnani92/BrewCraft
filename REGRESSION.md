@@ -1918,3 +1918,8 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] Fix: new poursSig(pours) = normalized per-pour signature (weight|start|end|technique|bloom, joined). paramsChanged appends 'Pour schedule' when poursSig(orig.pours) != poursSig(cur.pours). DIFF_FIELDS + its 7 other consumers + the version-diff display are UNTOUCHED.
 - [ ] Verified via preview (V60 Hoffmann, 5 pours): clean save -> []; edit one pour weight -> ['Pour schedule']; revert -> []. npm run check green (2.273.0), boots clean.
 - [ ] Update toast after deploy (cache v2.273.0)
+## Sprint 286 (v2.274.0) - Backend roadmap PR #3: reliable eyes-off pour beep (fix c)
+- [ ] Roadmap fix (c): the live-brew pour beep could be SILENT on a backgrounded iPhone. Cause: beep() (index.html:3538) created the AudioContext LAZILY off-gesture (3541) -> iOS starts it suspended and cannot resume without a gesture, so the first pour cue during a backgrounded brew was silent. (Source check corrected the brief: sounds defaults 'on' @2316 so beep is NOT off-by-default; and the wakeLock re-acquire on visibilitychange ALREADY exists @3902.)
+- [ ] Fix: new unlockAudio() (create + resume + play a 1-sample silent buffer) called INSIDE toggleTimer's start branch (the start-timer user gesture, used by BOTH the timer Start @1559 and Brew-Along Start @1924). Respects settings.sounds==='on'. beep() unchanged.
+- [ ] Verified via preview: unlockAudio brings audioCtx to state 'running'; toggleTimer start creates it; sounds='off' -> no-op. npm run check green (2.274.0), boots clean. (Real backgrounded-iPhone confirmation is the owner's to do on-device.)
+- [ ] Update toast after deploy (cache v2.274.0)
