@@ -1216,6 +1216,7 @@
       </div>
       <div class="ai-explain-row">
         <button class="ai-explain-btn" id="suggestStartBtn" onclick="openSuggest()" aria-expanded="false" aria-controls="suggestPanel"><svg class="ico"><use href="#i-spark"/></svg> Suggest a starting point</button>
+        <button class="ai-explain-btn" id="adaptBeanBtn" onclick="adaptToBean()" title="Adjust this recipe for the bean you are using now" aria-controls="suggestPanel"><svg class="ico"><use href="#i-spark"/></svg> Adapt to my bean</button>
         <button class="ai-explain-btn" id="explainParamsBtn" onclick="explainParams()" aria-expanded="false" aria-controls="paramsExplain"><svg class="ico"><use href="#i-info"/></svg> What do these mean?</button>
         <button class="ai-explain-btn beginner-hide" onclick="openDialinFromNudge()" title="Already brewed and the cup was off? Jump to the dial-in assistant"><svg class="ico"><use href="#i-bolt"/></svg> Dial in a cup</button>
       </div>
@@ -2259,7 +2260,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.267.0';
+const APP_VERSION = '2.268.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
@@ -4593,6 +4594,67 @@ function applySuggestion() {
   showToast('Starting point applied \u2014 tweak from here', 'success');
 }
 
+/* AI (req #6): adapt the CURRENT recipe to the bean in hand — re-derive temp/grind (+more) for roast level,
+   process, and freshness. AI when the user has a key; a rule-based delta otherwise. Reuses applySuggestion. */
+async function adaptToBean() {
+  const panel = document.getElementById('suggestPanel');
+  if (!panel) return;
+  const method = getSelectedMethod();
+  if (!method) { panel.hidden = false; panel.innerHTML = '<h4>Adapt recipe</h4>Pick a brew method first.'; return; }
+  panel.hidden = false; vibrate(8);
+  const d = gatherRecipeData();
+  const isEsp = method === 'Espresso';
+  const renderAdapt = function(s, note) {
+    _lastSuggestion = s;
+    const t = settings.tempUnit === 'F' ? Math.round(cToF(s.tempC)) + '°F' : s.tempC + '°C';
+    const stats = s.doseG + 'g · 1:' + s.ratio + (isEsp && s.espYield ? ' (' + s.espYield + 'g out)' : '') + ' · ' + t + ' · ' + (s.grind || 'medium') + (isEsp && s.espShot ? ' · ' + s.espShot + 's' : '');
+    panel.innerHTML = '<h4>Adapted for your bean</h4>' +
+      (s.rationale ? '<div style="margin-bottom:8px">' + escapeHtml(s.rationale) + '</div>' : '') +
+      '<div class="suggest-stats">' + escapeHtml(stats) + '</div>' +
+      '<button class="btn btn-primary btn-sm" onclick="applySuggestion()"><svg class="ico"><use href="#i-spark"/></svg> Apply to dials</button>' +
+      '<span class="src">' + note + '</span>';
+  };
+  if (!aiHasKey()) {
+    renderAdapt(ruleAdapt(method, d), 'Adapted from your roast level + freshness. <button type="button" class="link-btn" onclick="openSettingsToKey()">Add an API key</button> to tune to the exact origin & process.');
+    return;
+  }
+  panel.innerHTML = aiThinking('Adapting to your bean', 'Reading your ' + escapeHtml(method) + ' recipe');
+  try {
+    const sys = 'You are a specialty coffee expert. Given a brewing method, the CURRENT recipe, and the bean now in use (origin, process, roast level, freshness / days off roast), ADAPT the current recipe to suit this bean while keeping the method and overall intent. Make targeted, proportionate changes - do not overhaul a sound recipe. Guidance: lighter roasts want hotter water and a finer grind to extract more; darker roasts want cooler water and a coarser grind; very fresh (degassing) coffee blooms vigorously and can taste sharp; faded coffee needs a harder push (finer/hotter). Reply ONLY with minified JSON (no prose/markdown/code fence). Keys: doseG (number grams), ratio (number, water:coffee e.g. 16.5; for espresso the brew ratio e.g. 2.0), tempC (number Celsius), grind (one of EXACTLY: "extra fine","espresso-fine","fine","medium-fine","medium","medium-coarse","coarse","extra coarse"), rationale (one short plain-text sentence on what you changed and why). For espresso ALSO include espYield (grams out) and espShot (seconds).';
+    const fresh = freshnessInfo(d.roastDate, method);
+    const cur = { doseG: parseFloat(d.coffeeDose) || 0, ratio: parseFloat(d.brewRatio) || 0, tempC: parseFloat(d.waterTemp) || 93, grind: COARSE_LABELS[parseInt(d.grindCoarseness, 10)] || 'medium' };
+    if (isEsp) { cur.espYield = parseFloat(d.espYield) || 0; cur.espShot = parseFloat(d.espShotTime) || 0; }
+    const beanBits = { origin: d.beanOrigin, roaster: d.roaster, process: d.beanProcess, varietal: d.beanVarietal, roastLevel: d.roastLevel, freshness: fresh ? fresh.label : 'roast date not logged' };
+    const userMsg = 'METHOD: ' + method + '\nCURRENT RECIPE: ' + JSON.stringify(cur) + '\nBEAN: ' + JSON.stringify(beanBits) + '\nSKILL: ' + (settings.skill || 'beginner');
+    const text = await aiComplete(sys, userMsg, 350);
+    let s = null; try { s = parseJSONLoose(text); } catch(_) { s = null; }
+    if (!s || !(parseFloat(s.doseG) > 0) || !(parseFloat(s.ratio) > 0)) throw new Error('could not read an adaptation');
+    s.doseG = parseFloat(s.doseG); s.ratio = parseFloat(s.ratio); s.tempC = parseFloat(s.tempC) || 93;
+    if (s.espYield) s.espYield = parseFloat(s.espYield);
+    if (s.espShot) s.espShot = parseFloat(s.espShot);
+    renderAdapt(s, 'AI · ' + escapeHtml(settings.model || 'claude-sonnet-4-6') + ' · adapted to your bean');
+  } catch(e) {
+    renderAdapt(ruleAdapt(method, d), 'AI unavailable (' + escapeHtml(aiErrorHint(e)) + ') — showing a rule-based adaptation.');
+  }
+}
+function ruleAdapt(method, d) {
+  const isEsp = method === 'Espresso';
+  let lvl = parseInt(d.grindCoarseness, 10) || 4;
+  const tempC = parseFloat(d.waterTemp) || 93;
+  const s = { doseG: parseFloat(d.coffeeDose) || 0, ratio: parseFloat(d.brewRatio) || 0, tempC: tempC, rationale: '' };
+  if (isEsp) { s.espYield = parseFloat(d.espYield) || Math.round((s.doseG || 18) * (s.ratio || 2)); s.espShot = parseFloat(d.espShotTime) || 28; }
+  const rl = (d.roastLevel || '').toLowerCase();
+  const notes = [];
+  if (rl.indexOf('light') !== -1) { s.tempC = Math.min(100, tempC + 2); lvl = Math.max(1, lvl - 1); notes.push('hotter water and a touch finer to pull more from the denser light roast'); }
+  else if (rl.indexOf('dark') !== -1) { s.tempC = Math.max(80, tempC - 3); lvl = Math.min(7, lvl + 1); notes.push('cooler water and a touch coarser so the soluble dark roast does not turn bitter'); }
+  else notes.push('a medium roast extracts cleanly here, so your current numbers are a solid match');
+  s.grind = COARSE_LABELS[lvl] || 'Medium';
+  const fresh = freshnessInfo(d.roastDate, method);
+  if (fresh && fresh.cls === 'fresh-degassing') notes.push('it is still degassing, so expect a lively bloom and judge the cup after a few more days');
+  else if (fresh && fresh.cls === 'fresh-fading') notes.push('it is a little past peak, so a hair finer or hotter helps chase the fading sweetness');
+  s.rationale = (d.roastLevel ? 'For your ' + d.roastLevel.toLowerCase() + ' roast: ' : 'Log a roast level for a sharper read — for now: ') + notes.join('; ') + '.';
+  return s;
+}
 /* ======= AI: pattern detection across saved brews ======= */
 function ruleDetectPatterns(rated) {
   const num = function(v) { return parseFloat(v); };
