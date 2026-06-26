@@ -652,6 +652,11 @@
   .brew-nudge .bn-ico { width:15px; height:15px; color:var(--accent-bright); flex-shrink:0; margin-top:2px; }
   .brew-nudge .bn-text { flex:1; }
   .brew-nudge .bn-go { flex-shrink:0; white-space:nowrap; }
+  /* Unified Brew+Recipe screen: the editor above already shows name/params/grind/filter/pours, so hide the
+     read-only mirror in the brew header; keep only the brew-time intelligence (freshness, nudge, thread, best). */
+  #todaySubtitle, #todayName, #todayMeta, #todaySetup, #todayPourPlan, #brewBar { display:none !important; }
+  .brew-divider { display:flex; align-items:center; gap:12px; margin:28px 0 14px; color:var(--text-muted); font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:1.5px; }
+  .brew-divider::before, .brew-divider::after { content:''; flex:1; height:1px; background:var(--border); }
   .brew-thread { font-size:13px; color:var(--accent-bright); background:var(--accent-glow); border:1px solid rgba(200,149,108,0.25); border-radius:var(--radius-sm); padding:9px 11px; line-height:1.5; margin-top:12px; }
   .brew-thread strong { color:var(--accent-bright); }
   /* First-run gesture hints */
@@ -993,7 +998,6 @@
 
 <nav class="tabbar" aria-label="Main">
   <button class="tab-btn active" id="tabbtn-brew" aria-current="page" onclick="switchTab('brew')"><span class="live-dot" id="brewLiveDot"></span><span class="t-icon"><svg class="ico"><use href="#i-timer"/></svg></span><span class="t-label">Brew</span></button>
-  <button class="tab-btn" id="tabbtn-recipe" onclick="switchTab('recipe')"><span class="t-icon"><svg class="ico"><use href="#i-bean"/></svg></span><span class="t-label">Recipe</span></button>
   <button class="tab-btn" id="tabbtn-evaluate" onclick="switchTab('evaluate')"><span class="t-icon"><svg class="ico"><use href="#i-star"/></svg></span><span class="t-label">Taste</span></button>
   <button class="tab-btn" id="tabbtn-library" onclick="switchTab('library')"><span class="t-icon"><svg class="ico"><use href="#i-book"/></svg></span><span class="t-label">Journal</span></button>
   <button class="tab-btn" id="tabbtn-lab" onclick="switchTab('lab')"><span class="t-icon"><svg class="ico"><use href="#i-chart"/></svg></span><span class="t-label">Insights</span></button>
@@ -1002,7 +1006,7 @@
 <main class="main">
 
 
-<div class="tab-panel" id="tab-recipe">
+<div class="tab-panel active" id="tab-recipe">
 
   <input type="text" id="recipeName" class="name-hero" aria-label="Recipe name"placeholder="Name this recipe…" oninput="markDirty(); syncHeaderName()">
   <div class="brewbar" id="brewBar">
@@ -1426,6 +1430,7 @@
 
 <div class="tab-panel active" id="tab-brew">
 
+  <div class="brew-divider">Brew</div>
   <div class="info-card" id="todayHero">
     <div class="today-welcome" id="todayWelcome" hidden></div>
     <div class="section-subtitle" id="todaySubtitle">Now brewing</div>
@@ -1440,16 +1445,15 @@
     <div class="brew-thread" id="todayThread" style="display:none"></div>
     <div class="brew-nudge" id="todayNudge" style="display:none"></div>
     <div id="todayBest" style="display:none;margin-top:14px;padding-top:12px;border-top:1px solid var(--border)"></div>
-    <div class="today-actions" style="margin-top:14px">
-      <button class="btn btn-sm btn-ghost" onclick="switchTab('recipe')"><svg class="ico"><use href="#i-pencil"/></svg> Edit recipe</button>
-      <button class="btn btn-sm btn-ghost" onclick="toggleBrewQuickPick()"><svg class="ico"><use href="#i-reset"/></svg> Switch recipe</button>
-    </div>
-    <div class="template-row" id="brewQuickPick" hidden style="margin-top:12px">
-      <button class="preset-chip" onclick="brewPick('hoffmann')">Hoffmann V60</button>
-      <button class="preset-chip" onclick="brewPick('kasuya')">Kasuya 4:6</button>
-      <button class="preset-chip" onclick="brewPick('aeropress')">AeroPress Classic</button>
-      <button class="preset-chip" onclick="brewPick('frenchpress')">French Press</button>
-    </div>
+  </div>
+  <div class="today-actions" style="margin:4px 0 2px">
+    <button class="btn btn-sm btn-ghost" onclick="toggleBrewQuickPick()"><svg class="ico"><use href="#i-reset"/></svg> Switch recipe</button>
+  </div>
+  <div class="template-row" id="brewQuickPick" hidden style="margin-top:12px">
+    <button class="preset-chip" onclick="brewPick('hoffmann')">Hoffmann V60</button>
+    <button class="preset-chip" onclick="brewPick('kasuya')">Kasuya 4:6</button>
+    <button class="preset-chip" onclick="brewPick('aeropress')">AeroPress Classic</button>
+    <button class="preset-chip" onclick="brewPick('frenchpress')">French Press</button>
   </div>
 
   <div class="brewbar brewbar-compact" id="brewBarBrew">
@@ -2224,7 +2228,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.263.0';
+const APP_VERSION = '2.264.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
@@ -2530,15 +2534,19 @@ function updateDialinHint() {
 
 /* ======= TABS & SECTIONS ======= */
 function switchTab(name) {
+  // Brew + Recipe are unified into one screen: either name activates BOTH panels (recipe setup above, the
+  // brew/timer below) under the single Brew nav button, so every existing go-to-recipe/go-to-brew link lands here.
+  const merged = (name === 'brew' || name === 'recipe');
   document.querySelectorAll('.tab-panel').forEach(function(p) { p.classList.remove('active'); });
   document.querySelectorAll('.tab-btn').forEach(function(b) { b.classList.remove('active'); });
-  document.getElementById('tab-' + name).classList.add('active');
-  document.getElementById('tabbtn-' + name).classList.add('active');
+  document.getElementById('tab-' + (merged ? 'brew' : name)).classList.add('active');
+  if (merged) document.getElementById('tab-recipe').classList.add('active');
+  const _btn = document.getElementById('tabbtn-' + (merged ? 'brew' : name));
+  if (_btn) _btn.classList.add('active');
   // App-level nav: mark the active view with aria-current="page" (valid on a button, announced as "current")
   // — aria-selected isn't a real state for the button role, so a screen reader wasn't told which tab is on.
   document.querySelectorAll('.tab-btn').forEach(function(b) { if (b.classList.contains('active')) b.setAttribute('aria-current', 'page'); else b.removeAttribute('aria-current'); });
-  if (name === 'brew') { renderToday(); renderBrewBar(); }
-  if (name === 'recipe') showDialHint();
+  if (merged) { renderToday(); renderBrewBar(); showDialHint(); }
   if (name === 'library') { renderLibrary(); refreshSharePanel(); }
   if (name === 'lab') drawStats();
   window.scrollTo({ top: 0 });
@@ -6563,6 +6571,18 @@ function renderToday() {
   }
   renderThread();
   renderBrewNudge();
+  // Merged screen: show the brew-intelligence card only when it actually carries something (freshness, nudge,
+  // thread, best, welcome, starter hint, bag) — otherwise it would be an empty box above the brew controls.
+  (function() {
+    const _hero = document.getElementById('todayHero');
+    if (!_hero) return;
+    const _any = ['todayWelcome','todayStarterHint','todayFresh','todayFreshTip','todayBag','todayThread','todayNudge','todayBest'].some(function(id) {
+      const e = document.getElementById(id);
+      if (!e || e.hidden || getComputedStyle(e).display === 'none') return false;
+      return ((e.textContent || '').trim().length > 0) || !!e.querySelector('*');
+    });
+    _hero.style.display = _any ? '' : 'none';
+  })();
 }
 
 /* Freshness as guidance, not a badge: the bean's age changes the advice. */
