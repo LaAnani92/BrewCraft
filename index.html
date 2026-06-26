@@ -522,6 +522,45 @@
   .ruler-ticks { position:absolute; top:0; bottom:0; left:-50%; width:200%; background-image:repeating-linear-gradient(90deg, var(--border-light,#4f4436) 0 1.5px, transparent 1.5px var(--gap,25px)); -webkit-mask-image:linear-gradient(90deg,transparent,#000 18%,#000 82%,transparent); mask-image:linear-gradient(90deg,transparent,#000 18%,#000 82%,transparent); will-change:transform; }
   .ruler-caret { position:absolute; top:7px; bottom:7px; left:50%; width:2px; transform:translateX(-50%); background:var(--accent-bright); border-radius:2px; box-shadow:0 0 8px rgba(232,184,138,0.5); pointer-events:none; }
   .scrub-hint { font-size:10px; color:var(--text-muted); text-align:center; letter-spacing:0.3px; margin-top:-2px; }
+  /* ===== Param bubbles (steppers-bubbles) — compact instrument cluster ===== */
+  .bubble-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  @media (max-width:359px) { .bubble-grid { grid-template-columns:1fr; } }
+  @media (min-width:900px) { .bubble-grid { max-width:520px; } }
+  .param-bubble { background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius-sm); padding:10px 10px 9px; display:flex; flex-direction:column; gap:7px; box-shadow:var(--card-edge); transition:border-color 0.15s, box-shadow 0.15s; }
+  .param-bubble:focus-within { border-color:var(--accent); box-shadow:0 0 0 3px var(--accent-glow); }
+  .pb-top { display:flex; align-items:center; gap:6px; min-height:24px; }
+  .pb-label { font-size:10px; font-weight:700; letter-spacing:1.1px; text-transform:uppercase; color:var(--text-muted); display:flex; align-items:baseline; gap:4px; margin:0; }
+  .pb-unit { font-weight:400; letter-spacing:0; text-transform:none; font-size:10px; color:var(--text-muted); }
+  .pb-reset { margin-left:auto; width:36px; height:36px; }
+  .pb-reset .ico { width:14px; height:14px; }
+  .pb-num { -webkit-appearance:none; appearance:none; width:100%; text-align:center; font-family:'JetBrains Mono',monospace; font-size:26px; font-weight:600; letter-spacing:0.5px; color:var(--accent-bright); background:transparent; border:none; padding:0; outline:none; min-height:34px; line-height:1; cursor:text; }
+  .pb-num::-webkit-inner-spin-button, .pb-num::-webkit-outer-spin-button { -webkit-appearance:none; margin:0; }
+  .pb-num:focus { color:var(--text-primary); }
+  .pb-num.pulse { animation:pbPulse 0.22s ease; }
+  @keyframes pbPulse { 0% { transform:scale(1); } 45% { transform:scale(1.09); } 100% { transform:scale(1); } }
+  @media (prefers-reduced-motion: reduce) { .pb-num.pulse { animation:none; } }
+  .pb-step { display:flex; gap:6px; }
+  .pb-stepbtn { flex:1 1 0; width:auto; min-width:0; height:44px; min-height:44px; display:flex; align-items:center; justify-content:center; }
+  .pb-stepbtn .ico { width:18px; height:18px; }
+  .pb-chips { display:flex; gap:5px; }
+  .pb-chips .preset-chip { flex:1 1 0; min-width:0; min-height:44px; padding:0 2px; display:flex; align-items:center; justify-content:center; font-size:12px; border-radius:var(--radius-xs); }
+  /* ===== Quick-recipes: collapsed toggle + slim one-line pill strip ===== */
+  .qrec-collapsible { margin-bottom:12px; }
+  .qrec-toggle { display:flex; align-items:center; gap:8px; width:100%; min-height:44px; padding:0 12px; background:var(--bg-input); border:1px solid var(--border); border-radius:var(--radius-sm); color:var(--text-secondary); font-size:12px; font-weight:600; cursor:pointer; transition:all 0.15s; font-family:'DM Sans',sans-serif; text-align:left; }
+  .qrec-toggle:hover { border-color:var(--accent); color:var(--accent-bright); }
+  .qrec-toggle .ico { width:15px; height:15px; flex-shrink:0; }
+  .qrec-toggle-text { flex:1 1 auto; text-transform:uppercase; letter-spacing:0.8px; }
+  .qrec-toggle .qrec-label-sub { text-transform:none; letter-spacing:0; color:var(--text-muted); }
+  .qrec-chev { margin-left:auto; transition:transform 0.2s; }
+  .qrec-collapsible.open .qrec-chev { transform:rotate(180deg); }
+  .qrec-strip { margin-top:8px; gap:6px; }
+  .qrec-strip[hidden] { display:none; }
+  .qrec-strip .qrec-card { min-width:auto; max-width:none; flex:0 0 auto; flex-direction:row; align-items:center; gap:6px; padding:8px 12px; min-height:44px; border-radius:18px; white-space:nowrap; }
+  .qrec-strip .qrec-card:hover { transform:none; box-shadow:none; }
+  .qrec-strip .qrec-card .qrec-name { font-size:12.5px; }
+  .qrec-strip .qrec-card .qrec-author { display:none; }
+  .qrec-strip .qrec-card .qrec-stats { font-size:10px; }
+  .qrec-strip .qrec-hint { white-space:normal; }
   .fresh-badge { display:inline-block; font-size:11px; font-weight:600; padding:4px 10px; border-radius:12px; margin-top:6px; }
   .fresh-degassing { background:rgba(212,160,74,0.15); color:var(--warning); border:1px solid rgba(212,160,74,0.4); }
   .fresh-peak { background:rgba(122,184,122,0.15); color:var(--success); border:1px solid rgba(122,184,122,0.4); }
@@ -1217,9 +1256,13 @@
     </div>
     <div class="section-body">
       <div class="dialin-carry" id="dialinCarry" style="display:none"></div>
-      <div class="qrec-wrap" id="quickRecipesWrap" hidden>
-        <div class="qrec-label">Quick recipes <span class="qrec-label-sub">· tap to load</span></div>
-        <div class="qrec-rail" id="quickRecipes"></div>
+      <div class="qrec-wrap qrec-collapsible" id="quickRecipesWrap" hidden>
+        <button type="button" class="qrec-toggle" id="qrecToggle" aria-expanded="false" aria-controls="quickRecipes" onclick="toggleQuickRecipes()">
+          <svg class="ico"><use href="#i-spark"/></svg>
+          <span class="qrec-toggle-text">Quick recipes <span class="qrec-label-sub">tap to load a starting point</span></span>
+          <svg class="ico qrec-chev"><use href="#i-chev-down"/></svg>
+        </button>
+        <div class="qrec-rail qrec-strip" id="quickRecipes" hidden></div>
       </div>
       <div class="ai-explain-row">
         <button class="ai-explain-btn" id="suggestStartBtn" onclick="openSuggest()" aria-expanded="false" aria-controls="suggestPanel"><svg class="ico"><use href="#i-spark"/></svg> Suggest a starting point</button>
@@ -1229,55 +1272,47 @@
       </div>
       <div class="ai-panel" id="suggestPanel" role="region" aria-live="polite" hidden></div>
       <div class="ai-panel" id="paramsExplain" role="region" aria-live="polite" hidden></div>
-      <div class="field-grid" style="margin-bottom:10px">
-        <div class="field">
-          <div class="dial-head"><label>Coffee Dose <span class="unit">(g)</span></label>
-            <button class="dial-reset" aria-label="Reset dose to default" title="Reset to default (15)" onclick="resetField('coffeeDose',recalcFromDose)"><svg class="ico"><use href="#i-reset"/></svg></button>
+      <div class="bubble-grid" id="paramBubbles" style="margin-bottom:10px">
+        <div class="field param-bubble" data-field="coffeeDose">
+          <div class="pb-top"><label for="coffeeDose" class="pb-label">Dose <span class="pb-unit">g</span></label>
+            <button type="button" class="dial-reset pb-reset" aria-label="Reset dose to default (15)" title="Reset to default (15)" onclick="resetField('coffeeDose',recalcFromDose)"><svg class="ico"><use href="#i-reset"/></svg></button>
           </div>
-          <div class="scrub">
-            <input type="number" inputmode="decimal" enterkeyhint="done" id="coffeeDose" class="scrub-num" data-default="15" placeholder="15" step="0.1" min="0" oninput="recalcFromDose()" aria-label="Coffee dose in grams">
-            <div class="ruler" data-field="coffeeDose" role="slider" tabindex="0" aria-label="Coffee dose — drag or arrow keys to adjust" style="--gap:25px"><div class="ruler-ticks"></div><div class="ruler-caret"></div></div>
-            <div class="dial-hint" id="dialHint" hidden>↔ Drag the ruler to adjust — or tap the number to type</div>
-          </div>
-        </div>
-        <div class="field">
-          <div class="dial-head"><label>Ratio <span class="unit">(1 : x)</span></label>
-            <button class="dial-reset" aria-label="Reset ratio to default" title="Reset to default (16)" onclick="resetField('brewRatio',recalcFromRatio)"><svg class="ico"><use href="#i-reset"/></svg></button>
-          </div>
-          <div class="dial-presets">
-            <button class="preset-chip" onclick="setRatioChip(14)">1:14</button>
-            <button class="preset-chip" onclick="setRatioChip(15)">1:15</button>
-            <button class="preset-chip" onclick="setRatioChip(16)">1:16</button>
-            <button class="preset-chip" onclick="setRatioChip(17)">1:17</button>
-          </div>
-          <div class="scrub">
-            <input type="number" inputmode="decimal" enterkeyhint="done" id="brewRatio" class="scrub-num" data-default="16" placeholder="16" step="0.1" min="1" oninput="recalcFromRatio()" aria-label="Brew ratio (1 to x)" aria-describedby="provenRatioHint">
-            <div class="ruler" data-field="brewRatio" role="slider" tabindex="0" aria-label="Ratio — drag or arrow keys to adjust" style="--gap:40px"><div class="ruler-ticks"></div><div class="ruler-caret"></div></div>
+          <input type="number" inputmode="decimal" enterkeyhint="done" id="coffeeDose" class="pb-num" data-default="15" placeholder="15" step="0.1" min="0" oninput="recalcFromDose()" aria-label="Coffee dose in grams">
+          <div class="pb-step">
+            <button type="button" class="step-btn pb-stepbtn" aria-label="Decrease dose" onclick="bump('coffeeDose',-1,recalcFromDose)"><svg class="ico"><use href="#i-minus"/></svg></button>
+            <button type="button" class="step-btn pb-stepbtn" aria-label="Increase dose" onclick="bump('coffeeDose',1,recalcFromDose)"><svg class="ico"><use href="#i-plus"/></svg></button>
           </div>
         </div>
-        <div class="field">
-          <div class="dial-head"><label>Total Water <span class="unit">(g)</span></label>
-            <button class="dial-reset" aria-label="Reset water to default" title="Reset to default (250)" onclick="resetField('totalWater',recalcFromWater)"><svg class="ico"><use href="#i-reset"/></svg></button>
+        <div class="field param-bubble" data-field="brewRatio">
+          <div class="pb-top"><label for="brewRatio" class="pb-label">Ratio <span class="pb-unit">1:x</span></label>
+            <button type="button" class="dial-reset pb-reset" aria-label="Reset ratio to default (16)" title="Reset to default (16)" onclick="resetField('brewRatio',recalcFromRatio)"><svg class="ico"><use href="#i-reset"/></svg></button>
           </div>
-          <div class="scrub">
-            <input type="number" inputmode="decimal" enterkeyhint="done" id="totalWater" class="scrub-num" data-default="250" placeholder="250" step="1" min="0" oninput="recalcFromWater()" aria-label="Total water in grams">
-            <div class="ruler" data-field="totalWater" role="slider" tabindex="0" aria-label="Total water — drag or arrow keys to adjust" style="--gap:30px"><div class="ruler-ticks"></div><div class="ruler-caret"></div></div>
+          <input type="number" inputmode="decimal" enterkeyhint="done" id="brewRatio" class="pb-num" data-default="16" placeholder="16" step="0.1" min="1" oninput="recalcFromRatio()" aria-label="Brew ratio (1 to x)" aria-describedby="provenRatioHint">
+          <div class="pb-chips">
+            <button type="button" class="preset-chip" onclick="setRatioChip(15)">15</button>
+            <button type="button" class="preset-chip" onclick="setRatioChip(16)">16</button>
+            <button type="button" class="preset-chip" onclick="setRatioChip(17)">17</button>
           </div>
         </div>
-        <div class="field">
-          <div class="dial-head"><label>Water Temp <span class="unit" id="tempUnitLabel">(°C)</span></label>
-            <button class="dial-reset" aria-label="Reset temperature to default" title="Reset to default" onclick="resetField('waterTemp',markDirty)"><svg class="ico"><use href="#i-reset"/></svg></button>
+        <div class="field param-bubble" data-field="totalWater">
+          <div class="pb-top"><label for="totalWater" class="pb-label">Water <span class="pb-unit">g</span></label>
+            <button type="button" class="dial-reset pb-reset" aria-label="Reset water to default (250)" title="Reset to default (250)" onclick="resetField('totalWater',recalcFromWater)"><svg class="ico"><use href="#i-reset"/></svg></button>
           </div>
-          <div class="dial-presets">
-            <button class="preset-chip" data-c="88" onclick="setTempChip(88)">88°</button>
-            <button class="preset-chip" data-c="90" onclick="setTempChip(90)">90°</button>
-            <button class="preset-chip" data-c="93" onclick="setTempChip(93)">93°</button>
-            <button class="preset-chip" data-c="96" onclick="setTempChip(96)">96°</button>
-            <button class="preset-chip" data-c="98" onclick="setTempChip(98)">98°</button>
+          <input type="number" inputmode="decimal" enterkeyhint="done" id="totalWater" class="pb-num" data-default="250" placeholder="250" step="1" min="0" oninput="recalcFromWater()" aria-label="Total water in grams">
+          <div class="pb-step">
+            <button type="button" class="step-btn pb-stepbtn" aria-label="Decrease water" onclick="bump('totalWater',-5,recalcFromWater)"><svg class="ico"><use href="#i-minus"/></svg></button>
+            <button type="button" class="step-btn pb-stepbtn" aria-label="Increase water" onclick="bump('totalWater',5,recalcFromWater)"><svg class="ico"><use href="#i-plus"/></svg></button>
           </div>
-          <div class="scrub">
-            <input type="number" inputmode="decimal" enterkeyhint="done" id="waterTemp" class="scrub-num" data-default="93" placeholder="93" step="0.5" min="0" max="100" oninput="markDirty()" aria-label="Water temperature">
-            <div class="ruler" data-field="waterTemp" role="slider" tabindex="0" aria-label="Water temperature — drag or arrow keys to adjust" style="--gap:24px"><div class="ruler-ticks"></div><div class="ruler-caret"></div></div>
+        </div>
+        <div class="field param-bubble" data-field="waterTemp">
+          <div class="pb-top"><label for="waterTemp" class="pb-label">Temp <span class="pb-unit" id="tempUnitLabel">(°C)</span></label>
+            <button type="button" class="dial-reset pb-reset" aria-label="Reset temperature to default" title="Reset to default" onclick="resetField('waterTemp',markDirty)"><svg class="ico"><use href="#i-reset"/></svg></button>
+          </div>
+          <input type="number" inputmode="decimal" enterkeyhint="done" id="waterTemp" class="pb-num" data-default="93" placeholder="93" step="0.5" min="0" max="100" oninput="markDirty()" aria-label="Water temperature">
+          <div class="pb-chips">
+            <button type="button" class="preset-chip" data-c="90" onclick="setTempChip(90)">90°</button>
+            <button type="button" class="preset-chip" data-c="93" onclick="setTempChip(93)">93°</button>
+            <button type="button" class="preset-chip" data-c="96" onclick="setTempChip(96)">96°</button>
           </div>
         </div>
       </div>
@@ -2277,7 +2312,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.270.0';
+const APP_VERSION = '2.271.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
@@ -2757,16 +2792,10 @@ function loadHintState() {
 }
 function bumpHintsSeen() { hintsSeen += 1; try { store.set('brewcraft_hints_seen', String(hintsSeen)); } catch(e) {} }
 function hintsEligible() { return hintsSeen <= 4; } // only nudge during the first few app opens
-function showDialHint() {
-  const el = document.getElementById('dialHint');
-  if (!el) return;
-  el.hidden = !(!dialHintUsed && hintsEligible());
-}
-function dismissDialHint(permanent) {
-  const el = document.getElementById('dialHint');
-  if (el) el.hidden = true;
-  if (permanent && !dialHintUsed) { dialHintUsed = true; try { store.set('brewcraft_dialHintUsed', '1'); } catch(e) {} }
-}
+/* The dial-drag hint retired with the ruler — the Dose & Ratio bubbles are tap-to-type + steppers,
+   so there's no drag gesture to teach. Kept as no-ops so the existing callers stay harmless. */
+function showDialHint() {}
+function dismissDialHint(permanent) {}
 function showBAHint() {
   const el = document.getElementById('baHint');
   if (!el) return;
@@ -2990,6 +3019,7 @@ function renderQuickRecipes() {
     // and take the numbers off their shoulders. Beginners only; experts get the quiet hidden state.
     if (!method && document.body.classList.contains('skill-beginner')) {
       wrap.hidden = false;
+      rail.hidden = false;
       rail.innerHTML = '<div class="qrec-hint">Pick a brew method and I’ll show you expert recipes to start from — no need to know the numbers yet.</div>';
     } else { wrap.hidden = true; rail.innerHTML = ''; }
     return;
@@ -3003,6 +3033,9 @@ function renderQuickRecipes() {
       '<span class="qrec-author">' + escapeHtml(r.author) + '</span>' +
       '<span class="qrec-stats">' + escapeHtml(stats) + '</span></button>';
   }).join('');
+  rail.hidden = true;
+  wrap.classList.remove('open');
+  var _qt = document.getElementById('qrecToggle'); if (_qt) _qt.setAttribute('aria-expanded','false');
 }
 function applyQuickRecipe(method, idx) {
   const r = (QUICK_RECIPES[method] || [])[idx];
@@ -6233,6 +6266,34 @@ function initScrubber(field) {
   renderScrubber(field);
 }
 function initScrubbers() { Object.keys(SCRUBBERS).forEach(initScrubber); }
+/* +/- stepper for the param bubbles: snaps to the field's own step grid, honors min/max, fires the SAME
+   callback the input's oninput uses, so the interlink path is byte-identical to typing. */
+function bump(id, delta, cb) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  const step = parseFloat(el.step) || 1;
+  const cur = parseFloat(el.value);
+  let v = (isNaN(cur) ? (parseFloat(el.dataset.default) || 0) : cur) + delta;
+  const mn = parseFloat(el.min), mx = parseFloat(el.max);
+  if (!isNaN(mn)) v = Math.max(mn, v);
+  if (!isNaN(mx)) v = Math.min(mx, v);
+  v = Number((Math.round(v / step) * step).toFixed(4));
+  el.value = v;
+  vibrate(8);
+  el.classList.remove('pulse'); void el.offsetWidth; el.classList.add('pulse');
+  if (typeof cb === 'function') cb();
+}
+/* Expand/collapse the slim quick-recipes pill strip. */
+function toggleQuickRecipes() {
+  const wrap = document.getElementById('quickRecipesWrap');
+  const rail = document.getElementById('quickRecipes');
+  const btn = document.getElementById('qrecToggle');
+  if (!wrap || !rail) return;
+  const open = rail.hidden;
+  rail.hidden = !open;
+  wrap.classList.toggle('open', open);
+  if (btn) btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+}
 function resetField(id, cb) {
   const el = document.getElementById(id);
   const d = el.dataset.default;
