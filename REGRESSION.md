@@ -1879,3 +1879,8 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] Fix (index.html): added applyPourPattern(pattern) + a "Shape" chip row in the pour editor: Even (bloom 2x dose + 3 even), Bloom-heavy (bloom 3x/15% + 3 even), Tetsu 4:6 (5 equal 20% pours, first two carry sweetness/strength notes), Rao (bloom + one pour to full, swirl). Each restructures via setPourData, sums EXACTLY to water, sets ~45s cadence start times. Existing autoDistributePours kept as "Rescale" (keep-your-shape, fit-to-water).
 - [ ] Verified via preview (dose 15, water 300): Even [B30,90,90,90]; Bloom-heavy [B45,85,85,85]; Tetsu [B60 x5]; Rao [B30,270] - all sum 300, structure-bar segments match. npm run check green (2.266.0).
 - [ ] Update toast after deploy (cache v2.266.0)
+## Sprint 279 (v2.267.0) - #3: add Orea as a fully connected method
+- [ ] Owner req #3 named Orea explicitly ("Orea defaults to compatible Orea filter options") + #7 listed it. The app had Origami but not Orea.
+- [ ] Fix (index.html): added Orea everywhere it needs to exist - method card in the Gravity group; METHOD_BLURB; FILTER_DEFAULTS['Orea']='Orea Flat-Bottom Paper' + the option in the Basket/Flat-Bottom filter group (+ Sibarist FAST Flat); QUICK_RECIPES['Orea'] = 2 original structured recipes (Orea Flat-Bed 15g/1:16.7 with a 4-pour cadence; Orea Sweet 4:6 20g/1:15 with 5x60 cadence). grindBandKey/isPourPlanMethod treat it as pourOver so pour plan + editor show.
+- [ ] Verified via preview: Orea card present; selecting it on a new recipe seeds 15g/1:16.7 + Orea filter; isPourPlanMethod true; applyQuickRecipe('Orea',0) loads 4 pours summing 250. npm run check green (2.267.0).
+- [ ] Update toast after deploy (cache v2.267.0)

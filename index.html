@@ -1067,6 +1067,7 @@
             <div class="method-card" data-method="Chemex" onclick="selectMethod(this)"><span class="method-icon"><svg class="ico"><use href="#i-hourglass"/></svg></span><span class="method-name">Chemex</span></div>
             <div class="method-card" data-method="Kalita Wave" onclick="selectMethod(this)"><span class="method-icon"><svg class="ico"><use href="#i-wave"/></svg></span><span class="method-name">Kalita Wave</span></div>
             <div class="method-card" data-method="Origami" onclick="selectMethod(this)"><span class="method-icon"><svg class="ico"><use href="#i-cone"/></svg></span><span class="method-name">Origami</span></div>
+            <div class="method-card" data-method="Orea" onclick="selectMethod(this)"><span class="method-icon"><svg class="ico"><use href="#i-cone"/></svg></span><span class="method-name">Orea</span></div>
             <div class="method-card" data-method="Melitta" onclick="selectMethod(this)"><span class="method-icon"><svg class="ico"><use href="#i-cone"/></svg></span><span class="method-name">Melitta</span></div>
             <div class="method-card" data-method="Phin" onclick="selectMethod(this)"><span class="method-icon"><svg class="ico"><use href="#i-press"/></svg></span><span class="method-name">Phin</span></div>
             <div class="method-card" data-method="Cold Drip" onclick="selectMethod(this)"><span class="method-icon"><svg class="ico"><use href="#i-drop"/></svg></span><span class="method-name">Cold Drip</span></div>
@@ -1375,7 +1376,7 @@
             <optgroup label="Paper — Basket / Flat Bottom">
               <option>Melitta #2 White</option><option>Melitta #4 White</option>
               <option>Melitta #2 Natural</option><option>Melitta #4 Natural</option>
-              <option>Bunn Flat Bottom 12-Cup</option>
+              <option>Bunn Flat Bottom 12-Cup</option><option>Orea Flat-Bottom Paper</option><option>Sibarist FAST Flat</option>
             </optgroup>
             <optgroup label="Paper — Other">
               <option>Origami Paper S</option><option>Origami Paper M</option>
@@ -2258,7 +2259,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.266.0';
+const APP_VERSION = '2.267.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
@@ -2308,6 +2309,10 @@ const QUICK_RECIPES = {
   ],
   'Clever': [
     { name:'Clever standard', author:'Sweet Maria’s style', doseG:21, ratio:16, tempC:96, grind:'medium', time:'3:30', technique:'Add water and coffee, steep, stir ~1:30, then place on a mug to drain.', src:'https://library.sweetmarias.com/clever-coffee-dripper-a-full-immersion-brewing-method/' }
+  ],
+  'Orea': [
+    { name:'Orea Flat-Bed', author:'Method classic', doseG:15, ratio:16.7, tempC:94, grind:'medium', time:'2:45', technique:'Bloom 45g for 40s, then pour in three even stages to 250g; the flat bed extracts evenly for a clean, balanced cup.', src:'https://oreabrewing.com/', pours:[{isBloom:true,weight:45,start:'0:00',end:'0:40',technique:'bloom + swirl'},{isBloom:false,weight:68,start:'0:45',end:'1:05',technique:'even pour'},{isBloom:false,weight:68,start:'1:30',end:'1:50',technique:'even pour'},{isBloom:false,weight:69,start:'2:15',end:'2:35',technique:'to 250g'}] },
+    { name:'Orea Sweet 4:6', author:'Tetsu-style on a flat bed', doseG:20, ratio:15, tempC:93, grind:'medium', time:'3:00', technique:'Five 60g pours every 45s; the first two (to 120g) tune sweetness/acidity, the last three build strength.', src:'https://oreabrewing.com/', pours:[{isBloom:false,weight:60,start:'0:00',end:'0:20',technique:'sweetness'},{isBloom:false,weight:60,start:'0:45',end:'1:05',technique:'balance'},{isBloom:false,weight:60,start:'1:30',end:'1:50',technique:'strength'},{isBloom:false,weight:60,start:'2:15',end:'2:35',technique:''},{isBloom:false,weight:60,start:'3:00',end:'3:20',technique:''}] }
   ],
   'Origami': [
     { name:'Origami Clean & Sweet', author:'Kurasu (Kyoto)', doseG:15, ratio:18, tempC:89, grind:'medium-fine', time:'1:20', technique:'Pour 40g over 30s, then 130g over the next 30s, then the rest to 270g; pull the dripper at 1:20 for a clean, sweet cup.', src:'https://kurasu.kyoto/blogs/kurasu-journal/origami-dripper-brewing-recipe-how-we-do-it-at-kurasu' },
@@ -2863,6 +2868,7 @@ const METHOD_BLURB = {
   'Chemex': 'Thick filter, very clean and clear. Forgiving for bigger batches.',
   'Kalita Wave': 'Flat bed, even and repeatable — a touch more forgiving than V60.',
   'Origami': 'Flexible cone — bright like a V60, swap filters to taste.',
+  'Orea': 'Flat-bottom dripper - even, repeatable bed; clean and balanced, very forgiving.',
   'Melitta': 'Classic wedge dripper — easy, sweet, everyday cup.',
   'Phin': 'Vietnamese drip — slow, strong, syrupy. Lovely with condensed milk.',
   'Cold Drip': 'Cold water drop by drop — smooth and low-acid, takes hours.',
@@ -2896,6 +2902,7 @@ const FILTER_DEFAULTS = {
   'Chemex': 'Chemex Bonded White (Square)',
   'Kalita Wave': 'Kalita Wave 185 White',
   'Origami': 'Origami Paper S',
+  'Orea': 'Orea Flat-Bottom Paper',
   'Melitta': 'Melitta #2 White',
   'AeroPress': 'AeroPress Standard Paper',
   'Hario Switch': 'Hario V60 02 White (Tabbed)',
