@@ -536,6 +536,26 @@
   .pour-card-grid label { display:flex; flex-direction:column; gap:4px; font-size:10px; font-weight:600; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.6px; }
   .pour-card-grid input { font-family:'JetBrains Mono',monospace; font-size:14px; padding:10px; background:var(--bg-deep); border:1px solid var(--border); border-radius:var(--radius-xs); color:var(--text-primary); outline:none; width:100%; min-height:42px; }
   .pour-card-grid input:focus { border-color:var(--accent); }
+  /* Visual pour-timeline editor (#4): a proportional structure bar + compact tap-to-size pour cards. */
+  .pour-bar { display:flex; gap:2px; height:10px; border-radius:5px; overflow:hidden; background:var(--bg-deep); }
+  .pour-bar:empty { display:none; }
+  .pour-bar .pseg { background:var(--accent); min-width:4px; border-radius:2px; }
+  .pour-bar .pseg-bloom { background:var(--accent-bright); }
+  .pour-line { display:flex; align-items:center; gap:10px; }
+  .pour-card .pour-card-title { font-size:12.5px; font-weight:700; color:var(--text-secondary); display:inline-flex; align-items:center; gap:5px; min-width:58px; }
+  .pour-card.bloom .pour-card-title { color:var(--accent-bright); }
+  .pour-card .pour-card-title .ico { width:14px; height:14px; }
+  .pour-stepper { display:inline-flex; align-items:center; margin-left:auto; background:var(--bg-deep); border:1px solid var(--border); border-radius:999px; overflow:hidden; }
+  .pour-step { width:36px; height:36px; border:none; background:transparent; color:var(--accent-bright); font-size:20px; font-weight:700; line-height:1; cursor:pointer; padding:0; }
+  .pour-step:active { background:var(--accent-glow); }
+  .pour-weight { width:46px; text-align:center; border:none; background:transparent; color:var(--text-primary); font-family:'JetBrains Mono',monospace; font-size:15px; font-weight:700; padding:7px 0; outline:none; -moz-appearance:textfield; }
+  .pour-weight::-webkit-outer-spin-button, .pour-weight::-webkit-inner-spin-button { -webkit-appearance:none; margin:0; }
+  .pour-card .pour-card-cum { font-size:12px; color:var(--text-muted); white-space:nowrap; min-width:54px; text-align:right; }
+  .pour-line-sub { display:flex; align-items:center; gap:10px; margin-top:9px; }
+  .pour-at { font-size:11.5px; color:var(--text-muted); display:inline-flex; align-items:center; gap:5px; white-space:nowrap; }
+  .pour-at .pour-start { width:48px; background:var(--bg-deep); border:1px solid var(--border); border-radius:6px; padding:4px 5px; color:var(--text-primary); font-family:'JetBrains Mono',monospace; font-size:12px; text-align:center; outline:none; }
+  .pour-at .pour-start:focus, .pour-line-sub .pour-technique:focus { border-color:var(--accent); }
+  .pour-line-sub .pour-technique { flex:1; min-width:0; background:transparent; border:none; border-bottom:1px dashed var(--border); padding:4px 2px; color:var(--text-secondary); font-size:12px; outline:none; }
   .profile-row { display:flex; gap:8px; margin-bottom:16px; flex-wrap:wrap; align-items:center; }
   .profile-row select { flex:1; min-width:170px; font-family:'DM Sans',sans-serif; font-size:13px; padding:11px 12px; background:var(--bg-input); border:1px solid var(--border); border-radius:var(--radius-xs); color:var(--text-primary); outline:none; }
   .template-row { display:flex; gap:8px; flex-wrap:wrap; }
@@ -1495,7 +1515,8 @@
     </div>
     <div class="section-body">
       <div class="pour-table-wrapper">
-        <div id="pourCards" style="padding:12px 12px 4px"></div>
+        <div class="pour-bar" id="pourBar" style="margin:2px 12px 14px"></div>
+        <div id="pourCards" style="padding:0 12px 4px"></div>
         <div class="pour-controls">
           <div class="pour-controls-left">
             <button class="btn btn-sm btn-secondary" onclick="addPour()">+ Add Pour</button>
@@ -2228,7 +2249,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.264.0';
+const APP_VERSION = '2.265.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
@@ -3276,21 +3297,33 @@ function addPourRow(isBloom) {
   card.className = 'pour-card' + (isBloom ? ' bloom' : '');
   card.dataset.isBloom = isBloom ? 'true' : 'false';
   card.innerHTML =
-    '<div class="pour-card-head">' +
+    '<div class="pour-line">' +
       '<span class="pour-card-title">' + (isBloom ? '<svg class="ico"><use href="#i-drop"/></svg> Bloom' : 'Pour ' + pourCount) + '</span>' +
+      '<span class="pour-stepper">' +
+        '<button type="button" class="pour-step" onclick="nudgePourWeight(this,-5)" aria-label="Less water">\u2212</button>' +
+        '<input type="number" inputmode="decimal" enterkeyhint="done" class="pour-weight" placeholder="0" step="1" min="0" oninput="updatePourTotals(); markDirty()" aria-label="Pour weight in grams">' +
+        '<button type="button" class="pour-step" onclick="nudgePourWeight(this,5)" aria-label="More water">+</button>' +
+      '</span>' +
       '<span class="pour-card-cum">\u2014</span>' +
-      '<button class="pour-remove-btn" onclick="removePour(this)" title="Remove" aria-label="Remove pour"><svg class="ico"><use href="#i-close"/></svg></button>' +
+      '<button type="button" class="pour-remove-btn" onclick="removePour(this)" title="Remove" aria-label="Remove pour"><svg class="ico"><use href="#i-close"/></svg></button>' +
     '</div>' +
-    '<div class="pour-card-grid">' +
-      '<label>Weight (g)<input type="number" inputmode="decimal" enterkeyhint="done" class="pour-weight" placeholder="g" step="1" min="0" oninput="updatePourTotals(); markDirty()"></label>' +
-      '<label>Start<input type="text" class="pour-start" placeholder="0:00" oninput="markDirty()"></label>' +
-      '<label>End<input type="text" class="pour-end" placeholder="0:00" oninput="markDirty()"></label>' +
-      '<label>Technique<input type="text" class="pour-technique" placeholder="' + (isBloom ? 'Gentle circle' : 'Center spiral') + '" oninput="markDirty()"></label>' +
+    '<div class="pour-line-sub">' +
+      '<label class="pour-at">at <input type="text" class="pour-start" placeholder="0:00" oninput="markDirty()" aria-label="Start time"></label>' +
+      '<input type="text" class="pour-technique" placeholder="' + (isBloom ? 'gentle circle (optional)' : 'note (optional)') + '" oninput="markDirty()" aria-label="Technique note">' +
+      '<input type="hidden" class="pour-end">' +
     '</div>';
   wrap.appendChild(card);
   updatePourTotals();
 }
 function addPour() { addPourRow(false); }
+function nudgePourWeight(btn, delta) {
+  const input = btn.parentElement.querySelector('.pour-weight');
+  if (!input) return;
+  input.value = Math.max(0, (parseFloat(input.value) || 0) + delta);
+  updatePourTotals();
+  markDirty();
+  if (typeof vibrate === 'function') vibrate(8);
+}
 function removePour(btn) {
   if (pourEls().length <= 1) { showToast('Need at least one pour','warning'); return; }
   btn.closest('.pour-card').remove();
@@ -3321,6 +3354,17 @@ function updatePourTotals() {
     else html += ' <span class="pour-off">' + (diff > 0 ? '+' + diff + 'g over' : Math.abs(diff) + 'g short') + '</span>';
   }
   document.getElementById('pourTotal').innerHTML = html;
+  // Visual structure bar: each pour a segment proportional to its weight (bloom highlighted) so the build reads at a glance.
+  const _pbar = document.getElementById('pourBar');
+  if (_pbar) {
+    let _segs = '';
+    pourEls().forEach(function(c) {
+      const w = parseFloat(c.querySelector('.pour-weight').value) || 0;
+      if (w <= 0) return;
+      _segs += '<span class="pseg' + (c.dataset.isBloom === 'true' ? ' pseg-bloom' : '') + '" style="flex-grow:' + w + '" title="' + w + 'g"></span>';
+    });
+    _pbar.innerHTML = _segs;
+  }
   renderPourPlan(getSelectedMethod());
 }
 function autoDistributePours() {
