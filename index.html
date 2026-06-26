@@ -182,7 +182,8 @@
   #tab-recipe > #sec-method { order:1; }
   #tab-recipe > #sec-params { order:2; }
   #tab-recipe > #sec-bean { order:3; }
-  #tab-recipe > #sec-water { order:4; }
+  #tab-recipe > #sec-gear { order:4; }
+  #tab-recipe > #sec-water { order:5; }
   .method-card {
     padding:12px 8px; background:var(--bg-input); border:1px solid var(--border);
     border-radius:var(--radius-sm); cursor:pointer; transition:all var(--transition);
@@ -582,7 +583,7 @@
   /* Enthusiasts don't get the Water section (Expert-only), but the feature shouldn't be invisible —
      a calm breadcrumb that it's there to grow into. Beginners are deliberately NOT nudged toward it. */
   .water-grow { display:none; font-size:12px; color:var(--text-muted); line-height:1.6; margin:2px 0 14px; }
-  #tab-recipe > .water-grow { order:4; }
+  #tab-recipe > .water-grow { order:5; }
   body.skill-enthusiast .water-grow { display:block; }
   .water-grow strong { color:var(--text-secondary); }
   /* Beginner tier hides precision-gear bits that Enthusiast keeps (grinder model, grind clicks, saved setups). */
@@ -1113,7 +1114,7 @@
     </div>
   </div>
 
-  <div class="section" id="sec-bean">
+  <div class="section collapsed" id="sec-bean">
     <div class="section-header" onclick="toggleSection('sec-bean')">
       <div class="section-icon"><svg class="ico"><use href="#i-bean"/></svg></div>
       <div><div class="section-title">Bean & Recipe Details</div><div class="section-subtitle">Origin, roaster, and processing</div></div>
@@ -1211,7 +1212,7 @@
   <div class="section" id="sec-params">
     <div class="section-header" onclick="toggleSection('sec-params')">
       <div class="section-icon"><svg class="ico"><use href="#i-sliders"/></svg></div>
-      <div><div class="section-title">Brew Parameters</div><div class="section-subtitle">Dose, ratio, grind & temperature</div></div>
+      <div><div class="section-title">Dose & Ratio</div><div class="section-subtitle">Coffee, water & temperature</div></div>
       <div class="section-toggle"><svg class="ico"><use href="#i-chev-down"/></svg></div>
     </div>
     <div class="section-body">
@@ -1291,6 +1292,16 @@
         <div class="field pro-only"><label>Pre-infusion <span class="unit">(s)</span></label><input type="number" inputmode="decimal" enterkeyhint="done" id="espPreinfusion" placeholder="e.g., 5" step="1" min="0" oninput="markDirty()"></div>
       </div>
 
+    </div>
+  </div>
+
+  <div class="section collapsed" id="sec-gear">
+    <div class="section-header" onclick="toggleSection('sec-gear')">
+      <div class="section-icon"><svg class="ico"><use href="#i-sliders"/></svg></div>
+      <div><div class="section-title">Gear</div><div class="section-subtitle">Grinder, filter & grind setting</div></div>
+      <div class="section-toggle"><svg class="ico"><use href="#i-chev-down"/></svg></div>
+    </div>
+    <div class="section-body">
       <div class="profile-row beginner-hide">
         <select id="gearProfileSelect" aria-label="Load a saved gear setup" onchange="applyGearProfile()">
           <option value="">Saved setups…</option>
@@ -2266,7 +2277,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.269.0';
+const APP_VERSION = '2.270.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
@@ -6574,13 +6585,13 @@ function applyMode() {
   const sel = document.getElementById('labSkill');
   if (sel) sel.value = settings.skill || (settings.mode === 'pro' ? 'expert' : 'beginner');
 }
-/* Calm default for the Recipe tab: a Beginner opens to Method + Brew Parameters, with the optional
-   Bean & Recipe Details collapsed (one tap to open). Enthusiast/Expert keep it expanded. Boot-only,
-   so it never re-collapses on someone who opened it mid-session. */
+/* Calm default for the Recipe tab: everyone opens to Method + Dose & Ratio, with the optional
+   Bean & Recipe Details (and Gear) collapsed — one tap to open. Boot-only, so it never re-collapses
+   on someone who opened it mid-session. This is what kills the long setup scroll. */
 function applyInitialDisclosure() {
   const bean = document.getElementById('sec-bean');
   if (!bean) return;
-  const collapse = document.body.classList.contains('skill-beginner');
+  const collapse = true;
   bean.classList.toggle('collapsed', collapse);
   const h = bean.querySelector('.section-header');
   if (h) h.setAttribute('aria-expanded', String(!collapse));
