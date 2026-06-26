@@ -1913,3 +1913,8 @@ All added as boot-time enhancers (initControlsA11y / initFieldLabels / initModal
 - [ ] Fix: reuse the EXISTING loadRecipe(id) (the clean verbatim loader, 5136) via a new rebrewVerbatim(id) = loadRecipe(id) + switchTab('brew'). quickBrew now calls rebrewVerbatim(latest.id); the 4-star next-action calls rebrewVerbatim('<currentRecipeId>'). The two EXPLICIT "Brew Again (new version)" buttons (1702, 1749) and brewAgain() itself are UNCHANGED.
 - [ ] Verified via preview: rebrewVerbatim + quickBrew add 0 recipe rows and keep the id; explicit brewAgain() still adds 1 versioned child. npm run check green (2.272.0), boots clean.
 - [ ] Update toast after deploy (cache v2.272.0)
+## Sprint 285 (v2.273.0) - Backend roadmap PR #2: pour edits now trigger save-as-new-version consent
+- [ ] The skeptic caught a real shippable bug: editing a pour schedule did NOT offer save-as-new-version (a consent-save invariant hole, fully offline). Cause: paramsChanged() (~index.html:7623) compared via String(orig[f]).trim(), and pours is an ARRAY OF OBJECTS -> '[object Object],...' for every schedule, so all pour edits compared equal. (Source check corrected the panel: totalWater is ALREADY in DIFF_FIELDS; espShotTime is a result cleared by brewAgain, correctly excluded.)
+- [ ] Fix: new poursSig(pours) = normalized per-pour signature (weight|start|end|technique|bloom, joined). paramsChanged appends 'Pour schedule' when poursSig(orig.pours) != poursSig(cur.pours). DIFF_FIELDS + its 7 other consumers + the version-diff display are UNTOUCHED.
+- [ ] Verified via preview (V60 Hoffmann, 5 pours): clean save -> []; edit one pour weight -> ['Pour schedule']; revert -> []. npm run check green (2.273.0), boots clean.
+- [ ] Update toast after deploy (cache v2.273.0)

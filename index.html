@@ -2312,7 +2312,7 @@ let pendingImport = null;
 let compareA = null;
 let currentBeanId = null;
 let libraryView = 'list';
-const APP_VERSION = '2.272.0';
+const APP_VERSION = '2.273.0';
 let settings = { apiKey:'', model:'claude-sonnet-4-6', sounds:'on', tempUnit:'C', mode:'', skill:'', feedbackUrl:'', theme:'auto' };
 let baActive = false, baSteps = [], baIdx = 0, baTotalSec = 0, baOpener = null, baDoneFired = false;
 let wakeLock = null;
@@ -7620,6 +7620,17 @@ function applyTheme() {
 })();
 
 /* ======= v12: SAVE CONSENT & ESPRESSO BRAIN ======= */
+/* Stable structural signature of a pour schedule for change-detection. pours is an array of objects, so a
+   plain String() compare is meaningless ('[object Object],...'); this normalizes each pour to a string.
+   Identical schedules -> identical signature; any edit (weight/time/technique/bloom/count) -> different. */
+function poursSig(pours) {
+  if (!Array.isArray(pours) || !pours.length) return '';
+  return pours.map(function(p) {
+    return [p.weight, p.start, p.end, p.technique, p.isBloom ? 'b' : ''].map(function(x) {
+      return String(x === undefined || x === null ? '' : x).trim();
+    }).join('|');
+  }).join(';');
+}
 function paramsChanged() {
   const orig = recipes.find(function(r) { return r.id === currentRecipeId; });
   if (!orig) return [];
@@ -7630,6 +7641,10 @@ function paramsChanged() {
     const b = String(cur[f[0]] === undefined || cur[f[0]] === null ? '' : cur[f[0]]).trim();
     if (a !== b) changed.push(f[1]);
   });
+  // The pour schedule is a core brew PARAMETER, but the String().trim() compare above turns every pours array
+  // into '[object Object],...' so it never detected a change — editing a pour silently overwrote the saved
+  // recipe. Compare a structural signature so a pour edit correctly offers save-as-new-version vs update.
+  if (poursSig(orig.pours) !== poursSig(cur.pours)) changed.push('Pour schedule');
   return changed;
 }
 /* Shared accessible-modal focus management: move focus into the dialog on open (aria-modal marks the rest
